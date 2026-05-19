@@ -1,85 +1,207 @@
-.login-content {
-
-  --background: linear-gradient(
-    180deg,
-    #0f172a,
-    #1e293b
-  );
-
+/* Fondo general de la pantalla */
+ion-content {
+  --background: #f7f7f7;
+  font-family: 'Inter', sans-serif;
 }
 
-.overlay {
+/* Encabezado Rojo superior */
+.header-bg {
+  background-color: #b3000b;
+  height: 35vh; /* Usamos viewport height para adaptarse mejor a distintos celulares */
+  min-height: 250px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+}
 
+.logo-container {
+  text-align: center;
+  color: white;
+}
+
+.logo-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.logo-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+
+.logo-subtitle {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Tarjeta Blanca de Login */
+.login-card {
+  background-color: white;
+  border-radius: 12px;
+  margin: -60px 24px 0 24px; /* Margen negativo para montar sobre el rojo */
+  padding: 30px 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 10;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+/* Inputs y Formularios adaptados a Ionic */
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #f2cdd0;
+  border-radius: 6px;
+  padding: 0 12px;
+  height: 44px;
+  background-color: #fff;
+  transition: border-color 0.3s;
+
+  &:focus-within {
+    border-color: #b3000b;
+  }
+}
+
+.input-icon {
+  color: #555;
+  font-size: 15px;
+  margin-right: 10px;
+}
+
+/* Reseteamos los paddings nativos de ion-input para nuestro wrapper */
+ion-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  --placeholder-color: #9aa0a6;
+  font-size: 14px;
+}
+
+.show-pwd-icon {
+  color: #555;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* Fila de Recordarme y Olvidé contraseña */
+.options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 25px;
+}
+
+/* Personalización del ion-checkbox */
+.custom-checkbox {
+  font-size: 13px;
+  color: #555;
+  --checkbox-background-checked: #b3000b;
+  --border-color-checked: #b3000b;
+  
+  &::part(container) {
+    border-radius: 4px;
+    margin-right: 8px;
+  }
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: #b3000b;
+  text-decoration: none;
+  text-align: right;
+  line-height: 1.3;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Botón de Ingreso nativo de Ionic */
+.btn-submit {
+  --background: #b3000b;
+  --background-hover: #8f0009;
+  --border-radius: 6px;
+  height: 46px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: none; /* Evita que el texto salga todo en mayúsculas */
+}
+
+/* Footer de la Tarjeta */
+.card-footer {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  height: 100vh;
-
-  padding: 20px;
-
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
 }
 
-.login-card {
+.footer-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
 
-  width: 100%;
-
-  background: white;
-
-  border-radius: 25px;
-
-  padding: 30px;
-
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-
+  i {
+    margin-right: 6px;
+    font-size: 14px;
+  }
 }
 
-.title {
+.divider {
+  width: 1px;
+  height: 14px;
+  background-color: #e0e0e0;
+  margin: 0 16px;
+}
 
+/* Footer externo */
+.support-footer {
   text-align: center;
+  margin-top: 30px;
+  padding-bottom: 30px; /* Margen inferior para que no quede pegado al borde del celular */
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
 
-  font-size: 32px;
-
-  font-weight: bold;
-
-  color: #0f172a;
-
-  margin-bottom: 10px;
-
-}
-
-.subtitle {
-
-  text-align: center;
-
-  color: gray;
-
-  margin-bottom: 30px;
-
-}
-
-.input-item {
-
-  margin-bottom: 20px;
-
-  border-radius: 12px;
-
-  --background: #f1f5f9;
-
-}
-
-.login-btn {
-
-  margin-top: 20px;
-
-  --background: #2563eb;
-
-  height: 50px;
-
-  font-size: 16px;
-
-  font-weight: bold;
-
-  border-radius: 12px;
-
+  a {
+    color: #b3000b;
+    font-weight: 700;
+    text-decoration: none;
+  }
 }

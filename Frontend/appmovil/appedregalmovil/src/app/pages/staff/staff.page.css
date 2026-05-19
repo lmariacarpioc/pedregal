@@ -1,0 +1,208 @@
+/* Estilos globales de la página */
+ion-content {
+  --background: #f4f5f8; /* Color de fondo general */
+
+  .page-header {
+    h1 {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    p {
+      color: #737373;
+      margin-top: 0;
+    }
+  }
+
+  /* Tarjetas de Métricas Resumen */
+  .summary-cards {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    ion-card {
+      margin: 0;
+      width: 48%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+
+      ion-item {
+        ion-label {
+          h2 {
+            font-weight: bold;
+            font-size: 1.5em;
+          }
+          p {
+            color: #737373;
+          }
+        }
+      }
+
+      /* Iconos circulares de métricas */
+      .metric-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        ion-icon {
+          font-size: 20px;
+        }
+      }
+
+      .performance-metric {
+        background-color: var(--ion-color-success-tint);
+        color: var(--ion-color-success);
+      }
+
+      .attention-metric {
+        background-color: var(--ion-color-danger-tint);
+        color: var(--ion-color-danger);
+      }
+    }
+  }
+
+  /* Títulos de Sección con Badges y Barras Laterales */
+  .section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 10px;
+
+    /* Barra vertical lateral */
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      border-radius: 2px;
+    }
+
+    &.bajo-rendimiento:before {
+      background-color: var(--ion-color-danger);
+    }
+
+    &.alto-rendimiento:before {
+      background-color: var(--ion-color-success);
+    }
+
+    .title-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      h2 {
+        font-weight: bold;
+        margin: 0;
+      }
+    }
+  }
+
+  /* Listas de Colaboradores */
+  .colaborador-list {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+
+    .colaborador-card {
+      margin: 10px 0;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      border: 2px solid transparent; /* Para bordes de rendimiento */
+
+      &.low {
+        border-color: var(--ion-color-danger-tint);
+      }
+      &.high {
+        border-color: var(--ion-color-success-tint);
+      }
+
+      ion-item {
+        ion-avatar {
+          position: relative;
+          overflow: visible;
+          /* Punto de notificación */
+          .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background-color: var(--ion-color-danger);
+            border-radius: 50%;
+            border: 2px solid #fff;
+          }
+        }
+
+        ion-label {
+          h3 {
+            font-weight: bold;
+          }
+          p {
+            color: #737373;
+          }
+        }
+
+        /* Datos de rendimiento a la derecha */
+        .performance-data {
+          text-align: right;
+          h3 {
+            font-weight: bold;
+            font-size: 1.2em;
+          }
+          p {
+            color: var(--ion-color-danger);
+            margin: 0;
+            &.positive {
+              color: var(--ion-color-success);
+            }
+          }
+        }
+      }
+
+      /* Botón Intervenir */
+      .intervenir-btn {
+        margin: 10px 10px 10px 10px;
+        border-radius: 8px;
+        font-weight: bold;
+        ion-icon {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}
+
+/* Menú de Navegación Inferior (Tabs) */
+ion-tab-bar {
+  --background: #fff;
+  border-top: 1px solid #e0e0e0;
+  
+  ion-tab-button {
+    --color: #737373;
+    --color-selected: var(--ion-color-danger);
+    
+    /* Estilo para la pestaña seleccionada (Staff) */
+    &.tab-selected {
+      color: var(--ion-color-danger);
+      background-color: var(--ion-color-danger-tint);
+      border-radius: 10px;
+      margin: 0 5px;
+    }
+  }
+}
+
+/* Estilos de la barra de herramientas del encabezado */
+ion-header {
+  ion-toolbar {
+    --background: #fff;
+    --color: #333;
+    
+    .logo-title {
+      font-weight: bold;
+      color: var(--ion-color-danger);
+    }
+  }
+}

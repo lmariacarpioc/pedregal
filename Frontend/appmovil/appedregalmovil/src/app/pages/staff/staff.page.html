@@ -1,0 +1,158 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="logo-title">PEDREGAL</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon slot="icon-only" name="sync-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="page-header">
+    <h1>Gestión de Staff</h1>
+    <p>Supervisión de rendimiento en campo</p>
+  </div>
+
+  <div class="summary-cards">
+    <ion-card>
+      <ion-item lines="none">
+        <ion-avatar slot="start" class="metric-icon performance-metric">
+          <ion-icon name="trending-up"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <p>Rendimiento Promedio</p>
+          <h2>14.2 kg/hr</h2>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+
+    <ion-card>
+      <ion-item lines="none">
+        <ion-avatar slot="start" class="metric-icon attention-metric">
+          <ion-icon name="warning-outline"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <p>Atención Requerida</p>
+          <h2>8 Colaboradores</h2>
+        </ion-label>
+      </ion-item>
+    </ion-card>
+  </div>
+
+  <div class="section-title bajo-rendimiento">
+    <div class="title-container">
+      <ion-badge color="danger">Acción Requerida</ion-badge>
+      <h2>Bajo Rendimiento</h2>
+    </div>
+  </div>
+
+  <ion-list class="colaborador-list low-performance">
+    <ion-card class="colaborador-card low">
+      <ion-item lines="none">
+        <ion-avatar slot="start">
+          <img src="assets/images/juan_perez.png" alt="Juan Pérez" />
+          <div class="notification-dot"></div>
+        </ion-avatar>
+        <ion-label>
+          <h3>Juan Pérez</h3>
+          <p>ID: #88294</p>
+        </ion-label>
+        <ion-note slot="end" class="performance-data">
+          <h3>8.2 kg/hr</h3>
+          <p class="meta-diff">-24% vs meta</p>
+        </ion-note>
+      </ion-item>
+      <ion-button expand="full" color="danger" class="intervenir-btn">
+        <ion-icon slot="start" name="location"></ion-icon>
+        Intervenir
+      </ion-button>
+    </ion-card>
+
+    <ion-card class="colaborador-card low">
+      <ion-item lines="none">
+        <ion-avatar slot="start">
+          <img src="assets/images/elena_rivas.png" alt="Elena Rivas" />
+          <div class="notification-dot"></div>
+        </ion-avatar>
+        <ion-label>
+          <h3>Elena Rivas</h3>
+          <p>ID: #88312</p>
+        </ion-label>
+        <ion-note slot="end" class="performance-data">
+          <h3>9.5 kg/hr</h3>
+          <p class="meta-diff">-12% vs meta</p>
+        </ion-note>
+      </ion-item>
+      <ion-button expand="full" color="danger" class="intervenir-btn">
+        <ion-icon slot="start" name="location"></ion-icon>
+        Intervenir
+      </ion-button>
+    </ion-card>
+  </ion-list>
+
+  <div class="section-title alto-rendimiento">
+    <div class="title-container">
+      <ion-badge color="success">Lectura únicamente</ion-badge>
+      <h2>Alto Rendimiento</h2>
+    </div>
+  </div>
+
+  <ion-list class="colaborador-list high-performance">
+    <ion-card class="colaborador-card high">
+      <ion-item lines="none">
+        <ion-avatar slot="start">
+          <img src="assets/images/marcos_solis.png" alt="Marcos Solis" />
+        </ion-avatar>
+        <ion-label>
+          <h3>Marcos Solis</h3>
+          <p>ID: #88102</p>
+        </ion-label>
+        <ion-note slot="end" class="performance-data">
+          <h3>18.4 kg/hr</h3>
+          <p class="meta-diff positive">+45% vs meta</p>
+        </ion-note>
+      </ion-item>
+    </ion-card>
+
+    <ion-card class="colaborador-card high">
+      <ion-item lines="none">
+        <ion-avatar slot="start">
+          <img src="assets/images/lucia_mendez.png" alt="Lucía Mendez" />
+        </ion-avatar>
+        <ion-label>
+          <h3>Lucía Mendez</h3>
+          <p>ID: #88095</p>
+        </ion-label>
+        <ion-note slot="end" class="performance-data">
+          <h3>16.8 kg/hr</h3>
+          <p class="meta-diff positive">+32% vs meta</p>
+        </ion-note>
+      </ion-item>
+    </ion-card>
+  </ion-list>
+
+</ion-content>
+
+<ion-tab-bar slot="bottom">
+  <ion-tab-button tab="dashboard">
+    <ion-icon name="grid-outline"></ion-icon>
+    <ion-label>Dashboard</ion-label>
+  </ion-tab-button>
+  <ion-tab-button tab="reports">
+    <ion-icon name="bar-chart-outline"></ion-icon>
+    <ion-label>Reports</ion-label>
+  </ion-tab-button>
+  <ion-tab-button tab="staff" class="tab-selected">
+    <ion-icon name="people-outline"></ion-icon>
+    <ion-label>Staff</ion-label>
+  </ion-tab-button>
+  <ion-tab-button tab="sync">
+    <ion-icon name="sync-outline"></ion-icon>
+    <ion-label>Sync</ion-label>
+  </ion-tab-button>
+</ion-tab-bar>
