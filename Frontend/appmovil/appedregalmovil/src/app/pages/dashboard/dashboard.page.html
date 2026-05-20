@@ -1,0 +1,141 @@
+<div class="ion-page">
+  <ion-content class="dash-content" [scrollY]="true">
+
+  <!-- ===== TOP HEADER ===== -->
+  <div class="top-header">
+    <div class="header-brand">
+      <svg viewBox="0 0 56 42" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="22">
+        <rect x="4" y="10" width="26" height="16" rx="2.5" fill="#b3000b"/>
+        <rect x="18" y="5"  width="16" height="9"  rx="2"   fill="#b3000b" opacity="0.8"/>
+        <circle cx="11" cy="31" r="7" fill="#b3000b"/>
+        <circle cx="11" cy="31" r="3.5" fill="#f4f4f6"/>
+        <circle cx="40" cy="33" r="5.5" fill="#b3000b"/>
+        <circle cx="40" cy="33" r="2.5" fill="#f4f4f6"/>
+        <rect x="28" y="16" width="13" height="9" rx="2" fill="#b3000b" opacity="0.75"/>
+      </svg>
+      <span class="brand-name">PEDREGAL</span>
+    </div>
+    <button class="header-sync-btn" (click)="irSync()">
+      <ion-icon name="sync-outline"></ion-icon>
+    </button>
+  </div>
+
+  <!-- ===== BODY ===== -->
+  <div class="dash-body">
+
+    <!-- Hero Card Supervisor -->
+    <div class="hero-card">
+      <img src="fundo-pedregal.png" alt="Campo" class="hero-bg-img">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-top-row">
+          <div class="supervisor-info">
+            <img src="supervisor-avatar.png" alt="Supervisor" class="supervisor-avatar">
+            <div class="supervisor-text">
+              <p class="supervisor-name">{{ supervisor.nombre }}</p>
+              <p class="supervisor-cargo">{{ supervisor.cargo }}</p>
+            </div>
+          </div>
+          <span class="badge-activo">
+            <span class="badge-dot"></span>
+            ACTIVO
+          </span>
+        </div>
+        <div class="hero-bottom-row">
+          <div class="hero-stat">
+            <p class="hero-stat-label">Turno Actual</p>
+            <p class="hero-stat-value">
+              <ion-icon name="sunny-outline" class="turno-icon"></ion-icon>
+              {{ supervisor.turno }}
+            </p>
+          </div>
+          <div class="hero-stat-right">
+            <p class="hero-stat-label">Ubicación</p>
+            <p class="hero-stat-value hero-ubicacion">{{ supervisor.ubicacion }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== KPI Cards ===== -->
+    <div class="kpi-row">
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <i class="fas fa-users kpi-icon"></i>
+          <span class="kpi-badge red">+{{ stats.personalNuevos }} hoy</span>
+        </div>
+        <p class="kpi-label">Personal Total</p>
+        <p class="kpi-value">{{ stats.personalTotal }}</p>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <i class="fas fa-clipboard-check kpi-icon"></i>
+          <span class="kpi-badge outline">PARTE HOY</span>
+        </div>
+        <p class="kpi-label">Registrados</p>
+        <p class="kpi-value">{{ stats.registrados | number:'2.0' }}</p>
+      </div>
+
+    </div>
+
+    <!-- ===== Partes Diarios HOY ===== -->
+    <div class="section-header">
+      <h2 class="section-title">Partes Diarios</h2>
+      <button class="ver-todos-btn" (click)="verTodos()">Ver todos</button>
+    </div>
+
+    <div class="partes-list">
+      @for (parte of partesHoy; track parte.id) {
+        <div class="parte-item ion-activatable">
+          <div class="parte-icon-wrap" [style.background]="parte.iconColor + '18'">
+            <i [class]="'fas ' + parte.icono" [style.color]="parte.iconColor"></i>
+          </div>
+          <div class="parte-info">
+            <p class="parte-titulo">{{ parte.titulo }}</p>
+            <p class="parte-subtitulo">{{ parte.subtitulo }}</p>
+          </div>
+          <span class="parte-estado" [class]="'estado-' + parte.estado.toLowerCase().replace(' ', '-')">
+            {{ parte.estado }}
+          </span>
+          <i class="fas fa-chevron-right parte-arrow"></i>
+          <ion-ripple-effect></ion-ripple-effect>
+        </div>
+      }
+    </div>
+
+    <!-- ===== Partes AYER ===== -->
+    <div class="section-header ayer-header">
+      <h2 class="section-title section-title--ayer">AYER</h2>
+    </div>
+
+    <div class="partes-list">
+      @for (parte of partesAyer; track parte.id) {
+        <div class="parte-item ion-activatable">
+          <div class="parte-icon-wrap" [style.background]="parte.iconColor + '18'">
+            <i [class]="'fas ' + parte.icono" [style.color]="parte.iconColor"></i>
+          </div>
+          <div class="parte-info">
+            <p class="parte-titulo">{{ parte.titulo }}</p>
+            <p class="parte-subtitulo">{{ parte.subtitulo }}</p>
+          </div>
+          <span class="parte-estado estado-cerrado">{{ parte.estado }}</span>
+          <ion-ripple-effect></ion-ripple-effect>
+        </div>
+      }
+    </div>
+
+    <!-- Botón Crear Parte Diario (Normal, no flotante) -->
+    <ion-button expand="block" class="btn-crear-parte" (click)="crearParte()">
+      <ion-icon name="add-outline" slot="start"></ion-icon>
+      Crear parte diario
+    </ion-button>
+
+    <!-- Espacio final -->
+    <div style="height: 24px;"></div>
+
+  </div>
+
+</ion-content>
+</div>

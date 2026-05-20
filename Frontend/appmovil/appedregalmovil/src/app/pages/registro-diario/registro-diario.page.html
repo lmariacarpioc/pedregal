@@ -1,0 +1,116 @@
+<ion-content class="rd-content">
+
+  <!-- ===== TOP HEADER ===== -->
+  <div class="top-header">
+    <div class="header-brand">
+      <!-- Ícono tractor rojo SVG -->
+      <svg viewBox="0 0 56 42" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="22">
+        <rect x="4" y="10" width="26" height="16" rx="2.5" fill="#b3000b"/>
+        <rect x="18" y="5"  width="16" height="9"  rx="2"   fill="#b3000b" opacity="0.8"/>
+        <circle cx="11" cy="31" r="7" fill="#b3000b"/>
+        <circle cx="11" cy="31" r="3.5" fill="#f4f4f6"/>
+        <circle cx="40" cy="33" r="5.5" fill="#b3000b"/>
+        <circle cx="40" cy="33" r="2.5" fill="#f4f4f6"/>
+        <rect x="28" y="16" width="13" height="9" rx="2" fill="#b3000b" opacity="0.75"/>
+      </svg>
+      <span class="brand-name">PEDREGAL</span>
+    </div>
+    <button class="header-sync-btn" (click)="irA('sync')">
+      <ion-icon name="sync-outline"></ion-icon>
+    </button>
+  </div>
+
+  <!-- ===== BODY SCROLLABLE ===== -->
+  <div class="rd-body">
+
+    <!-- Título de página -->
+    <div class="page-title-section">
+      <h1 class="page-title">Registro de Asistencia</h1>
+      <p class="page-subtitle">Field Management &amp; Daily Control</p>
+    </div>
+
+    <!-- Alerta Importante -->
+    <div class="alert-box">
+      <div class="alert-icon">
+        <i class="fas fa-triangle-exclamation"></i>
+      </div>
+      <div class="alert-content">
+        <p class="alert-title">Importante</p>
+        <p class="alert-text">
+          Asegúrese de que el personal cuente con su fotocheck visible antes de proceder con el registro.
+        </p>
+      </div>
+    </div>
+
+    <!-- Card de Fecha y Hora -->
+    <div class="registration-card">
+
+      <div class="field-group">
+        <label class="field-label">Fecha de Registro</label>
+        <div class="field-value-row">
+          <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
+          <span class="field-value">{{ fechaRegistro() }}</span>
+        </div>
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Hora de Ingreso</label>
+        <div class="field-value-row">
+          <ion-icon name="time-outline" class="field-icon"></ion-icon>
+          <span class="field-value">{{ horaIngreso() }}</span>
+        </div>
+      </div>
+
+      <!-- Botón Continuar -->
+      <ion-button
+        expand="block"
+        class="btn-continuar"
+        (click)="continuar()">
+        Continuar
+        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+
+    </div>
+
+    <!-- Botón Ver Historial -->
+    <button class="btn-historial ion-activatable" (click)="verHistorial()">
+      <ion-icon name="refresh-outline"></ion-icon>
+      Ver Historial de Hoy
+      <ion-ripple-effect></ion-ripple-effect>
+    </button>
+
+    <!-- Imagen del Fundo -->
+    <div class="fundo-image-card">
+      <img src="fundo-pedregal.png" alt="Fundo El Pedregal - Sector Norte" class="fundo-img">
+      <div class="fundo-overlay">
+        <span class="fundo-label">Fundo El Pedregal - Sector Norte</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BOTTOM NAVIGATION ===== -->
+  <div class="bottom-nav">
+    <button class="nav-item active" (click)="irA('dashboard')">
+      <div class="nav-icon-wrap active">
+        <i class="fas fa-th-large"></i>
+      </div>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-item" (click)="irA('reports')">
+      <i class="fas fa-chart-bar nav-icon-plain"></i>
+      <span>Reports</span>
+    </button>
+    <button class="nav-item" (click)="irA('staff')">
+      <i class="fas fa-users nav-icon-plain"></i>
+      <span>Staff</span>
+    </button>
+    <button class="nav-item" (click)="irA('sync')">
+      <i class="fas fa-sync-alt nav-icon-plain"></i>
+      <span>Sync</span>
+    </button>
+  </div>
+
+</ion-content>

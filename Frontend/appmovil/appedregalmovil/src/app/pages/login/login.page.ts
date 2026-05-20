@@ -1,25 +1,39 @@
-import { Component } from '@angular/core';
-import { NavController } from '@ionic/angular'; // 1. Importar el controlador
+import { Component, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import {
+  IonContent,
+  IonInput,
+  IonButton,
+  IonIcon,
+  IonCheckbox,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { arrowForwardOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [IonContent, IonInput, IonButton, IonIcon, IonCheckbox, FormsModule],
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.css'],
 })
 export class LoginPage {
+  username = signal('');
+  password = signal('');
+  rememberMe = signal(false);
+  showPassword = signal(false);
 
-  // 2. Inyectar NavController en el constructor
-  constructor(private navCtrl: NavController) {}
+  constructor(private router: Router) {
+    addIcons({ arrowForwardOutline });
+  }
 
-  // 3. Crear la función que se ejecuta al hacer clic
+  togglePassword() {
+    this.showPassword.set(!this.showPassword());
+  }
+
   ingresar() {
-    console.log('Botón presionado, ingresando...');
-    
-    // Aquí en el futuro puedes poner la validación de tu usuario y contraseña.
-    // Por ahora, le damos pase directo.
-    
-    // OJO: Cambia '/staff' por el nombre real de tu ruta. 
-    // Si estás usando la plantilla de pestañas (tabs), podría ser '/tabs/staff' o '/tabs/tab1'
-    this.navCtrl.navigateRoot('/staff'); 
+    // Por ahora navegación directa sin validación real
+    this.router.navigateByUrl('/registro-diario');
   }
 }

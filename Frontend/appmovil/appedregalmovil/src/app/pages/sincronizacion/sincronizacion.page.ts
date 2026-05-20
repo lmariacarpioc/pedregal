@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-sincronizacion',
   standalone: true,
-  imports: [IonicModule],
+  imports: [IonContent],
   templateUrl: './sincronizacion.page.html',
   styleUrls: ['./sincronizacion.page.css'],
 })
-export class SincronizacionPage {
-
-}
+export class SincronizacionPage {}

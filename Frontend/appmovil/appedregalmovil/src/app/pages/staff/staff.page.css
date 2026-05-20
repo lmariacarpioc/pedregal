@@ -1,208 +1,135 @@
-/* Estilos globales de la página */
-ion-content {
-  --background: #f4f5f8; /* Color de fondo general */
+/* ============================================================
+   STAFF — Gestión de Staff
+   ============================================================ */
 
-  .page-header {
-    h1 {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    p {
-      color: #737373;
-      margin-top: 0;
-    }
-  }
-
-  /* Tarjetas de Métricas Resumen */
-  .summary-cards {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    ion-card {
-      margin: 0;
-      width: 48%;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border-radius: 10px;
-
-      ion-item {
-        ion-label {
-          h2 {
-            font-weight: bold;
-            font-size: 1.5em;
-          }
-          p {
-            color: #737373;
-          }
-        }
-      }
-
-      /* Iconos circulares de métricas */
-      .metric-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        ion-icon {
-          font-size: 20px;
-        }
-      }
-
-      .performance-metric {
-        background-color: var(--ion-color-success-tint);
-        color: var(--ion-color-success);
-      }
-
-      .attention-metric {
-        background-color: var(--ion-color-danger-tint);
-        color: var(--ion-color-danger);
-      }
-    }
-  }
-
-  /* Títulos de Sección con Badges y Barras Laterales */
-  .section-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    position: relative;
-    padding-left: 10px;
-
-    /* Barra vertical lateral */
-    &:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      border-radius: 2px;
-    }
-
-    &.bajo-rendimiento:before {
-      background-color: var(--ion-color-danger);
-    }
-
-    &.alto-rendimiento:before {
-      background-color: var(--ion-color-success);
-    }
-
-    .title-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      h2 {
-        font-weight: bold;
-        margin: 0;
-      }
-    }
-  }
-
-  /* Listas de Colaboradores */
-  .colaborador-list {
-    background: transparent;
-    padding: 0;
-    margin: 0;
-
-    .colaborador-card {
-      margin: 10px 0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border-radius: 10px;
-      border: 2px solid transparent; /* Para bordes de rendimiento */
-
-      &.low {
-        border-color: var(--ion-color-danger-tint);
-      }
-      &.high {
-        border-color: var(--ion-color-success-tint);
-      }
-
-      ion-item {
-        ion-avatar {
-          position: relative;
-          overflow: visible;
-          /* Punto de notificación */
-          .notification-dot {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 10px;
-            height: 10px;
-            background-color: var(--ion-color-danger);
-            border-radius: 50%;
-            border: 2px solid #fff;
-          }
-        }
-
-        ion-label {
-          h3 {
-            font-weight: bold;
-          }
-          p {
-            color: #737373;
-          }
-        }
-
-        /* Datos de rendimiento a la derecha */
-        .performance-data {
-          text-align: right;
-          h3 {
-            font-weight: bold;
-            font-size: 1.2em;
-          }
-          p {
-            color: var(--ion-color-danger);
-            margin: 0;
-            &.positive {
-              color: var(--ion-color-success);
-            }
-          }
-        }
-      }
-
-      /* Botón Intervenir */
-      .intervenir-btn {
-        margin: 10px 10px 10px 10px;
-        border-radius: 8px;
-        font-weight: bold;
-        ion-icon {
-          margin-right: 5px;
-        }
-      }
-    }
-  }
+ion-content.sf-content {
+  --background: #f4f4f6;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Menú de Navegación Inferior (Tabs) */
-ion-tab-bar {
-  --background: #fff;
-  border-top: 1px solid #e0e0e0;
-  
-  ion-tab-button {
-    --color: #737373;
-    --color-selected: var(--ion-color-danger);
-    
-    /* Estilo para la pestaña seleccionada (Staff) */
-    &.tab-selected {
-      color: var(--ion-color-danger);
-      background-color: var(--ion-color-danger-tint);
-      border-radius: 10px;
-      margin: 0 5px;
-    }
-  }
+
+/* ---- Top Header ---- */
+.top-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px 10px; background: #ffffff;
+  border-bottom: 1px solid #f0f0f0; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.menu-btn {
+  background: none; border: none; padding: 6px; cursor: pointer;
+  color: #374151; font-size: 18px; display: flex; align-items: center; border-radius: 6px;
+}
+.header-brand { display: flex; align-items: center; gap: 7px; }
+.brand-name { font-size: 15px; font-weight: 800; color: #b3000b; letter-spacing: 2px; }
+.header-sync-btn {
+  background: none; border: none; padding: 6px; cursor: pointer;
+  color: #6b7280; font-size: 18px; display: flex; align-items: center;
+  border-radius: 8px; transition: background 0.2s;
 }
 
-/* Estilos de la barra de herramientas del encabezado */
-ion-header {
-  ion-toolbar {
-    --background: #fff;
-    --color: #333;
-    
-    .logo-title {
-      font-weight: bold;
-      color: var(--ion-color-danger);
-    }
-  }
+/* ---- Body ---- */
+.sf-body { padding: 16px 16px 0; }
+
+/* ---- Título ---- */
+.page-title-section { margin-bottom: 16px; }
+.page-title { font-size: 22px; font-weight: 800; color: #1a1a1a; margin: 0 0 4px; }
+.page-subtitle { font-size: 13px; color: #6b7280; margin: 0; }
+
+/* ---- KPI Chips ---- */
+.kpi-chips { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+.kpi-chip {
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
+
+.kpi-chip-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.kpi-chip-icon.green { background: #f0fdf4; color: #16a34a; }
+.kpi-chip-icon.orange { background: #fff7ed; color: #ea580c; }
+
+.kpi-chip-text { display: flex; flex-direction: column; gap: 2px; }
+.kpi-chip-label { font-size: 12px; color: #6b7280; font-weight: 500; }
+.kpi-chip-value { font-size: 15px; font-weight: 700; }
+.kpi-chip-value.green { color: #16a34a; }
+.kpi-chip-value.orange { color: #ea580c; }
+
+/* ---- Section Headers ---- */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 18px 0 12px;
+}
+.section-title-row { display: flex; align-items: center; gap: 10px; }
+
+.section-bar {
+  width: 4px; height: 20px; border-radius: 2px; flex-shrink: 0;
+}
+.section-bar.bajo { background: #b3000b; }
+.section-bar.alto { background: #16a34a; }
+
+.section-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 0; }
+
+.badge-accion {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  background: #fff0f0; color: #b3000b;
+  border: 1px solid #fca5a5; border-radius: 20px;
+}
+.badge-lectura {
+  font-size: 11px; font-weight: 600; padding: 4px 10px;
+  background: #f0fdf4; color: #16a34a;
+  border: 1px solid #bbf7d0; border-radius: 20px;
+}
+
+/* ---- Colaborador Cards ---- */
+.colaborador-card {
+  background: #fff; border-radius: 14px;
+  padding: 14px 14px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin-bottom: 10px;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.bajo-card { border-left: 4px solid #fca5a5; }
+.alto-card { border-left: 4px solid #bbf7d0; }
+
+.card-top-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+
+.avatar-wrap {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.avatar-wrap.gray { background: #f3f4f6; }
+.avatar-icon { font-size: 22px; }
+.avatar-icon.gray { color: #9ca3af; }
+
+.col-info { flex: 1; }
+.col-nombre { font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 0 0 3px; }
+.col-id { font-size: 12px; color: #9ca3af; margin: 0; }
+
+.col-rendimiento { text-align: right; }
+.col-valor { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 0 0 3px; }
+.col-meta { font-size: 12px; font-weight: 600; margin: 0; }
+.col-meta.negativo { color: #b3000b; }
+.col-meta.positivo { color: #16a34a; }
+
+/* ---- Botón Intervenir ---- */
+.btn-intervenir {
+  width: 100%; padding: 11px;
+  background: #b3000b; border: none; border-radius: 10px;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+  color: #fff; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px;
+  position: relative; overflow: hidden;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-intervenir:hover { background: #8f0009; }
+.btn-intervenir:active { transform: scale(0.98); }
+.btn-intervenir i { font-size: 15px; }

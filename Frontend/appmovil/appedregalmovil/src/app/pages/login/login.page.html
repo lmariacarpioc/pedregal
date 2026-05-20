@@ -1,54 +1,105 @@
 <ion-content class="login-content">
+
+  <!-- ===== HEADER ROJO ===== -->
   <div class="header-bg">
     <div class="logo-container">
-      <i class="fas fa-tractor logo-icon"></i>
+      <div class="tractor-icon">
+        <svg viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="52" height="40">
+          <rect x="8" y="14" width="30" height="18" rx="3" fill="white" opacity="0.95"/>
+          <rect x="22" y="8" width="18" height="10" rx="2" fill="white" opacity="0.85"/>
+          <circle cx="14" cy="36" r="8" fill="white" opacity="0.95"/>
+          <circle cx="14" cy="36" r="4" fill="#b3000b"/>
+          <circle cx="46" cy="38" r="6" fill="white" opacity="0.95"/>
+          <circle cx="46" cy="38" r="3" fill="#b3000b"/>
+          <rect x="36" y="20" width="14" height="10" rx="2" fill="white" opacity="0.85"/>
+          <rect x="38" y="28" width="4" height="8" rx="1" fill="white" opacity="0.7"/>
+        </svg>
+      </div>
       <h1 class="logo-title">PEDREGAL</h1>
       <p class="logo-subtitle">AGRICULTURAL SYSTEMS</p>
     </div>
   </div>
 
+  <!-- ===== CARD DE LOGIN ===== -->
   <div class="login-card">
     <h2 class="card-title">Iniciar Sesión</h2>
     <p class="card-subtitle">Ingrese sus credenciales de<br>supervisor</p>
 
-    <form>
+    <form (ngSubmit)="ingresar()">
+
+      <!-- Campo Usuario -->
       <div class="input-group">
-        <label>Usuario</label>
+        <label class="input-label">Usuario</label>
         <div class="input-wrapper">
           <i class="far fa-user input-icon"></i>
-          <ion-input type="text" placeholder="ej. jsmith_pedregal"></ion-input>
+          <ion-input
+            type="text"
+            placeholder="ej. jsmith_pedregal"
+            [(ngModel)]="username"
+            name="username">
+          </ion-input>
         </div>
       </div>
 
+      <!-- Campo Contraseña -->
       <div class="input-group">
-        <label>Contraseña</label>
+        <label class="input-label">Contraseña</label>
         <div class="input-wrapper">
           <i class="fas fa-lock input-icon"></i>
-          <ion-input type="password" placeholder="••••••••"></ion-input>
-          <i class="far fa-eye show-pwd-icon"></i>
+          <ion-input
+            [type]="showPassword() ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            name="password">
+          </ion-input>
+          <i
+            class="show-pwd-icon"
+            [class]="showPassword() ? 'fas fa-eye-slash' : 'far fa-eye'"
+            (click)="togglePassword()">
+          </i>
         </div>
       </div>
 
+      <!-- Recordarme + Olvidé -->
       <div class="options-row">
-        <ion-checkbox mode="md" class="custom-checkbox" labelPlacement="end">
+        <ion-checkbox
+          mode="md"
+          class="custom-checkbox"
+          labelPlacement="end"
+          [(ngModel)]="rememberMe"
+          name="rememberMe">
           Recordarme
         </ion-checkbox>
         <a href="#" class="forgot-link">¿Olvido su<br>contraseña?</a>
       </div>
 
-      <ion-button expand="block" type="submit" class="btn-submit">
-        Ingresar <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      <!-- Botón Ingresar -->
+      <ion-button
+        expand="block"
+        type="submit"
+        class="btn-submit"
+        (click)="ingresar()">
+        Ingresar
+        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
       </ion-button>
+
     </form>
 
+    <!-- Footer Links -->
     <div class="card-footer">
-      <a href="#" class="footer-link"><i class="far fa-question-circle"></i> Ayuda</a>
-      <div class="divider"></div>
-      <a href="#" class="footer-link"><i class="fas fa-sync-alt"></i> Sincronizar</a>
+      <a href="#" class="footer-link">
+        <i class="far fa-question-circle"></i> Ayuda
+      </a>
+      <div class="footer-divider"></div>
+      <a href="#" class="footer-link">
+        <i class="fas fa-sync-alt"></i> Sincronizar
+      </a>
     </div>
   </div>
 
+  <!-- ===== SOPORTE ===== -->
   <div class="support-footer">
     <p>¿Problemas para ingresar? <a href="#">Contacte a soporte<br>IT</a></p>
   </div>
+
 </ion-content>

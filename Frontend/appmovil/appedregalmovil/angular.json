@@ -24,6 +24,9 @@
             "styles": [
               "src/styles.css",
               {
+                "input": "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+              },
+              {
                 "input": "node_modules/@ionic/angular/css/core.css"
               },
               {
@@ -108,7 +111,10 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+              }
             ]
           }
         },

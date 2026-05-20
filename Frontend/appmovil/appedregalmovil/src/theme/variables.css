@@ -1,10 +1,23 @@
 /**
- * Ionic Dark Theme
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
+ * Pedregal — Ionic Theme Variables
+ * Desactivamos el dark mode automático para mantener
+ * el design system rojo/blanco de la marca.
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+:root {
+  /* Ionic primary color → Rojo Pedregal */
+  --ion-color-primary: #b3000b;
+  --ion-color-primary-rgb: 179, 0, 11;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #8f0009;
+  --ion-color-primary-tint: #c8000d;
+
+  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ion-background-color: #f4f4f6;
+  --ion-text-color: #1a1a1a;
+}

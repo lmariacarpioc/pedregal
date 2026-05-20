@@ -1,0 +1,231 @@
+<div class="ion-page">
+  <ion-header class="ion-no-border">
+  <ion-toolbar class="rp-toolbar">
+    <div class="rp-header-content">
+      <div class="header-brand-new">
+        <i class="fas fa-tractor" style="color: #b3000b; font-size: 16px;"></i>
+        <span class="header-title-text">Crear Parte Diario</span>
+      </div>
+      <button class="header-profile-btn">
+        <i class="far fa-user-circle"></i>
+      </button>
+    </div>
+  </ion-toolbar>
+
+  <div class="material-tabs">
+    <button class="mat-tab" [class.active]="activeTab === 'inversion'" (click)="setTab('inversion')">
+      Inversión
+    </button>
+    <button class="mat-tab" [class.active]="activeTab === 'produccion'" (click)="setTab('produccion')">
+      Producción
+    </button>
+  </div>
+</ion-header>
+
+<ion-content class="rp-content" [scrollY]="true">
+
+  <!-- ===== BODY ===== -->
+  <div class="rp-body">
+
+    <!-- ══ TAB: INVERSIÓN ══ -->
+    @if (activeTab === 'inversion') {
+      <div class="tab-content">
+
+        <!-- Campaña -->
+        <div class="field-group">
+          <label class="field-label">Campaña</label>
+          <div class="select-wrapper">
+            <select class="native-select" [(ngModel)]="campania">
+              <option value="2023-2024">2023-2024</option>
+              <option value="2024-2025">2024-2025</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Cultivo -->
+        <div class="field-group">
+          <label class="field-label">Cultivo</label>
+          <div class="select-wrapper">
+            <select class="native-select" [(ngModel)]="cultivo">
+              <option value="Uva de Mesa">Uva de Mesa</option>
+              <option value="Espárrago">Espárrago</option>
+              <option value="Arándano">Arándano</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Imagen Sector -->
+        <div class="sector-image-card">
+          <img src="vineyard-sector.png" alt="Sector Operativo" class="sector-img">
+          <div class="sector-overlay">
+            <i class="fas fa-location-dot sector-pin"></i>
+            <span class="sector-label">Sector Operativo A - Norte</span>
+          </div>
+        </div>
+
+        <!-- Fundo -->
+        <div class="field-group">
+          <label class="field-label">Fundo</label>
+          <div class="select-wrapper">
+            <select class="native-select" [(ngModel)]="fundo">
+              <option value="Fundo Los Olivos">Fundo Los Olivos</option>
+              <option value="Fundo El Pedregal">Fundo El Pedregal</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Lote -->
+        <div class="field-group">
+          <label class="field-label">Lote</label>
+          <div class="select-wrapper">
+            <select class="native-select" [(ngModel)]="lote">
+              <option value="Lote 01-A">Lote 01-A</option>
+              <option value="Lote 01-B">Lote 01-B</option>
+              <option value="Lote 02-A">Lote 02-A</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Sección Operación -->
+        <div class="section-header-row">
+          <div class="section-icon-wrap">
+            <i class="fas fa-users-gear section-icon-op"></i>
+          </div>
+          <h2 class="section-heading">Operación</h2>
+        </div>
+
+        <!-- Etapa -->
+        <div class="field-group">
+          <label class="field-label">Etapa (Phase)</label>
+          <div class="select-wrapper">
+            <select class="native-select" [(ngModel)]="etapa">
+              <option value="Cosecha">Cosecha</option>
+              <option value="Poda">Poda</option>
+              <option value="Riego">Riego</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Proceso -->
+        <div class="field-group">
+          <label class="field-label">Proceso</label>
+          <div class="select-wrapper">
+            <select class="native-select" [(ngModel)]="proceso">
+              <option value="Selección y Empaque">Selección y Empaque</option>
+              <option value="Lavado">Lavado</option>
+              <option value="Clasificación">Clasificación</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+      </div>
+    }
+
+    <!-- ══ TAB: PRODUCCIÓN ══ -->
+    @if (activeTab === 'produccion') {
+      <div class="tab-content">
+
+        <!-- Imagen Producción -->
+        <div class="sector-image-card">
+          <img src="produccion-field.png" alt="Configuración de Producción" class="sector-img">
+          <div class="sector-overlay">
+            <span class="sector-label">Configuración de Producción</span>
+          </div>
+        </div>
+
+        <!-- Sección Metas -->
+        <div class="section-header-row">
+          <div class="section-icon-wrap prod">
+            <i class="fas fa-chart-line section-icon-op"></i>
+          </div>
+          <h2 class="section-heading">Metas de Producción</h2>
+        </div>
+
+        <!-- Cajas Estimadas -->
+        <div class="field-group">
+          <label class="field-label-upper">CANTIDAD DE CAJAS/BINES ESTIMADAS</label>
+          <div class="input-unit-wrapper">
+            <input
+              type="number"
+              class="unit-input"
+              [(ngModel)]="cajas"
+              min="0"
+              placeholder="0">
+            <span class="unit-tag">u.</span>
+          </div>
+        </div>
+
+        <!-- Tipo de Empaque -->
+        <div class="field-group">
+          <label class="field-label-upper">TIPO DE EMPAQUE</label>
+          <div class="select-wrapper">
+            <select class="native-select" [(ngModel)]="tipoEmpaque">
+              <option value="" disabled>Seleccionar...</option>
+              <option value="Caja 8.2kg">Caja 8.2 kg</option>
+              <option value="Bin 300kg">Bin 300 kg</option>
+              <option value="Granel">Granel</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Calidad de Fruta -->
+        <div class="field-group">
+          <label class="field-label-upper">CALIDAD DE FRUTA</label>
+          <div class="calidad-toggle">
+            <button
+              class="calidad-btn"
+              [class.active]="calidadFruta === 'CAT1'"
+              (click)="setCalidad('CAT1')">
+              <i class="fas fa-star"></i> CAT 1
+            </button>
+            <button
+              class="calidad-btn"
+              [class.active]="calidadFruta === 'CAT2'"
+              (click)="setCalidad('CAT2')">
+              CAT 2
+            </button>
+          </div>
+        </div>
+
+        <!-- Rendimiento Esperado -->
+        <div class="field-group">
+          <div class="rendimiento-header">
+            <label class="field-label-upper">RENDIMIENTO ESPERADO</label>
+            <span class="badge-critico">crítico</span>
+          </div>
+          <div class="rendimiento-display">
+            <span class="rendimiento-value">{{ cajas > 0 ? (cajas * 0.82).toFixed(2) : '0.00' }}</span>
+            <span class="rendimiento-unit">kg/hr</span>
+          </div>
+          <p class="rendimiento-hint">Basado en promedio histórico de cuadrilla actual.</p>
+        </div>
+
+        <!-- Aviso de sincronización -->
+        <div class="sync-notice">
+          <i class="fas fa-rotate-right sync-notice-icon"></i>
+          <p class="sync-notice-text">La información se sincronizará automáticamente cuando se complete el registro.</p>
+        </div>
+
+      </div>
+    }
+
+    <!-- Botón Continuar -->
+    <ion-button expand="block" class="btn-continuar" (click)="continuar()">
+      Continuar
+      <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+    </ion-button>
+
+    <!-- Espacio para que el contenido no quede bajo la tab bar -->
+    <div style="height: 24px;"></div>
+
+  </div>
+
+</ion-content>
+</div>

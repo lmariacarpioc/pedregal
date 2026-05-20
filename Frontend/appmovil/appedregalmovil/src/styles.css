@@ -1,1 +1,47 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================================================
+   PEDREGAL — Global Styles
+   =========================================================
+   Nota: Los CSS de Ionic (@ionic/angular/css/*) y
+   src/theme/variables.css se incluyen desde angular.json.
+   Aquí solo agregamos estilos globales propios.
+   ========================================================= */
+
+/* Design Tokens */
+:root {
+  --pedregal-red: #b3000b;
+  --pedregal-red-dark: #8f0009;
+  --pedregal-red-light: #fdf0f0;
+  --pedregal-bg: #f4f4f6;
+  --pedregal-card: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body, ion-app {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--pedregal-bg);
+}
+
+ion-content {
+  --background: var(--pedregal-bg);
+}
+
+/* Scrollbar (web preview) */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }

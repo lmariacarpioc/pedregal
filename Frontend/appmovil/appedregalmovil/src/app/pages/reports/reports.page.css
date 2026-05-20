@@ -1,0 +1,259 @@
+/* ============================================================
+   REPORTS — Crear Parte Diario
+   ============================================================ */
+
+ion-content.rp-content {
+  --background: #f4f4f6;
+  font-family: 'Inter', sans-serif;
+}
+
+
+/* ---- Nueva Barra Superior (IonToolbar) ---- */
+.rp-toolbar {
+  --background: #ffffff;
+  --min-height: 56px;
+  --border-width: 0;
+}
+.rp-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 100%;
+}
+.header-brand-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed #3b82f6; /* Como en la captura del usuario, un borde azul por el devtools quizás, pero lo pondré sutil o solo el layout */
+  border-color: transparent; /* lo dejo transparente para producción */
+}
+.header-title-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.header-profile-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  font-size: 20px;
+  color: #6b7280;
+  cursor: pointer;
+  border: 1px dashed transparent;
+}
+
+/* ---- Material Tabs ---- */
+.material-tabs {
+  display: flex;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mat-tab {
+  flex: 1;
+  padding: 14px 0;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.mat-tab.active {
+  color: #b3000b;
+  font-weight: 600;
+}
+
+.mat-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #b3000b;
+}
+
+/* ---- Body ---- */
+.rp-body { padding: 16px; padding-bottom: 30px; }
+
+/* ---- Tab Content ---- */
+.tab-content {
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ---- Field Groups ---- */
+.field-group { margin-bottom: 14px; }
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 7px;
+}
+
+.field-label-upper {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+}
+
+/* ---- Native Select ---- */
+.select-wrapper {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.native-select {
+  width: 100%;
+  padding: 13px 40px 13px 14px;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* ---- Sector Image ---- */
+.sector-image-card {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  height: 140px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+}
+.sector-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sector-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  padding: 20px 12px 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sector-pin { color: #fff; font-size: 13px; }
+.sector-label { color: #fff; font-size: 12px; font-weight: 600; }
+
+/* ---- Sección Operación ---- */
+.section-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 14px;
+}
+.section-icon-wrap {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: #fff0f0; display: flex; align-items: center; justify-content: center;
+}
+.section-icon-wrap.prod { background: #f0fdf4; }
+.section-icon-op { color: #b3000b; font-size: 16px; }
+.section-icon-wrap.prod .section-icon-op { color: #16a34a; }
+.section-heading { font-size: 16px; font-weight: 800; color: #1a1a1a; margin: 0; }
+
+/* ---- Input con Unidad ---- */
+.input-unit-wrapper {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.unit-input {
+  flex: 1; padding: 13px 14px; border: none; background: transparent;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  color: #1a1a1a; outline: none;
+}
+.unit-tag {
+  padding: 13px 14px; color: #6b7280; font-size: 13px;
+  font-weight: 600; border-left: 1px solid #e5e7eb; background: #f9fafb;
+}
+
+/* ---- Toggle Calidad ---- */
+.calidad-toggle {
+  display: flex;
+  gap: 10px;
+}
+.calidad-btn {
+  flex: 1; padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px; background: #fff;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  color: #6b7280; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s;
+}
+.calidad-btn.active {
+  border-color: #b3000b; color: #b3000b;
+  background: #fff5f5;
+}
+.calidad-btn.active i { color: #b3000b; }
+
+/* ---- Rendimiento Esperado ---- */
+.rendimiento-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.badge-critico {
+  background: #fff0f0; color: #b3000b;
+  font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 6px;
+  border: 1px solid #fca5a5;
+}
+.rendimiento-display {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 14px; background: #fafafa;
+  border: 1.5px solid #e5e7eb; border-radius: 10px;
+}
+.rendimiento-value { font-size: 28px; font-weight: 700; color: #d1d5db; }
+.rendimiento-unit { font-size: 14px; color: #9ca3af; font-weight: 500; }
+.rendimiento-hint { font-size: 12px; color: #9ca3af; margin: 6px 0 0; }
+
+/* ---- Aviso Sincronización ---- */
+.sync-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+.sync-notice-icon { color: #94a3b8; font-size: 15px; flex-shrink: 0; padding-top: 1px; }
+.sync-notice-text { font-size: 12px; color: #64748b; margin: 0; line-height: 1.5; }
+
+/* ---- Botón Continuar ---- */
+.btn-continuar {
+  --background: linear-gradient(135deg, #c8000d 0%, #8f0009 100%);
+  --background-hover: #7a0008;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 14px rgba(179,0,11,0.3);
+  height: 50px; margin: 18px 0 0;
+  font-size: 15px; font-weight: 600; text-transform: none;
+}

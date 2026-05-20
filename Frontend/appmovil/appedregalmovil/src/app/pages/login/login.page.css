@@ -1,207 +1,273 @@
-/* Fondo general de la pantalla */
-ion-content {
-  --background: #f7f7f7;
+/* ============================================================
+   LOGIN PAGE — Pedregal App
+   ============================================================ */
+
+ion-content.login-content {
+  --background: #f4f4f6;
   font-family: 'Inter', sans-serif;
 }
 
-/* Encabezado Rojo superior */
+/* ---- Encabezado Rojo ---- */
 .header-bg {
-  background-color: #b3000b;
-  height: 35vh; /* Usamos viewport height para adaptarse mejor a distintos celulares */
-  min-height: 250px;
+  background: linear-gradient(160deg, #c8000d 0%, #8f0009 100%);
+  height: 38vh;
+  min-height: 240px;
+  max-height: 320px;
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-top: 50px;
+  align-items: center;
+  padding-top: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decoración de círculo sutil en el fondo */
+.header-bg::before {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  top: -80px;
+  right: -60px;
+}
+
+.header-bg::after {
+  content: '';
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  bottom: -40px;
+  left: -30px;
 }
 
 .logo-container {
   text-align: center;
   color: white;
+  z-index: 1;
+  animation: fadeInDown 0.6s ease;
 }
 
-.logo-icon {
-  font-size: 42px;
-  margin-bottom: 12px;
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tractor-icon {
+  margin-bottom: 14px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
 .logo-title {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  margin-bottom: 6px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 5px;
+  margin: 0 0 6px;
+  color: #fff;
 }
 
 .logo-subtitle {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 400;
-  letter-spacing: 1.5px;
-  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
 }
 
-/* Tarjeta Blanca de Login */
+/* ---- Card de Login ---- */
 .login-card {
-  background-color: white;
-  border-radius: 12px;
-  margin: -60px 24px 0 24px; /* Margen negativo para montar sobre el rojo */
-  padding: 30px 24px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border-radius: var(--radius-lg, 16px);
+  margin: -52px 20px 0;
+  padding: 28px 22px 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
   position: relative;
   z-index: 10;
+  animation: slideUp 0.5s ease 0.1s both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .card-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
   text-align: center;
-  margin-bottom: 8px;
+  margin: 0 0 6px;
 }
 
 .card-subtitle {
   font-size: 13px;
-  color: #666;
+  color: #6b7280;
   text-align: center;
-  margin-bottom: 25px;
-  line-height: 1.4;
+  margin: 0 0 24px;
+  line-height: 1.5;
 }
 
-/* Inputs y Formularios adaptados a Ionic */
+/* ---- Inputs ---- */
 .input-group {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
-.input-group label {
+.input-label {
   display: block;
   font-size: 13px;
-  color: #333;
-  margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 7px;
 }
 
 .input-wrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #f2cdd0;
-  border-radius: 6px;
+  border: 1.5px solid #fcd5d7;
+  border-radius: 8px;
   padding: 0 12px;
-  height: 44px;
-  background-color: #fff;
-  transition: border-color 0.3s;
+  height: 46px;
+  background: #fff;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
 
-  &:focus-within {
-    border-color: #b3000b;
-  }
+.input-wrapper:focus-within {
+  border-color: var(--pedregal-red, #b3000b);
+  box-shadow: 0 0 0 3px rgba(179, 0, 11, 0.08);
 }
 
 .input-icon {
-  color: #555;
+  color: #9ca3af;
   font-size: 15px;
   margin-right: 10px;
+  flex-shrink: 0;
 }
 
-/* Reseteamos los paddings nativos de ion-input para nuestro wrapper */
 ion-input {
   --padding-start: 0;
   --padding-end: 0;
-  --placeholder-color: #9aa0a6;
+  --placeholder-color: #c4c9d1;
+  --color: #1a1a1a;
   font-size: 14px;
+  flex: 1;
 }
 
 .show-pwd-icon {
-  color: #555;
+  color: #9ca3af;
   font-size: 15px;
   cursor: pointer;
+  flex-shrink: 0;
+  padding: 4px;
+  transition: color 0.2s;
 }
 
-/* Fila de Recordarme y Olvidé contraseña */
+.show-pwd-icon:hover {
+  color: var(--pedregal-red, #b3000b);
+}
+
+/* ---- Recordarme / Olvidé ---- */
 .options-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
-  margin-bottom: 25px;
+  margin: 18px 0 22px;
 }
 
-/* Personalización del ion-checkbox */
 .custom-checkbox {
   font-size: 13px;
-  color: #555;
-  --checkbox-background-checked: #b3000b;
-  --border-color-checked: #b3000b;
-  
-  &::part(container) {
-    border-radius: 4px;
-    margin-right: 8px;
-  }
+  color: #4b5563;
+  --checkbox-background-checked: var(--pedregal-red, #b3000b);
+  --border-color-checked: var(--pedregal-red, #b3000b);
+  --size: 18px;
+}
+
+.custom-checkbox::part(container) {
+  border-radius: 4px;
 }
 
 .forgot-link {
   font-size: 13px;
-  color: #b3000b;
+  color: var(--pedregal-red, #b3000b);
   text-decoration: none;
+  font-weight: 500;
   text-align: right;
-  line-height: 1.3;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  line-height: 1.4;
+  transition: opacity 0.2s;
 }
 
-/* Botón de Ingreso nativo de Ionic */
+.forgot-link:hover { opacity: 0.75; }
+
+/* ---- Botón Ingresar ---- */
 .btn-submit {
-  --background: #b3000b;
-  --background-hover: #8f0009;
-  --border-radius: 6px;
-  height: 46px;
+  --background: linear-gradient(135deg, #c8000d 0%, #8f0009 100%);
+  --background-hover: #7a0008;
+  --background-activated: #7a0008;
+  --border-radius: 10px;
+  --box-shadow: 0 4px 16px rgba(179, 0, 11, 0.35);
+  height: 48px;
   margin: 0;
   font-size: 15px;
-  font-weight: 500;
-  text-transform: none; /* Evita que el texto salga todo en mayúsculas */
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  transition: transform 0.15s;
 }
 
-/* Footer de la Tarjeta */
+.btn-submit:active {
+  transform: scale(0.98);
+}
+
+/* ---- Footer de la Card ---- */
 .card-footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #f0f0f0;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #f3f4f6;
 }
 
 .footer-link {
-  color: #666;
+  color: #6b7280;
   text-decoration: none;
   font-size: 13px;
   display: flex;
   align-items: center;
-
-  i {
-    margin-right: 6px;
-    font-size: 14px;
-  }
+  gap: 6px;
+  transition: color 0.2s;
 }
 
-.divider {
+.footer-link:hover { color: var(--pedregal-red, #b3000b); }
+
+.footer-divider {
   width: 1px;
   height: 14px;
-  background-color: #e0e0e0;
-  margin: 0 16px;
+  background: #e5e7eb;
+  margin: 0 18px;
 }
 
-/* Footer externo */
+/* ---- Soporte externo ---- */
 .support-footer {
   text-align: center;
-  margin-top: 30px;
-  padding-bottom: 30px; /* Margen inferior para que no quede pegado al borde del celular */
+  margin-top: 28px;
+  padding-bottom: 32px;
   font-size: 13px;
-  color: #666;
-  line-height: 1.4;
+  color: #6b7280;
+  line-height: 1.5;
+  animation: fadeIn 0.6s ease 0.3s both;
+}
 
-  a {
-    color: #b3000b;
-    font-weight: 700;
-    text-decoration: none;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.support-footer a {
+  color: var(--pedregal-red, #b3000b);
+  font-weight: 700;
+  text-decoration: none;
 }

@@ -1,158 +1,124 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title class="logo-title">PEDREGAL</ion-title>
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon slot="icon-only" name="sync-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<div class="ion-page">
+  <ion-content class="sf-content" [scrollY]="true">
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <div class="page-header">
-    <h1>Gestión de Staff</h1>
-    <p>Supervisión de rendimiento en campo</p>
-  </div>
-
-  <div class="summary-cards">
-    <ion-card>
-      <ion-item lines="none">
-        <ion-avatar slot="start" class="metric-icon performance-metric">
-          <ion-icon name="trending-up"></ion-icon>
-        </ion-avatar>
-        <ion-label>
-          <p>Rendimiento Promedio</p>
-          <h2>14.2 kg/hr</h2>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-
-    <ion-card>
-      <ion-item lines="none">
-        <ion-avatar slot="start" class="metric-icon attention-metric">
-          <ion-icon name="warning-outline"></ion-icon>
-        </ion-avatar>
-        <ion-label>
-          <p>Atención Requerida</p>
-          <h2>8 Colaboradores</h2>
-        </ion-label>
-      </ion-item>
-    </ion-card>
-  </div>
-
-  <div class="section-title bajo-rendimiento">
-    <div class="title-container">
-      <ion-badge color="danger">Acción Requerida</ion-badge>
-      <h2>Bajo Rendimiento</h2>
+  <!-- ===== TOP HEADER con menú hamburguesa ===== -->
+  <div class="top-header">
+    <div class="header-left">
+      <button class="menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="header-brand">
+        <svg viewBox="0 0 56 42" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="18">
+          <rect x="4" y="10" width="26" height="16" rx="2.5" fill="#b3000b"/>
+          <rect x="18" y="5"  width="16" height="9"  rx="2"   fill="#b3000b" opacity="0.8"/>
+          <circle cx="11" cy="31" r="7" fill="#b3000b"/>
+          <circle cx="11" cy="31" r="3.5" fill="#f4f4f6"/>
+          <circle cx="40" cy="33" r="5.5" fill="#b3000b"/>
+          <circle cx="40" cy="33" r="2.5" fill="#f4f4f6"/>
+          <rect x="28" y="16" width="13" height="9" rx="2" fill="#b3000b" opacity="0.75"/>
+        </svg>
+        <span class="brand-name">PEDREGAL</span>
+      </div>
     </div>
+    <button class="header-sync-btn">
+      <i class="fas fa-sync-alt"></i>
+    </button>
   </div>
 
-  <ion-list class="colaborador-list low-performance">
-    <ion-card class="colaborador-card low">
-      <ion-item lines="none">
-        <ion-avatar slot="start">
-          <img src="assets/images/juan_perez.png" alt="Juan Pérez" />
-          <div class="notification-dot"></div>
-        </ion-avatar>
-        <ion-label>
-          <h3>Juan Pérez</h3>
-          <p>ID: #88294</p>
-        </ion-label>
-        <ion-note slot="end" class="performance-data">
-          <h3>8.2 kg/hr</h3>
-          <p class="meta-diff">-24% vs meta</p>
-        </ion-note>
-      </ion-item>
-      <ion-button expand="full" color="danger" class="intervenir-btn">
-        <ion-icon slot="start" name="location"></ion-icon>
-        Intervenir
-      </ion-button>
-    </ion-card>
+  <!-- ===== BODY ===== -->
+  <div class="sf-body">
 
-    <ion-card class="colaborador-card low">
-      <ion-item lines="none">
-        <ion-avatar slot="start">
-          <img src="assets/images/elena_rivas.png" alt="Elena Rivas" />
-          <div class="notification-dot"></div>
-        </ion-avatar>
-        <ion-label>
-          <h3>Elena Rivas</h3>
-          <p>ID: #88312</p>
-        </ion-label>
-        <ion-note slot="end" class="performance-data">
-          <h3>9.5 kg/hr</h3>
-          <p class="meta-diff">-12% vs meta</p>
-        </ion-note>
-      </ion-item>
-      <ion-button expand="full" color="danger" class="intervenir-btn">
-        <ion-icon slot="start" name="location"></ion-icon>
-        Intervenir
-      </ion-button>
-    </ion-card>
-  </ion-list>
-
-  <div class="section-title alto-rendimiento">
-    <div class="title-container">
-      <ion-badge color="success">Lectura únicamente</ion-badge>
-      <h2>Alto Rendimiento</h2>
+    <!-- Título -->
+    <div class="page-title-section">
+      <h1 class="page-title">Gestión de Staff</h1>
+      <p class="page-subtitle">Supervisión de rendimiento en campo</p>
     </div>
+
+    <!-- KPI Chips -->
+    <div class="kpi-chips">
+      <div class="kpi-chip">
+        <div class="kpi-chip-icon green">
+          <i class="fas fa-arrow-trend-up"></i>
+        </div>
+        <div class="kpi-chip-text">
+          <span class="kpi-chip-label">Rendimiento Promedio</span>
+          <span class="kpi-chip-value green">{{ rendimientoPromedio }} kg/hr</span>
+        </div>
+      </div>
+      <div class="kpi-chip">
+        <div class="kpi-chip-icon orange">
+          <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <div class="kpi-chip-text">
+          <span class="kpi-chip-label">Atención Requerida</span>
+          <span class="kpi-chip-value orange">{{ atencionRequerida }} Colaboradores</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BAJO RENDIMIENTO ══ -->
+    <div class="section-header">
+      <div class="section-title-row">
+        <div class="section-bar bajo"></div>
+        <h2 class="section-title">Bajo Rendimiento</h2>
+      </div>
+      <span class="badge-accion">Acción Requerida</span>
+    </div>
+
+    @for (col of colaboradoresBajo; track col.id) {
+      <div class="colaborador-card bajo-card">
+        <div class="card-top-row">
+          <div class="avatar-wrap" [style.background]="col.avatarColor + '22'">
+            <i class="fas fa-hard-hat avatar-icon" [style.color]="col.avatarColor"></i>
+          </div>
+          <div class="col-info">
+            <p class="col-nombre">{{ col.nombre }}</p>
+            <p class="col-id">ID: {{ col.id }}</p>
+          </div>
+          <div class="col-rendimiento">
+            <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
+            <p class="col-meta negativo">{{ col.meta }}% vs meta</p>
+          </div>
+        </div>
+        <button class="btn-intervenir ion-activatable" (click)="intervenir(col)">
+          <i class="fas fa-crosshairs"></i>
+          Intervenir
+          <ion-ripple-effect></ion-ripple-effect>
+        </button>
+      </div>
+    }
+
+    <!-- ══ ALTO RENDIMIENTO ══ -->
+    <div class="section-header">
+      <div class="section-title-row">
+        <div class="section-bar alto"></div>
+        <h2 class="section-title">Alto Rendimiento</h2>
+      </div>
+      <span class="badge-lectura">Lectura únicamente</span>
+    </div>
+
+    @for (col of colaboradoresAlto; track col.id) {
+      <div class="colaborador-card alto-card">
+        <div class="card-top-row">
+          <div class="avatar-wrap gray">
+            <i class="fas fa-hard-hat avatar-icon gray"></i>
+          </div>
+          <div class="col-info">
+            <p class="col-nombre">{{ col.nombre }}</p>
+            <p class="col-id">ID: {{ col.id }}</p>
+          </div>
+          <div class="col-rendimiento">
+            <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
+            <p class="col-meta positivo">+{{ col.meta }}% vs meta</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Espacio final para que el último item no quede tapado -->
+    <div style="height: 24px;"></div>
+
   </div>
-
-  <ion-list class="colaborador-list high-performance">
-    <ion-card class="colaborador-card high">
-      <ion-item lines="none">
-        <ion-avatar slot="start">
-          <img src="assets/images/marcos_solis.png" alt="Marcos Solis" />
-        </ion-avatar>
-        <ion-label>
-          <h3>Marcos Solis</h3>
-          <p>ID: #88102</p>
-        </ion-label>
-        <ion-note slot="end" class="performance-data">
-          <h3>18.4 kg/hr</h3>
-          <p class="meta-diff positive">+45% vs meta</p>
-        </ion-note>
-      </ion-item>
-    </ion-card>
-
-    <ion-card class="colaborador-card high">
-      <ion-item lines="none">
-        <ion-avatar slot="start">
-          <img src="assets/images/lucia_mendez.png" alt="Lucía Mendez" />
-        </ion-avatar>
-        <ion-label>
-          <h3>Lucía Mendez</h3>
-          <p>ID: #88095</p>
-        </ion-label>
-        <ion-note slot="end" class="performance-data">
-          <h3>16.8 kg/hr</h3>
-          <p class="meta-diff positive">+32% vs meta</p>
-        </ion-note>
-      </ion-item>
-    </ion-card>
-  </ion-list>
 
 </ion-content>
-
-<ion-tab-bar slot="bottom">
-  <ion-tab-button tab="dashboard">
-    <ion-icon name="grid-outline"></ion-icon>
-    <ion-label>Dashboard</ion-label>
-  </ion-tab-button>
-  <ion-tab-button tab="reports">
-    <ion-icon name="bar-chart-outline"></ion-icon>
-    <ion-label>Reports</ion-label>
-  </ion-tab-button>
-  <ion-tab-button tab="staff" class="tab-selected">
-    <ion-icon name="people-outline"></ion-icon>
-    <ion-label>Staff</ion-label>
-  </ion-tab-button>
-  <ion-tab-button tab="sync">
-    <ion-icon name="sync-outline"></ion-icon>
-    <ion-label>Sync</ion-label>
-  </ion-tab-button>
-</ion-tab-bar>
+</div>
