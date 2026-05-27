@@ -1,0 +1,246 @@
+/* ==========================================
+   1. ESTILOS GENERALES Y FONDO
+   ========================================== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #bc101c; /* Fondo rojo de seguridad */
+}
+
+.login-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+   background: linear-gradient(155deg, #af0b16 50%, #90060e 50.2%);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   2. PANEL IZQUIERDO (TEXTO EXPLICATIVO)
+   ========================================== */
+.login-left-panel {
+  flex: 1;
+  max-width: 500px;
+  padding: 40px;
+  color: #ffffff;
+  order: 2;
+}
+
+.agro-badge {
+  display: none; /* Se oculta para coincidir con la imagen de referencia */
+}
+
+.login-left-panel h2 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.login-left-panel p {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ==========================================
+   3. PANEL DERECHO (TARJETA BLANCA)
+   ========================================== */
+.login-right-panel {
+  flex: 1;
+  max-width: 450px;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  order: 1;
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 40px 35px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+/* Encabezado de la tarjeta */
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header-icon-svg {
+  width: 50px;  /* Ajuste de tamaño para el icono superior */
+  height: 50px;
+  fill: #bc101c;
+  margin-bottom: 10px;
+}
+
+.user-icon {
+   position: absolute;
+  left: 14px;          /* Distancia desde el borde izquierdo */
+  width: 18px;         /* Tamaño adecuado para el campo */
+  height: 18px;
+  fill: #888888;      
+  pointer-events: none;/* Evita que interfiera al hacer clic en el input */
+  transition: fill 0.2s;
+}
+
+.contr-icon {
+  position: absolute;
+  left: 14px;          /* Distancia desde el borde izquierdo */
+  width: 18px;         /* Tamaño adecuado para el campo */
+  height: 18px;
+  fill: #888888;      
+  pointer-events: none;/* Evita que interfiera al hacer clic en el input */
+  transition: fill 0.2s;
+}
+
+.login-header h2 {
+  color: #bc101c;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 5px 0 0 0;
+  letter-spacing: 0.5px;
+}
+
+.login-header p {
+  color: #666666;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 2px 0 0 0;
+  letter-spacing: 1px;
+}
+
+/* ==========================================
+   4. FORMULARIO DE ENTRADA
+   ========================================== */
+.login-form .form-group {
+  margin-bottom: 20px;
+}
+
+.login-form label {
+  display: block;
+  color: #555555;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* Contenedores de Inputs con Icono inline */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: #888888;
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 12px 12px 42px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #fcfcfc;
+  font-size: 0.95rem;
+  color: #333333;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.input-wrapper input:focus {
+  border-color: #bc101c;
+  background-color: #ffffff;
+}
+
+/* Opciones: Recordar / Olvido */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  margin-bottom: 25px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666666;
+  cursor: pointer;
+}
+
+.forgot-link {
+  color: #bc101c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   5. BOTÓN DE INGRESO (CON SVG AJUSTADO)
+   ========================================== */
+.btn-submit {
+  width: 100%;
+  background-color: #bc101c;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Distancia entre el texto e icono */
+  transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+  background-color: #a00a14;
+}
+
+/* Aquí controlamos exactamente el tamaño del icono SVG del botón */
+.btn-icon-svg {
+  width: 18px;  
+  height: 18px;
+  fill: #ffffff; /* Icono blanco */
+  display: inline-block;
+}
+
+/* ==========================================
+   6. DISEÑO RESPONSIVO (MÓVILES)
+   ========================================== */
+@media (max-width: 850px) {
+  .login-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 40px 20px;
+  }
+  
+  .login-left-panel {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 10px;
+  }
+}
+.input-wrapper input:focus + .user-icon,
+.input-wrapper:focus-within .user-icon {
+  fill: #bc101c;
+}
