@@ -1,0 +1,595 @@
+/* ==========================================================================
+   1. CONTENEDOR PRINCIPAL Y LAYOUT (ADAPTADO AL SIDEBAR DE 280PX)
+   ========================================================================== */
+.dashboard-container {
+  display: flex;
+  /* El ancho se calcula restando el espacio fijo del menú izquierdo para evitar scroll horizontal */
+  width: calc(100vw - 280px); 
+  height: 100vh; 
+  background-color: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* El contenido central crece dinámicamente y se comprime suavemente si se abre el detalle */
+.main-content {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   2. DETALLE DEL TRABAJADOR (ASIDE DERECHO EN GRUPO CON FLEX)
+   ========================================================================== */
+.detail-sidebar {
+  position: relative; 
+  width: 420px;
+  height: 100%;
+  background-color: #ffffff;
+  border-left: 1px solid #eaeaea;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+  z-index: 10;
+  overflow-y: auto; 
+  animation: slideIn 0.25s ease-out;
+}
+
+/* Animación de entrada fluida */
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* ==========================================================================
+   3. BARRA SUPERIOR DE BÚSQUEDA INTERNA
+   ========================================================================== */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #edf2f7;
+  padding: 8px 14px;
+  border-radius: 8px;
+  width: 320px;
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  margin-left: 8px;
+  font-size: 13px;
+  width: 100%;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info {
+  text-align: right;
+}
+
+.user-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.user-role {
+  font-size: 11px;
+  color: #718096;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  background-color: #e52320; /* Color corporativo */
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Títulos */
+.page-title-section h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 4px 0;
+}
+
+.page-title-section p {
+  font-size: 13px;
+  color: #718096;
+  margin: 0 0 24px 0;
+}
+
+/* ==========================================================================
+   4. ACORDEÓN DE JEFES DE CAMPO
+   ========================================================================== */
+.supervisors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.supervisor-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.supervisor-row:hover {
+  background-color: #fcfcfc;
+  border-color: #cbd5e0;
+}
+
+.supervisor-row.row-expanded {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: #fcfcfc;
+  border-bottom-color: transparent;
+}
+
+.sup-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sup-meta h3 {
+  font-size: 14px;
+  margin: 0;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.sup-meta p {
+  font-size: 12px;
+  color: #718096;
+  margin: 0;
+}
+
+.sup-avatar {
+  width: 38px;
+  height: 38px;
+  background-color: #edf2f7;
+  color: #4a5568;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.zone-tag {
+  background-color: #edf2f7;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.sup-count {
+  font-size: 13px;
+  color: #4a5568;
+}
+
+.sup-arrow {
+  color: #a0aec0;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   5. TABLA INTERNA DESPLEGABLE
+   ========================================================================== */
+.workers-accordion {
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 8px 20px 20px 20px;
+}
+
+.workers-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.workers-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #718096;
+  font-weight: 600;
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 2px solid #edf2f7;
+}
+
+.workers-table td {
+  padding: 14px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid #edf2f7;
+  vertical-align: middle;
+}
+
+.worker-clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.worker-clickable-row:hover {
+  background-color: #fff5f5; /* Sutil hover rojo Pedregal */
+}
+
+.worker-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.labor-badge {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #4a5568;
+}
+
+/* Semáforos de Rendimiento */
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pill-green { background-color: #e6f6ec; color: #1a7f37; }
+.pill-yellow { background-color: #fef5d1; color: #b25e00; }
+.pill-red { background-color: #ffebe9; color: #cf222e; }
+
+/* ==========================================================================
+   6. COMPONENTES TARJETA ASIDE DE DETALLE
+   ========================================================================== */
+.detail-header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.btn-close-panel {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 12px;
+  cursor: pointer;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-big-avatar {
+  width: 64px;
+  height: 64px;
+  background-color: #edf2f7;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 12px auto;
+}
+
+.worker-profile-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 4px 0;
+}
+
+.profile-dni {
+  font-size: 12px;
+  color: #718096;
+  margin: 0;
+}
+
+.detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 15px;
+}
+
+.detail-section-card {
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.detail-section-card h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #a0aec0;
+  margin: 0 0 14px 0;
+  letter-spacing: 0.5px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  color: #718096;
+}
+
+.info-value {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.value-cost {
+  color: #cf222e;
+  font-weight: 700;
+}
+
+.value-cost.cost-zero {
+  color: #1a7f37;
+}
+
+/* Bloques Métricas en Rejilla */
+.performance-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.metric-box {
+  background: #f7fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.metric-num {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #e52320;
+}
+
+.metric-lbl {
+  font-size: 11px;
+  color: #718096;
+  margin-top: 2px;
+}
+
+.margin-top-15 { margin-top: 15px; }
+.font-semibold { font-weight: 600; }
+.text-green-check { color: #1a7f37; font-weight: 600; }
+.text-alert-restriction { color: #b25e00; font-weight: 600; }
+
+/* ==========================================================================
+   7. BOTONERA DE ACCIÓN INFERIOR
+   ========================================================================== */
+.detail-actions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.btn-edit-profile {
+  background-color: #1a202c;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+
+.btn-edit-profile:hover {
+  background-color: #2d3748;
+}
+
+.btn-edit-profile svg {
+  width: 14px;
+  height: 14px;
+  fill: #ffffff;
+}
+
+/* Botón de reporte Dinámico imitando la UI final */
+.detail-actions-panel::after {
+  content: "🚫 Reportar para Bloqueo";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ffebe9;
+  color: #cf222e;
+  background-color: #fff5f5;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.detail-actions-panel::after:hover {
+  background-color: #ffebe9;
+}
+
+/* ==========================================================================
+   8. OPTIMIZACIÓN RESPONSIVE (MEDIA QUERIES)
+   ========================================================================== */
+
+/* --- TABLETS Y PANTALLAS MEDIANAS (Menos de 1024px) --- */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    width: 100vw; /* Toma todo el ancho si el menú se oculta o colapsa */
+  }
+
+  /* Cambiamos el comportamiento del panel para que no empuje la tabla, sino que flote sobre ella */
+  .detail-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 380px;
+    height: 100%;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* --- DISPOSITIVOS MÓVILES (Menos de 768px) --- */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px; /* Reducimos espacio para aprovechar el ancho del celular */
+  }
+
+  /* Cabecera del panel de búsqueda y perfil de usuario */
+  .top-bar {
+    flex-direction: column-reverse; /* El perfil arriba y la barra de búsqueda abajo */
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .search-box {
+    width: 100%; /* El buscador toma todo el ancho disponible */
+  }
+
+  .user-profile {
+    justify-content: flex-end;
+  }
+
+  /* Acordeón de Supervisores */
+  .supervisor-row {
+    flex-wrap: wrap; /* Permite que los elementos bajen si no alcanzan */
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .sup-zone {
+    order: 3; /* Mandamos la zona abajo */
+    width: 50%;
+  }
+
+  .sup-count {
+    order: 4; /* Mandamos el conteo abajo alineado */
+    width: 40%;
+    text-align: right;
+    font-size: 12px;
+  }
+
+  .sup-arrow {
+    order: 2;
+  }
+
+  /* ⚠️ CRÍTICO: Evita que la tabla rompa el layout del celular */
+  .workers-accordion {
+    padding: 8px 8px 16px 8px;
+    overflow-x: auto; /* Activa scroll horizontal sutil solo para la tabla */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .workers-table {
+    min-width: 600px; /* Asegura un tamaño mínimo para que los datos sean legibles */
+  }
+
+  .workers-table th, 
+  .workers-table td {
+    padding: 10px 8px;
+  }
+
+  /* 📱 PANEL DE DETALLES EN MÓVIL (Efecto Modal de Pantalla Completa) */
+  .detail-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999; /* Se superpone a todo para facilitar la lectura en campo */
+    border-left: none;
+    border-radius: 0;
+  }
+
+  .btn-close-panel {
+    top: 0;
+    right: 0;
+    width: 36px;
+    height: 36px; /* Botón de cierre más grande para presionar con el pulgar */
+    font-size: 16px;
+  }
+}
+
+/* --- CELULARES MUY PEQUEÑOS (Menos de 480px) --- */
+@media (max-width: 480px) {
+  .page-title-section h1 {
+    font-size: 18px;
+  }
+
+  .sup-meta h3 {
+    font-size: 13px;
+  }
+
+  /* Ajustamos las cajas de métricas del detalle para que no se aprieten */
+  .performance-metrics {
+    grid-template-columns: 1fr; /* Pasan de 2 columnas a 1 sola vertical */
+    gap: 8px;
+  }
+}

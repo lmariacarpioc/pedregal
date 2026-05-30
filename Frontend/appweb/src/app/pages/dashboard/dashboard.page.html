@@ -1,1 +1,107 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  
+  
+
+  <main class="main-content">
+    
+    <header class="top-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Buscar supervisor, lote o labor...">
+      </div>
+      <div class="user-profile">
+        <div class="user-info">
+          <span class="user-name">Roberto Mendoza</span>
+          <span class="user-role">Jefe de Área</span>
+        </div>
+        <div class="user-avatar">RM</div>
+      </div>
+    </header>
+
+    <div class="content-body">
+      
+      <div class="dashboard-summary-row">
+        <div class="page-title">
+          <h1>Monitoreo en Tiempo Real</h1>
+          <p>Resumen general de rendimiento en campo</p>
+        </div>
+        
+        <div class="kpi-cards-container">
+          <div class="kpi-card">
+            <div class="kpi-data">
+              <span class="kpi-label">Personal Activo</span>
+              <span class="kpi-value value-blue">1,240</span>
+            </div>
+            <div class="kpi-icon-wrapper bg-light-blue">👥</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-data">
+              <span class="kpi-label">Alertas Críticas</span>
+              <span class="kpi-value value-red">02</span>
+            </div>
+            <div class="kpi-icon-wrapper bg-light-red">⚠️</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-data">
+              <span class="kpi-label">Impacto Económico</span>
+              <span class="kpi-value value-orange">S/. 325.50</span>
+            </div>
+            <div class="kpi-icon-wrapper bg-light-orange">📉</div>
+          </div>
+        </div>
+      </div>
+
+      <section class="table-card">
+        <div class="table-header">
+          <h2>Ranking de Rendimiento Operativo</h2>
+          <button class="sync-button">🔄 Sincronizar Datos</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Colaborador</th>
+                <th>DNI</th>
+                <th>Ubicación / Lote</th>
+                <th>Labor Asignada</th>
+                <th>Rendimiento / Hora</th>
+                <th>Pérdida Económica</th>
+                <th>Estado Semáforo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of alertasPersonal">
+                <td>
+                  <div class="colab-cell">
+                    <span class="colab-avatar">{{ item.nombre.charAt(0) }}</span>
+                    <span class="colab-name">{{ item.nombre }}</span>
+                  </div>
+                </td>
+                <td>{{ item.dni }}</td>
+                <td>{{ item.lote }}</td>
+                <td><span class="labor-tag">{{ item.labor }}</span></td>
+                <td><strong>{{ item.unidadesHora }}</strong> <span class="unit-text">plantas/hr ({{ item.rendimiento }}%)</span></td>
+                <td class="price-cell" [class.has-loss]="item.impactoEconomico > 0">
+                  {{ item.impactoEconomico > 0 ? 'S/. ' + (item.impactoEconomico | number:'1.2-2') : '—' }}
+                </td>
+                <td>
+                  <span class="status-pill" [ngClass]="{
+                    'pill-red': item.rendimiento < 70,
+                    'pill-yellow': item.rendimiento >= 70 && item.rendimiento < 85,
+                    'pill-green': item.rendimiento >= 85
+                  }">
+                    {{ item.rendimiento < 70 ? 'Crítico' : (item.rendimiento < 85 ? 'Regular' : 'Óptimo') }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
