@@ -1,0 +1,207 @@
+/* ==========================================
+   CONTENEDOR PRINCIPAL DEL SIDEBAR
+   ========================================== */
+.sidebar-container {
+  width: 280px;
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ==========================================
+   LOGOTIPO / BRANDING CORPORATIVO
+   ========================================== */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 30px;
+  margin-bottom: 20px;
+}
+
+.brand-icon {
+  background-color: #e52320; /* Rojo Pedregal vibrante */
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+/* Forzar que el SVG del tractor sea blanco */
+.brand-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: #ffffff; 
+}
+
+.brand-text h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e52320;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.brand-text p {
+  font-size: 10px;
+  font-weight: 700;
+  color: #7d848c;
+  letter-spacing: 1px;
+  margin: 0;
+  margin-top: 2px;
+}
+
+/* ==========================================
+   BLOQUES DE NAVEGACIÓN
+   ========================================== */
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Empuja la sección de Ayuda y Cerrar Sesión al final de la pantalla */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* Elementos de Lista */
+.sidebar-nav li {
+  width: 100%;
+}
+
+/* Enlaces (Por defecto / Inactivos) */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #5c636a; /* Gris neutro oscuro de la imagen */
+  font-weight: 500;
+  font-size: 15px;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Controlar tamaño y color base de los SVGs del Menú */
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  fill: #5c636a; /* Color gris por defecto */
+  transition: fill 0.2s ease-in-out;
+  flex-shrink: 0;
+}
+
+/* Efecto Hover general */
+.nav-item:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.nav-item:hover svg {
+  fill: #212529;
+}
+
+/* ==========================================
+   ESTADO ACTIVO (Seleccionado en Angular)
+   ========================================== */
+.sidebar-nav li a.active-link {
+  background-color: #fdf2f2; /* Sutil fondo rosado/rojo claro */
+  color: #e52320;            /* Texto Rojo */
+  font-weight: 600;
+  position: relative;
+}
+
+/* Cambia el color del SVG interno a rojo automáticamente */
+.sidebar-nav li a.active-link svg {
+  fill: #e52320;
+}
+
+/* Indicador vertical rojo pegado al borde derecho */
+.sidebar-nav li a.active-link::after {
+  content: '';
+  position: absolute;
+  right: -16px; /* Ajustado para alinearse al borde derecho real del contenedor */
+  top: 15%;
+  height: 70%;
+  width: 4px;
+  background-color: #e52320;
+  border-radius: 4px 0 0 4px;
+}
+
+/* ==========================================
+   LOGOUT INTERNO (Opcional - Toque extra)
+   ========================================== */
+.logout-item:hover {
+  background-color: #fff5f5;
+  color: #dc3545;
+}
+.logout-item:hover svg {
+  fill: #dc3545;
+}
+
+/* ==========================================
+   RESPONSIVE: PANTALLAS MEDIANAS Y MÓVILES
+   ========================================== */
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 100%;
+    height: auto; /* Ya no ocupa toda la pantalla vertical */
+    position: relative;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  /* Ocultamos temporalmente el eslogan en móvil para ahorrar espacio */
+  .brand-text p, 
+  .sidebar-brand {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* Transformamos la lista vertical en un menú de botones horizontales o colapsable */
+  .sidebar-nav {
+    flex-direction: row; /* Se alinean de izquierda a derecha */
+    justify-content: space-around;
+    gap: 0;
+    margin-top: 15px;
+  }
+
+  .nav-item {
+    padding: 8px 12px;
+    flex-direction: column; /* Icono arriba, texto abajo */
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  /* Ocultamos la sección footer (Ayuda/Cerrar Sesión) en la barra superior móvil 
+     para que no sature la pantalla (puedes moverlos dentro de un menú desplegable) */
+  .sidebar-footer {
+    display: none; 
+  }
+
+  /* Quitamos la línea indicadora derecha y la ponemos abajo del item activo */
+  .sidebar-nav li a.active-link::after {
+    right: 0;
+    bottom: 0;
+    top: auto;
+    height: 3px;
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+  }
+}
