@@ -1,1 +1,228 @@
-<p>configuracion works!</p>
+<!-- ===== CONTENIDO PRINCIPAL: CONFIGURACIÓN ===== -->
+<main class="contenido-principal">
+
+  <!-- Encabezado -->
+  <div class="config-header">
+    <h1>Configuración del Sistema</h1>
+    <p>Administre los recursos estructurales, agrícolas y el acceso de usuarios para la operación del Pedregal.</p>
+  </div>
+
+  <!-- ===== FILA 1: Gestión de Fundos + Cultivos ===== -->
+  <div class="config-fila">
+
+    <!-- Tarjeta: Gestión de Fundos -->
+    <div class="tarjeta fundos">
+      <div class="tarjeta-header">
+        <div class="tarjeta-titulo">
+          <span class="icono-titulo">🏔️</span>
+          <h3>Gestión de Fundos</h3>
+        </div>
+        <button class="btn-agregar">+ Añadir Fundo</button>
+      </div>
+
+      <div class="lista-fundos">
+        <div class="fundo-item">
+          <div class="fundo-icono">🏔️</div>
+          <div class="fundo-info">
+            <strong>Fundo San José</strong>
+            <span>Ica, Perú • 450 Hectáreas</span>
+          </div>
+        </div>
+        <div class="fundo-item">
+          <div class="fundo-icono">🏔️</div>
+          <div class="fundo-info">
+            <strong>Fundo Santa Rosa</strong>
+            <span>Piura, Perú • 320 Hectáreas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta: Cultivos -->
+    <div class="tarjeta cultivos">
+      <div class="tarjeta-titulo">
+        <span class="icono-titulo">🌱</span>
+        <h3>Cultivos</h3>
+      </div>
+
+      <div class="lista-cultivos">
+        <div class="cultivo-item">
+          <span class="cultivo-dot verde"></span>
+          <span class="cultivo-nombre">Uva de Mesa</span>
+          <span class="cultivo-variedades">8 VARIEDADES</span>
+        </div>
+        <div class="cultivo-item">
+          <span class="cultivo-dot morado"></span>
+          <span class="cultivo-nombre">Arándanos</span>
+          <span class="cultivo-variedades">4 VARIEDADES</span>
+        </div>
+        <div class="cultivo-item">
+          <span class="cultivo-dot naranja"></span>
+          <span class="cultivo-nombre">Palto Has</span>
+          <span class="cultivo-variedades">2 VARIEDADES</span>
+        </div>
+      </div>
+
+      <button class="btn-gestionar">+ Gestionar Variedades</button>
+    </div>
+
+  </div>
+
+  <!-- ===== TARJETA: Usuarios y Permisos ===== -->
+  <div class="tarjeta usuarios-permisos">
+    <div class="tarjeta-header">
+      <div class="tarjeta-titulo">
+        <span class="icono-titulo">👥</span>
+        <h3>Usuarios y Permisos</h3>
+      </div>
+      <div class="usuarios-badges">
+        <span class="badge-usuario admin">Admin: 2</span>
+        <span class="badge-usuario staff">Staff: 14</span>
+      </div>
+    </div>
+
+    <div class="usuarios-contenido">
+
+      <!-- Formulario: Registrar nuevo usuario -->
+      <div class="form-nuevo-usuario">
+        <p class="form-titulo">REGISTRAR NUEVO USUARIO</p>
+
+        <div class="campo">
+          <label>NOMBRE COMPLETO</label>
+          <input type="text" placeholder="Ej. Juan Pérez" />
+        </div>
+
+        <div class="campo">
+          <label>CORREO ELECTRÓNICO</label>
+          <input type="email" placeholder="jperez@pedregal.com" />
+        </div>
+
+        <div class="campo">
+          <label>ROL DEL SISTEMA</label>
+          <div class="select-wrapper">
+            <select>
+              <option>Supervisor de Campo</option>
+              <option>Administrador</option>
+              <option>Staff</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-crear">Crear Cuenta</button>
+      </div>
+
+      <!-- Tabla: Lista de usuarios -->
+      <div class="tabla-usuarios">
+        <table>
+          <thead>
+            <tr>
+              <th>USUARIO</th>
+              <th>ROL</th>
+              <th>ESTADO</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="usuario-info">
+                  <span class="avatar" style="background:#c0392b;">MA</span>
+                  <div>
+                    <strong>Miguel Arrieta</strong>
+                    <span>m.arrieta@pedregal.com</span>
+                  </div>
+                </div>
+              </td>
+              <td>Administrador</td>
+              <td><span class="estado-icon activo">✔</span></td>
+              <td><button class="btn-opciones">⋮</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="usuario-info">
+                  <span class="avatar" style="background:#7f8c8d;">SV</span>
+                  <div>
+                    <strong>Sofia Valdivia</strong>
+                    <span>s.valdivia@pedregal.com</span>
+                  </div>
+                </div>
+              </td>
+              <td>Supervisor</td>
+              <td><span class="estado-icon activo">✔</span></td>
+              <td><button class="btn-opciones">⋮</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="usuario-info">
+                  <span class="avatar" style="background:#95a5a6;">LC</span>
+                  <div>
+                    <strong>Luis Campos</strong>
+                    <span>l.campos@pedregal.com</span>
+                  </div>
+                </div>
+              </td>
+              <td>Supervisor</td>
+              <td><span class="estado-icon inactivo">○</span></td>
+              <td><button class="btn-opciones">⋮</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TARJETA: Configuración de Lotes ===== -->
+  <div class="tarjeta config-lotes">
+    <div class="tarjeta-header">
+      <div class="tarjeta-titulo">
+        <span class="icono-titulo lotes-icono">⊞</span>
+        <h3>Configuración de Lotes</h3>
+      </div>
+      <div class="lotes-acciones">
+        <div class="select-wrapper fundo-select">
+          <select>
+            <option>Ver: Fundo San José</option>
+            <option>Ver: Fundo Santa Rosa</option>
+          </select>
+        </div>
+        <button class="btn-dibujar">✦ Dibujar Lote</button>
+      </div>
+    </div>
+
+    <div class="lotes-contenido">
+      <!-- Mapa / imagen del fundo -->
+      <div class="mapa-lotes">
+        <div class="mapa-leyenda">
+          <span class="leyenda-box rojo"></span>
+          <div>
+            <strong>Lotes Seleccionados (0)</strong>
+            <span>Áreas Sin Asignar</span>
+          </div>
+        </div>
+        <img
+          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80"
+          alt="Vista aérea del fundo"
+          class="imagen-mapa"
+        />
+      </div>
+
+      <!-- Panel: Información del lote -->
+      <div class="info-lote">
+        <p class="info-label">INFORMACIÓN DEL LOTE</p>
+        <div class="info-placeholder">
+          <span class="info-icono">👆</span>
+          <p>Seleccione un lote en el mapa para ver sus detalles o editar su configuración.</p>
+        </div>
+        <div class="capacidad">
+          <span class="capacidad-label">CAPACIDAD TOTAL</span>
+          <span class="capacidad-valor">84%</span>
+          <div class="barra-capacidad">
+            <div class="barra-relleno" style="width: 84%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
