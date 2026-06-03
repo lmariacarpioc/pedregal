@@ -1,0 +1,451 @@
+/* ==========================================
+   PALETA DE COLORES Y VARIABLES GLOBALES
+   ========================================== */
+:root {
+  --text-main: #4a4a4a;
+  --text-muted: #7e7e7e;
+  --border-color: #e5dedb;
+  --red-accent: #9c0000;         /* Guinda títulos */
+  --red-btn: #b30000;            /* Rojo botón */
+  --red-btn-hover: #900000;
+  
+  /* Badges inferiores */
+  --green-bg: #e6f7ed;   --green-txt: #1e7e34;
+  --blue-bg: #e8f0fe;    --blue-txt: #1a73e8;
+  --orange-bg: #fdf2e9;  --orange-txt: #d35400;
+}
+
+/* Contenedor general */
+.edit-page-container {
+  padding: 30px 40px;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #f9f6f5; /* Fondo grisáceo cálido claro */
+}
+
+/* ==========================================
+   ENCABEZADO DE LA APLICACIÓN
+   ========================================== */
+.edit-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-text-block h1 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+}
+
+.edit-page-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-cancel {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid var(--border-color);
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-cancel:hover { background-color: #600505; }
+
+.btn-save {
+  background-color:rgb(198, 87, 73);
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-save:hover { background-color: #600505; }
+
+/* ==========================================
+   GRILLA DE TARJETAS ASIMÉTRICAS
+   ========================================== */
+.edit-page-body {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.full-width-card {
+  grid-column: 1 / -1;
+}
+/* ==========================================
+   A JUSTES DE ICONOS EN TARJETAS PRINCIPALES
+   ========================================== */
+
+/* Alineación de los títulos principales con sus iconos */
+.info-card-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--red-accent);
+  margin: 0;
+  display: flex;
+  align-items: center;  /* Centra verticalmente el texto con el icono */
+  gap: 10px;            /* Espacio exacto entre el icono y el texto */
+}
+
+/* Contenedor del SVG en el título de la tarjeta */
+.icon-span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;          /* Dimensión estructural para el área del icono */
+  height: 16px;
+}
+
+/* Control del gráfico vectorial (SVG) dentro del título */
+.icon-span svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--red-accent); /* Utiliza el color guinda de tus variables globales */
+}
+
+/* ==========================================
+   ICONO INTERNO (EJÉMPLO: CARGO / RANGO)
+   ========================================== */
+.inner-icon-badge {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;  /* Evita que interfiera con los clics sobre el input */
+}
+
+.inner-icon-badge svg {
+  width: 100%;
+  height: 100%;
+  fill: #e07a5f;         /* Tono salmón/terracota suave del diseño para el logro */
+}
+
+/* ==========================================
+   ICONOS DE LAS TARJETAS DE ESTADO INFERIORES
+   ========================================== */
+
+/* Ajuste del círculo blanco contenedor para el SVG */
+.badge-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;        /* Evita que el círculo se deforme en pantallas chicas */
+}
+
+/* Control del tamaño del SVG dentro del círculo blanco */
+.badge-icon-circle svg {
+  width: 16px;           /* Proporción interna en base al círculo de 38px */
+  height: 16px;
+}
+
+/* ASIGNACIÓN DE COLORES DE RELLENO INDEPENDIENTES SEGÚN EL ESTADO */
+
+/* Estado Contractual (Verde) */
+.card-active .badge-icon-circle svg {
+  fill: var(--green-txt); /* Aplica el verde #1e7e34 */
+}
+
+/* Sincronización (Azul) */
+.card-sync .badge-icon-circle svg {
+  fill: var(--blue-txt);  /* Aplica el azul #1a73e8 */
+}
+
+/* Última Evaluación (Naranja) */
+.card-eval .badge-icon-circle svg {
+  fill: var(--orange-txt); /* Aplica el naranja #d35400 */
+}
+/* ==========================================
+   DISEÑO HOMOLOGADO DE LAS TARJETAS (CARDS)
+   ========================================== */
+.info-card-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #b4b3b2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabecera independiente con fondo gris claro */
+.info-card-header {
+  background-color: #dac0c0;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e8e2df;
+}
+
+.info-card-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--red-accent);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-span {
+  font-size: 15px;
+}
+
+/* Cuerpo interno acolchado */
+.info-card-body {
+  padding: 24px;
+  flex-grow: 1;
+}
+
+/* ==========================================
+   BLOQUE INTERNO: INFORMACIÓN PERSONAL
+   ========================================== */
+.personal-info-block {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.avatar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 115px;
+}
+
+.avatar-image-container {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 14px;
+  border: 2px solid var(--red-accent); /* Borde perimetral rojo vino */
+  padding: 2px;
+  box-sizing: border-box;
+  background-color: #a9a3a3;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+  background-color: #fdecd8; /* Tono de piel de respaldo */
+}
+
+.btn-camera-upload {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background-color: var(--red-btn);
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.camera-svg {
+  width: 13px;
+  height: 13px;
+  fill: #ffffff;
+}
+
+.worker-id-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.info-fields-wrapper {
+  flex: 1;
+}
+
+.form-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ==========================================
+   DISEÑO DE FORMULARIOS (GRILLAS E INPUTS)
+   ========================================== */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.form-grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+  background-color: #d0d0d0 !important;
+  color: #333333 !important;
+  font-size: 13.5px;
+  outline: none;
+  box-sizing: border-box;
+  border:#333333;
+}
+
+.form-field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='none' stroke='%237e7e7e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 14px !important;
+}
+
+/* Inputs destacados como Cargo (Cosechador Senior) */
+.input-with-badge-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.text-red-bold {
+  color: var(--red-btn) !important;
+  font-weight: 600 !important;
+  padding-right: 36px !important;
+}
+
+.inner-icon-badge {
+  position: absolute;
+  right: 12px;
+  font-size: 14px;
+}
+
+/* ==========================================
+   TARJETAS DE ESTADO INFERIORES SEPARADAS
+   ========================================== */
+.status-badges-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  width: 100%;
+}
+
+/* Base de cada rectángulo independiente */
+.badge-card {
+  padding: 16px 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  border: 1px solid #eaeaea; /* Borde suave para delimitar el rectángulo */
+}
+
+/* Contenedor del texto interno */
+.badge-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.badge-label {
+  font-size: 12px;
+  color: #7e7e7e;
+  font-weight: 500;
+}
+
+.badge-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Círculos blancos de los iconos */
+.badge-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background-color: #ffffff !important; /* Fuerza el fondo blanco del círculo */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  flex-shrink: 0;
+}
+
+/* COLORES DE FONDO EXACTOS PARA CADA RECTÁNGULO */
+.card-active { 
+  background-color: #e6f7ed !important; /* Verde claro */
+}
+.card-active .badge-value { 
+  color: #1e7e34; 
+}
+
+.card-sync { 
+  background-color: #e8f0fe !important; /* Azul claro */
+}
+.card-sync .badge-value { 
+  color: #1a73e8; 
+}
+
+.card-eval { 
+  background-color: #fdf2e9 !important; /* Naranja/Crema claro */
+}
+.card-eval .badge-value { 
+  color: #d35400; 
+}
+/* ==========================================
+   MEDIA QUERIES (SISTEMA RESPONSIVO)
+   ========================================== */
+@media (max-width: 1150px) {
+  .edit-page-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .edit-page-container { padding: 20px 16px; }
+  .edit-page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .edit-page-actions { width: 100%; }
+  .edit-page-actions button { flex: 1; text-align: center; }
+  .personal-info-block { flex-direction: column; align-items: center; }
+  .form-grid-2, .form-grid-4, .status-badges-container { grid-template-columns: 1fr; }
+}
