@@ -5,6 +5,7 @@ import { StaffPage } from './pages/staff/staff.page';
 import { Menu } from './pages/menu/menu';
 import{Configuracion} from './pages/configuracion/configuracion';
 import { Reportes } from './pages/reportes/reportes';
+import{EditarTrabajador} from './pages/staff/editar_trabajador';
 
 export const routes: Routes = [
     {
@@ -16,13 +17,14 @@ export const routes: Routes = [
     path: 'login',
     component: LoginPage // <-- Usamos directamente el componente standalone
   },
-  
+
   {
     path: '',
    component: Menu,
    children: [
 {path: 'dashboard', component: DashboardPage},
 {path: 'staff', component: StaffPage},
+{path: 'staff/editar_trabajador/:dni', component: EditarTrabajador},
 {path: 'configuracion', component: Configuracion},
 {path: 'reportes', component: Reportes}
    ]
