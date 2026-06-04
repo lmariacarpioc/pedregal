@@ -1,228 +1,299 @@
-<!-- ===== CONTENIDO PRINCIPAL: CONFIGURACIÓN ===== -->
-<main class="contenido-principal">
+<div class="pagina-configuracion">
 
-  <!-- Encabezado -->
-  <div class="config-header">
+  <!-- ═══ ENCABEZADO ═══════════════════════════════════════ -->
+  <div class="encabezado">
     <h1>Configuración del Sistema</h1>
     <p>Administre los recursos estructurales, agrícolas y el acceso de usuarios para la operación del Pedregal.</p>
   </div>
 
-  <!-- ===== FILA 1: Gestión de Fundos + Cultivos ===== -->
-  <div class="config-fila">
+  <!-- ═══ FILA: FUNDOS + CULTIVOS ══════════════════════════ -->
+  <div class="fila-dos-columnas">
 
-    <!-- Tarjeta: Gestión de Fundos -->
-    <div class="tarjeta fundos">
+    <!-- GESTIÓN DE FUNDOS -->
+    <div class="tarjeta">
       <div class="tarjeta-header">
-        <div class="tarjeta-titulo">
-          <span class="icono-titulo">🏔️</span>
-          <h3>Gestión de Fundos</h3>
-        </div>
-        <button class="btn-agregar">+ Añadir Fundo</button>
+        <h2>🏔️ Gestión de Fundos</h2>
+        <button class="btn-agregar" (click)="abrirModalFundo()">+ Añadir Fundo</button>
       </div>
-
       <div class="lista-fundos">
-        <div class="fundo-item">
+        <div class="item-fundo" *ngFor="let fundo of fundos; let i = index">
           <div class="fundo-icono">🏔️</div>
           <div class="fundo-info">
-            <strong>Fundo San José</strong>
-            <span>Ica, Perú • 450 Hectáreas</span>
+            <strong>{{ fundo.nombre }}</strong>
+            <span>{{ fundo.ubicacion }} • {{ fundo.hectareas }} Hectáreas</span>
           </div>
+          <button class="btn-eliminar" (click)="eliminarFundo(i)" title="Eliminar">✕</button>
         </div>
-        <div class="fundo-item">
-          <div class="fundo-icono">🏔️</div>
-          <div class="fundo-info">
-            <strong>Fundo Santa Rosa</strong>
-            <span>Piura, Perú • 320 Hectáreas</span>
-          </div>
+        <div class="lista-vacia" *ngIf="fundos.length === 0">
+          <p>No hay fundos registrados aún.</p>
         </div>
       </div>
     </div>
 
-    <!-- Tarjeta: Cultivos -->
-    <div class="tarjeta cultivos">
-      <div class="tarjeta-titulo">
-        <span class="icono-titulo">🌱</span>
-        <h3>Cultivos</h3>
+    <!-- CULTIVOS -->
+    <div class="tarjeta">
+      <div class="tarjeta-header">
+        <h2>🌱 Cultivos</h2>
       </div>
-
       <div class="lista-cultivos">
-        <div class="cultivo-item">
-          <span class="cultivo-dot verde"></span>
-          <span class="cultivo-nombre">Uva de Mesa</span>
-          <span class="cultivo-variedades">8 VARIEDADES</span>
-        </div>
-        <div class="cultivo-item">
-          <span class="cultivo-dot morado"></span>
-          <span class="cultivo-nombre">Arándanos</span>
-          <span class="cultivo-variedades">4 VARIEDADES</span>
-        </div>
-        <div class="cultivo-item">
-          <span class="cultivo-dot naranja"></span>
-          <span class="cultivo-nombre">Palto Has</span>
-          <span class="cultivo-variedades">2 VARIEDADES</span>
+        <div class="item-cultivo" *ngFor="let cultivo of cultivos; let i = index">
+          <div class="cultivo-punto" [style.background-color]="cultivo.color"></div>
+          <span class="cultivo-nombre">{{ cultivo.nombre }}</span>
+          <span class="cultivo-variedades">{{ cultivo.variedades }} VARIEDADES</span>
+          <button class="btn-eliminar" (click)="eliminarCultivo(i)" title="Eliminar">✕</button>
         </div>
       </div>
-
-      <button class="btn-gestionar">+ Gestionar Variedades</button>
+      <button class="btn-secundario" (click)="abrirModalCultivo()">+ Gestionar Variedades</button>
     </div>
 
   </div>
 
-  <!-- ===== TARJETA: Usuarios y Permisos ===== -->
-  <div class="tarjeta usuarios-permisos">
+  <!-- ═══ USUARIOS Y PERMISOS ═══════════════════════════════ -->
+  <div class="tarjeta">
     <div class="tarjeta-header">
-      <div class="tarjeta-titulo">
-        <span class="icono-titulo">👥</span>
-        <h3>Usuarios y Permisos</h3>
-      </div>
-      <div class="usuarios-badges">
-        <span class="badge-usuario admin">Admin: 2</span>
-        <span class="badge-usuario staff">Staff: 14</span>
+      <h2>👥 Usuarios y Permisos</h2>
+      <div class="badges-conteo">
+        <span class="badge-rojo">Admin: {{ totalAdmins }}</span>
+        <span class="badge-gris">Staff: {{ totalStaff }}</span>
       </div>
     </div>
 
-    <div class="usuarios-contenido">
+    <div class="usuarios-layout">
 
-      <!-- Formulario: Registrar nuevo usuario -->
-      <div class="form-nuevo-usuario">
-        <p class="form-titulo">REGISTRAR NUEVO USUARIO</p>
+      <!-- Formulario -->
+      <div class="formulario-usuario">
+        <h3>REGISTRAR NUEVO USUARIO</h3>
 
-        <div class="campo">
-          <label>NOMBRE COMPLETO</label>
-          <input type="text" placeholder="Ej. Juan Pérez" />
+        <label>NOMBRE COMPLETO</label>
+        <input [(ngModel)]="nuevoUsuario.nombre" placeholder="Ej. María García" />
+
+        <label>CORREO ELECTRÓNICO</label>
+        <input [(ngModel)]="nuevoUsuario.email" type="email" placeholder="usuario@pedregal.com" />
+
+        <label>ROL DEL SISTEMA</label>
+        <select [(ngModel)]="nuevoUsuario.rol">
+          <option value="Administrador">Administrador</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Operario">Operario</option>
+        </select>
+
+        <p class="mensaje-validacion" *ngIf="mensajeUsuario">{{ mensajeUsuario }}</p>
+        <button class="btn-crear" (click)="crearUsuario()">Crear Cuenta</button>
+      </div>
+
+      <!-- Lista usuarios -->
+      <div class="lista-usuarios">
+        <div class="tabla-header-usuarios">
+          <span>USUARIO</span>
+          <span>ROL</span>
+          <span>ESTADO</span>
+          <span>ACCIONES</span>
         </div>
 
-        <div class="campo">
-          <label>CORREO ELECTRÓNICO</label>
-          <input type="email" placeholder="jperez@pedregal.com" />
+        <div class="usuario-item" *ngFor="let usuario of usuarios; let i = index">
+          <div class="usuario-avatar">{{ getIniciales(usuario.nombre) }}</div>
+          <div class="usuario-datos">
+            <strong>{{ usuario.nombre }}</strong>
+            <small>{{ usuario.email }}</small>
+          </div>
+          <span class="usuario-rol">{{ usuario.rol }}</span>
+          <div
+            class="toggle-estado"
+            [class.activo]="usuario.estado"
+            (click)="toggleEstadoUsuario(usuario)"
+          >
+            <span class="toggle-circulo"></span>
+          </div>
+          <button class="btn-eliminar" (click)="eliminarUsuario(i)" title="Eliminar">✕</button>
         </div>
 
-        <div class="campo">
-          <label>ROL DEL SISTEMA</label>
-          <div class="select-wrapper">
-            <select>
-              <option>Supervisor de Campo</option>
-              <option>Administrador</option>
-              <option>Staff</option>
-            </select>
+        <div class="lista-vacia" *ngIf="usuarios.length === 0">
+          <p>No hay usuarios registrados.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ CONFIGURACIÓN DE LOTES ════════════════════════════ -->
+  <div class="tarjeta tarjeta-lotes">
+
+    <!-- Header -->
+    <div class="lotes-header">
+      <div class="lotes-header-titulo">
+        <span class="lotes-grid-icon">⊞</span>
+        <h2>Configuración de Lotes</h2>
+      </div>
+      <div class="lotes-header-acciones">
+
+        <!-- Dropdown fundo -->
+        <div class="dropdown-fundo-wrapper">
+          <button class="btn-ver-fundo" (click)="toggleDropdownFundo()">
+            Ver: {{ fundoSeleccionado }} 
+            <span class="chevron">▾</span>
+          </button>
+          <div class="dropdown-fundo-lista" *ngIf="mostrarDropdownFundo">
+            <div
+              class="dropdown-fundo-opcion"
+              *ngFor="let fundo of fundos"
+              (click)="seleccionarFundo(fundo.nombre)"
+              [class.activo]="fundo.nombre === fundoSeleccionado"
+            >
+              {{ fundo.nombre }}
+            </div>
           </div>
         </div>
 
-        <button class="btn-crear">Crear Cuenta</button>
-      </div>
+        <button class="btn-dibujar">
+          ✏️ Dibujar Lote
+        </button>
 
-      <!-- Tabla: Lista de usuarios -->
-      <div class="tabla-usuarios">
-        <table>
-          <thead>
-            <tr>
-              <th>USUARIO</th>
-              <th>ROL</th>
-              <th>ESTADO</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="usuario-info">
-                  <span class="avatar" style="background:#c0392b;">MA</span>
-                  <div>
-                    <strong>Miguel Arrieta</strong>
-                    <span>m.arrieta@pedregal.com</span>
-                  </div>
-                </div>
-              </td>
-              <td>Administrador</td>
-              <td><span class="estado-icon activo">✔</span></td>
-              <td><button class="btn-opciones">⋮</button></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="usuario-info">
-                  <span class="avatar" style="background:#7f8c8d;">SV</span>
-                  <div>
-                    <strong>Sofia Valdivia</strong>
-                    <span>s.valdivia@pedregal.com</span>
-                  </div>
-                </div>
-              </td>
-              <td>Supervisor</td>
-              <td><span class="estado-icon activo">✔</span></td>
-              <td><button class="btn-opciones">⋮</button></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="usuario-info">
-                  <span class="avatar" style="background:#95a5a6;">LC</span>
-                  <div>
-                    <strong>Luis Campos</strong>
-                    <span>l.campos@pedregal.com</span>
-                  </div>
-                </div>
-              </td>
-              <td>Supervisor</td>
-              <td><span class="estado-icon inactivo">○</span></td>
-              <td><button class="btn-opciones">⋮</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ===== TARJETA: Configuración de Lotes ===== -->
-  <div class="tarjeta config-lotes">
-    <div class="tarjeta-header">
-      <div class="tarjeta-titulo">
-        <span class="icono-titulo lotes-icono">⊞</span>
-        <h3>Configuración de Lotes</h3>
-      </div>
-      <div class="lotes-acciones">
-        <div class="select-wrapper fundo-select">
-          <select>
-            <option>Ver: Fundo San José</option>
-            <option>Ver: Fundo Santa Rosa</option>
-          </select>
-        </div>
-        <button class="btn-dibujar">✦ Dibujar Lote</button>
       </div>
     </div>
 
-    <div class="lotes-contenido">
-      <!-- Mapa / imagen del fundo -->
-      <div class="mapa-lotes">
+    <!-- Cuerpo -->
+    <div class="lotes-cuerpo">
+
+      <!-- MAPA -->
+      <div class="lotes-mapa-area">
+
+        <img
+          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80"
+          alt="Vista aérea del fundo"
+          class="mapa-img"
+        />
+
+        <!-- Leyenda -->
         <div class="mapa-leyenda">
-          <span class="leyenda-box rojo"></span>
-          <div>
-            <strong>Lotes Seleccionados (0)</strong>
+          <div class="leyenda-fila">
+            <span class="leyenda-cuadro rojo"></span>
+            <span>Lotes Seleccionados ({{ lotesSeleccionados.length }})</span>
+          </div>
+          <div class="leyenda-fila">
+            <span class="leyenda-cuadro gris"></span>
             <span>Áreas Sin Asignar</span>
           </div>
         </div>
-        <img
-          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80"
-          alt="Vista aérea del fundo"
-          class="imagen-mapa"
-        />
+
+        <!-- Marcadores de lotes -->
+        <div
+          class="marcador-lote"
+          *ngFor="let lote of lotesDelFundo; let i = index"
+          [style.left.%]="lote.x"
+          [style.top.%]="lote.y"
+          [class.seleccionado]="lote.seleccionado"
+          (click)="seleccionarLote(lote)"
+          [title]="lote.nombre"
+        >
+          {{ i + 1 }}
+        </div>
+
       </div>
 
-      <!-- Panel: Información del lote -->
-      <div class="info-lote">
-        <p class="info-label">INFORMACIÓN DEL LOTE</p>
-        <div class="info-placeholder">
-          <span class="info-icono">👆</span>
+      <!-- PANEL DERECHO -->
+      <div class="lotes-panel-info">
+
+        <span class="panel-seccion-titulo">INFORMACIÓN DEL LOTE</span>
+
+        <!-- Sin lote seleccionado -->
+        <div class="panel-sin-seleccion" *ngIf="!loteSeleccionado">
+          <div class="panel-sin-icono">🖱️</div>
           <p>Seleccione un lote en el mapa para ver sus detalles o editar su configuración.</p>
         </div>
-        <div class="capacidad">
-          <span class="capacidad-label">CAPACIDAD TOTAL</span>
-          <span class="capacidad-valor">84%</span>
-          <div class="barra-capacidad">
-            <div class="barra-relleno" style="width: 84%;"></div>
+
+        <!-- Con lote seleccionado -->
+        <div class="panel-con-seleccion" *ngIf="loteSeleccionado">
+
+          <div class="info-campo">
+            <span class="info-label">NOMBRE</span>
+            <span class="info-valor">{{ loteSeleccionado.nombre }}</span>
+          </div>
+
+          <div class="info-campo">
+            <span class="info-label">HECTÁREAS</span>
+            <span class="info-valor">{{ loteSeleccionado.hectareas }} ha</span>
+          </div>
+
+          <div class="info-campo">
+            <span class="info-label">CULTIVO</span>
+            <span class="info-valor">{{ loteSeleccionado.cultivo }}</span>
+          </div>
+
+          <div class="info-campo">
+            <span class="info-label">ESTADO</span>
+            <span
+              class="estado-badge"
+              [class.activo]="loteSeleccionado.estado === 'Activo'"
+              [class.inactivo]="loteSeleccionado.estado === 'Inactivo'"
+            >
+              {{ loteSeleccionado.estado }}
+            </span>
+          </div>
+
+          <div class="panel-acciones-lote">
+            <button class="btn-editar-lote" (click)="editarLote()">✏️ Editar Lote</button>
+            <button class="btn-eliminar-lote" (click)="eliminarLote()">🗑️ Eliminar</button>
+          </div>
+
+        </div>
+
+        <!-- Capacidad Total -->
+        <div class="bloque-capacidad">
+          <div class="capacidad-fila">
+            <span>CAPACIDAD TOTAL</span>
+            <span>{{ capacidadTotal }}%</span>
+          </div>
+          <div class="capacidad-track">
+            <div class="capacidad-fill" [style.width.%]="capacidadTotal"></div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
-</main>
+  <!-- ═══ MODAL: AÑADIR FUNDO ═════════ -->
+  <div class="overlay" *ngIf="mostrarModalFundo" (click)="cerrarModalFundo()"></div>
+  <div class="modal" *ngIf="mostrarModalFundo">
+    <div class="modal-header">
+      <h3>🏔️ Añadir Nuevo Fundo</h3>
+      <button class="btn-cerrar-modal" (click)="cerrarModalFundo()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>NOMBRE DEL FUNDO *</label>
+      <input [(ngModel)]="nuevoFundo.nombre" placeholder="Ej. Fundo San José" />
+      <label>UBICACIÓN *</label>
+      <input [(ngModel)]="nuevoFundo.ubicacion" placeholder="Ej. Ica, Perú" />
+      <label>HECTÁREAS *</label>
+      <input [(ngModel)]="nuevoFundo.hectareas" type="number" placeholder="Ej. 450" />
+      <p class="mensaje-validacion" *ngIf="mensajeFundo">{{ mensajeFundo }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" (click)="cerrarModalFundo()">Cancelar</button>
+      <button class="btn-guardar" (click)="agregarFundo()">Guardar Fundo</button>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: AÑADIR CULTIVO ════════ -->
+  <div class="overlay" *ngIf="mostrarModalCultivo" (click)="cerrarModalCultivo()"></div>
+  <div class="modal" *ngIf="mostrarModalCultivo">
+    <div class="modal-header">
+      <h3>🌱 Añadir Nuevo Cultivo</h3>
+      <button class="btn-cerrar-modal" (click)="cerrarModalCultivo()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>NOMBRE DEL CULTIVO *</label>
+      <input [(ngModel)]="nuevoCultivo.nombre" placeholder="Ej. Uva de Mesa" />
+      <label>NÚMERO DE VARIEDADES *</label>
+      <input [(ngModel)]="nuevoCultivo.variedades" type="number" placeholder="Ej. 8" />
+      <label>COLOR REPRESENTATIVO</label>
+      <input [(ngModel)]="nuevoCultivo.color" type="color" />
+      <p class="mensaje-validacion" *ngIf="mensajeCultivo">{{ mensajeCultivo }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" (click)="cerrarModalCultivo()">Cancelar</button>
+      <button class="btn-guardar" (click)="agregarCultivo()">Guardar Cultivo</button>
+    </div>
+  </div>
+
+</div>
