@@ -9,4 +9,3 @@ import { RouterLink } from '@angular/router';
   styleUrl: './reportes.css',
 })
 export class Reportes {}
-
