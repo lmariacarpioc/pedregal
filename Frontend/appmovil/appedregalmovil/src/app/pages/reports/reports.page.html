@@ -1,231 +1,641 @@
 <div class="ion-page">
   <ion-header class="ion-no-border">
-  <ion-toolbar class="rp-toolbar">
-    <div class="rp-header-content">
-      <div class="header-brand-new">
-        <i class="fas fa-tractor" style="color: #b3000b; font-size: 16px;"></i>
-        <span class="header-title-text">Crear Parte Diario</span>
+    @if (currentStep === 1) {
+      <ion-toolbar class="rp-toolbar">
+        <div class="rp-header-content">
+          <div class="header-brand-new">
+            <i class="fas fa-tractor" style="color: #b3000b; font-size: 16px;"></i>
+            <span class="header-title-text">Crear Parte Diario</span>
+          </div>
+          <button class="header-profile-btn">
+            <i class="far fa-user-circle"></i>
+          </button>
+        </div>
+      </ion-toolbar>
+
+      <div class="material-tabs">
+        <button class="mat-tab" [class.active]="activeTab === 'inversion'" (click)="setTab('inversion')">
+          Inversión
+        </button>
+        <button class="mat-tab" [class.active]="activeTab === 'produccion'" (click)="setTab('produccion')">
+          Producción
+        </button>
+        <button class="mat-tab" [class.active]="activeTab === 'reportes'" (click)="setTab('reportes')">
+          Reportes
+        </button>
       </div>
-      <button class="header-profile-btn">
-        <i class="far fa-user-circle"></i>
-      </button>
+    } @else {
+      <!-- Header for Step 2 and 3 -->
+      <ion-toolbar class="rp-toolbar step-header">
+        <div class="rp-header-content stepper-header-content">
+          <button class="header-back-btn">
+            <i class="fas fa-bars" style="color: #b3000b; font-size: 18px;"></i>
+          </button>
+          <div class="header-brand-logo">
+            @if (wizardType === 'produccion') {
+              <span class="brand-text-red">Supervisión Agrícola</span>
+            } @else {
+              <span class="brand-text-red">PEDREGAL</span>
+            }
+          </div>
+          <button class="header-action-btn">
+            <i class="fas fa-rotate-right" style="color: #b3000b; font-size: 18px;"></i>
+          </button>
+        </div>
+      </ion-toolbar>
+
+      <div class="stepper-container">
+        <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
+          <div class="step-circle">1</div>
+          <span class="step-label">{{ wizardType === 'produccion' ? 'Configuración' : 'Datos' }}</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep >= 2"></div>
+        <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Personal</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep >= 3"></div>
+        <div class="step" [class.active]="currentStep === 3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Resumen</span>
+        </div>
+      </div>
+    }
+  </ion-header>
+
+  <ion-content class="rp-content" [scrollY]="true">
+
+    <!-- ===== BODY ===== -->
+    <div class="rp-body">
+
+      <!-- ══ PASO 1: DATOS ══ -->
+      @if (currentStep === 1) {
+        <!-- ══ TAB: INVERSIÓN ══ -->
+        @if (activeTab === 'inversion') {
+          <div class="tab-content">
+            <!-- Campaña -->
+            <div class="field-group">
+              <label class="field-label">Campaña</label>
+              <div class="select-wrapper">
+                <select class="native-select" [(ngModel)]="campania">
+                  <option value="2023-2024">2023-2024</option>
+                  <option value="2024-2025">2024-2025</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Cultivo -->
+            <div class="field-group">
+              <label class="field-label">Cultivo</label>
+              <div class="select-wrapper">
+                <select class="native-select" [(ngModel)]="cultivo">
+                  <option value="Uva de Mesa">Uva de Mesa</option>
+                  <option value="Espárrago">Espárrago</option>
+                  <option value="Arándano">Arándano</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Imagen Sector -->
+            <div class="sector-image-card">
+              <img src="vineyard-sector.png" alt="Sector Operativo" class="sector-img">
+              <div class="sector-overlay">
+                <i class="fas fa-location-dot sector-pin"></i>
+                <span class="sector-label">Sector Operativo A - Norte</span>
+              </div>
+            </div>
+
+            <!-- Fundo -->
+            <div class="field-group">
+              <label class="field-label">Fundo</label>
+              <div class="select-wrapper">
+                <select class="native-select" [(ngModel)]="fundo">
+                  <option value="Fundo Los Olivos">Fundo Los Olivos</option>
+                  <option value="Fundo El Pedregal">Fundo El Pedregal</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Lote -->
+            <div class="field-group">
+              <label class="field-label">Lote</label>
+              <div class="select-wrapper">
+                <select class="native-select" [(ngModel)]="lote">
+                  <option value="Lote 01-A">Lote 01-A</option>
+                  <option value="Lote 01-B">Lote 01-B</option>
+                  <option value="Lote 02-A">Lote 02-A</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Sección Operación -->
+            <div class="section-header-row">
+              <div class="section-icon-wrap">
+                <i class="fas fa-users-gear section-icon-op"></i>
+              </div>
+              <h2 class="section-heading">Operación</h2>
+            </div>
+
+            <!-- Etapa -->
+            <div class="field-group">
+              <label class="field-label">Etapa (Phase)</label>
+              <div class="select-wrapper">
+                <select class="native-select" [(ngModel)]="etapa">
+                  <option value="Cosecha">Cosecha</option>
+                  <option value="Poda">Poda</option>
+                  <option value="Riego">Riego</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Proceso -->
+            <div class="field-group">
+              <label class="field-label">Proceso</label>
+              <div class="select-wrapper">
+                <select class="native-select" [(ngModel)]="proceso">
+                  <option value="Selección y Empaque">Selección y Empaque</option>
+                  <option value="Lavado">Lavado</option>
+                  <option value="Clasificación">Clasificación</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ══ TAB: PRODUCCIÓN ══ -->
+        @if (activeTab === 'produccion') {
+          <div class="tab-content">
+            <!-- Imagen Producción -->
+            <div class="sector-image-card">
+              <img src="produccion-field.png" alt="Configuración de Producción" class="sector-img">
+              <div class="sector-overlay">
+                <span class="sector-label">Configuración de Producción</span>
+              </div>
+            </div>
+
+            <!-- Sección Metas -->
+            <div class="section-header-row">
+              <div class="section-icon-wrap prod">
+                <i class="fas fa-chart-line section-icon-op"></i>
+              </div>
+              <h2 class="section-heading">Metas de Producción</h2>
+            </div>
+
+            <!-- Cajas Estimadas -->
+            <div class="field-group">
+              <label class="field-label-upper">CANTIDAD DE CAJAS/BINES ESTIMADAS</label>
+              <div class="input-unit-wrapper">
+                <input
+                  type="number"
+                  class="unit-input"
+                  [(ngModel)]="cajas"
+                  min="0"
+                  placeholder="0">
+                <span class="unit-tag">u.</span>
+              </div>
+            </div>
+
+            <!-- Tipo de Empaque -->
+            <div class="field-group">
+              <label class="field-label-upper">TIPO DE EMPAQUE</label>
+              <div class="select-wrapper">
+                <select class="native-select" [(ngModel)]="tipoEmpaque">
+                  <option value="" disabled>Seleccionar...</option>
+                  <option value="Caja 8.2kg">Caja 8.2 kg</option>
+                  <option value="Bin 300kg">Bin 300 kg</option>
+                  <option value="Granel">Granel</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Calidad de Fruta -->
+            <div class="field-group">
+              <label class="field-label-upper">CALIDAD DE FRUTA</label>
+              <div class="calidad-toggle">
+                <button
+                  class="calidad-btn"
+                  [class.active]="calidadFruta === 'CAT1'"
+                  (click)="setCalidad('CAT1')">
+                  <i class="fas fa-star"></i> CAT 1
+                </button>
+                <button
+                  class="calidad-btn"
+                  [class.active]="calidadFruta === 'CAT2'"
+                  (click)="setCalidad('CAT2')">
+                  CAT 2
+                </button>
+              </div>
+            </div>
+
+            <!-- Rendimiento Esperado -->
+            <div class="field-group">
+              <div class="rendimiento-header">
+                <label class="field-label-upper">RENDIMIENTO ESPERADO</label>
+                <span class="badge-critico">crítico</span>
+              </div>
+              <div class="rendimiento-display">
+                <span class="rendimiento-value">{{ cajas > 0 ? (cajas * 0.82).toFixed(2) : '0.00' }}</span>
+                <span class="rendimiento-unit">kg/hr</span>
+              </div>
+              <p class="rendimiento-hint">Basado en promedio histórico de cuadrilla actual.</p>
+            </div>
+
+            <!-- Aviso de sincronización -->
+            <div class="sync-notice">
+              <i class="fas fa-rotate-right sync-notice-icon"></i>
+              <p class="sync-notice-text">La información se sincronizará automáticamente cuando se complete el registro.</p>
+            </div>
+          </div>
+        }
+
+        <!-- ══ TAB: REPORTES ══ -->
+        @if (activeTab === 'reportes') {
+          <div class="tab-content reportes-tab">
+            <div class="shift-badge">
+              <i class="far fa-clock"></i> ACTIVE SHIFT 06:00 - 14:00
+            </div>
+            
+            <div class="search-bar-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search worker by name or ID...">
+            </div>
+
+            <div class="reportes-list">
+              @for (rep of reportesList; track rep.id) {
+                <div class="reporte-card">
+                  <div class="rc-header">
+                    <div class="rc-avatar">
+                      @if (rep.avatarType === 'img') {
+                        <img [src]="rep.avatar" alt="avatar">
+                      } @else {
+                        <div class="text-avatar">{{ rep.avatar }}</div>
+                      }
+                    </div>
+                    <div class="rc-info">
+                      <div class="rc-name">{{ rep.nombre }}</div>
+                      <div class="rc-id">ID: {{ rep.id }}</div>
+                    </div>
+                    <div class="rc-yield-badge" [class.yield-high]="rep.yield === 'High'" [class.yield-avg]="rep.yield === 'Average'" [class.yield-low]="rep.yield === 'Low'">
+                      <i class="fas fa-arrow-trend-up" *ngIf="rep.yield === 'High'"></i>
+                      <i class="fas fa-minus" *ngIf="rep.yield === 'Average'"></i>
+                      <i class="fas fa-arrow-trend-down" *ngIf="rep.yield === 'Low'"></i>
+                      Yield {{ rep.yield }}
+                    </div>
+                  </div>
+                  <div class="rc-stats">
+                    <div class="rc-stat-col">
+                      <label>RDTO. CURRENT</label>
+                      <span class="rc-val-black" [class.rc-val-red]="rep.yield === 'High'">{{ rep.rdtoCurrent }}/hr</span>
+                    </div>
+                    <div class="rc-stat-col">
+                      <label>MANUAL INPUT</label>
+                      <div class="rc-input-box">{{ rep.manualInput === 0 ? '0.0' : rep.manualInput }}</div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Botón Continuar -->
+        @if (activeTab !== 'reportes') {
+          <ion-button expand="block" class="btn-continuar" (click)="continuar()">
+            Continuar
+            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        }
+      }
+
+      <!-- ══ PASO 2: PERSONAL ══ -->
+      @if (currentStep === 2) {
+        @if (wizardType === 'inversion') {
+        <div class="step-content fade-in">
+          <h2 class="step-title">Registro de Personal</h2>
+          <p class="step-subtitle">Registro de Labores y Personal del Fundo</p>
+
+          <div class="warning-alert">
+            <i class="fas fa-circle-exclamation alert-icon"></i>
+            <div class="alert-content">
+              <strong>Aviso Importante</strong>
+              <p>La hora de inicio de las labores está configurada a las 06:30 AM. Asegúrese de que el personal esté presente 15 minutos antes.</p>
+            </div>
+          </div>
+
+          <div class="card-section">
+            <div class="card-header">
+              <i class="fas fa-user-plus text-red"></i>
+              <span class="header-text-red">Agregar Personal</span>
+            </div>
+            <div class="card-body">
+              <label class="field-label fw-500">Número de Documento (DNI)</label>
+              <div class="input-with-button">
+                <input type="text" class="custom-input" placeholder="8 dígitos" [(ngModel)]="nuevoDni">
+                <button class="btn-validate">
+                  <i class="fas fa-search"></i> Validar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-section list-section">
+            <div class="card-header space-between">
+              <div>
+                <i class="fas fa-users text-gray-dark"></i>
+                <span class="header-text-gray">Lista de Colaboradores</span>
+              </div>
+              <span class="badge-total">Total: {{ trabajadores.length < 10 ? '0' + trabajadores.length : trabajadores.length }}</span>
+            </div>
+            <div class="card-body p-0">
+              <table class="workers-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>DNI</th>
+                    <th>Apellidos y<br>Nombres</th>
+                    <th>Horas</th>
+                    <th>Rend.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (t of trabajadores; track t.dni; let i = $index) {
+                    <tr>
+                      <td class="text-gray-light">{{ (i + 1) < 10 ? '0' + (i + 1) : (i + 1) }}</td>
+                      <td>{{ t.dni }}</td>
+                      <td><strong class="text-dark">{{ t.nombre }}</strong></td>
+                      <td>
+                        <div class="hours-box">{{ t.horas }}</div>
+                      </td>
+                      <td>
+                        <div class="flex-center">
+                          <span class="rend-badge" [class.rend-alto]="t.rend === 'ALTO'" [class.rend-med]="t.rend === 'MED'" [class.rend-bajo]="t.rend === 'BAJO'">{{ t.rend }}</span>
+                          <button class="btn-delete" (click)="eliminarTrabajador(t.dni)"><i class="far fa-trash-can"></i></button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+          <div class="actions-row center-align" style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="btn-outline-red-sm" style="width: 100%;" (click)="continuarResumen()">Continuar al Resumen</button>
+            <button class="btn-regresar-ghost" (click)="regresarPaso1()">
+              <i class="fas fa-arrow-left"></i> Regresar a Datos
+            </button>
+          </div>
+            </div>
+          </div>
+        </div>
+        } @else {
+          <!-- PRODUCCIÓN WIZARD STEP 2 -->
+          <div class="step-content fade-in">
+            <h2 class="step-title">Personal de Producción</h2>
+            <p class="step-subtitle">Registre el personal y su producción diaria</p>
+
+            <div class="card-section">
+              <div class="card-body">
+                <label class="field-label fw-500">Añadir por DNI</label>
+                <div class="input-with-button">
+                  <div class="input-icon-wrap">
+                    <i class="far fa-id-card"></i>
+                    <input type="text" class="custom-input pl-icon" placeholder="Ingrese DNI" [(ngModel)]="nuevoDniProd">
+                  </div>
+                  <button class="btn-validate">
+                    <i class="fas fa-search"></i> Buscar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-section list-section">
+              <div class="card-body p-0">
+                <table class="workers-table prod-table">
+                  <thead>
+                    <tr>
+                      <th>TRABAJADOR</th>
+                      <th class="center-text">CAJAS</th>
+                      <th class="center-text">HORAS</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (t of trabajadoresProd; track t.dni) {
+                      <tr>
+                        <td>
+                          <div class="prod-w-name">{{ t.nombre }}</div>
+                          <div class="prod-w-dni">DNI: {{ t.dni }}</div>
+                        </td>
+                        <td class="center-text">
+                          <input type="number" class="prod-input" [(ngModel)]="t.cajas">
+                        </td>
+                        <td class="center-text">
+                          <input type="number" class="prod-input" [(ngModel)]="t.horas">
+                        </td>
+                        <td>
+                          <button class="btn-delete" (click)="eliminarTrabajadorProd(t.dni)"><i class="far fa-trash-can text-red"></i></button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+                <div class="table-footer-row">
+                  <span class="tf-text">{{ trabajadoresProd.length }} Trabajadores registrados</span>
+                  <div class="tf-total">
+                    <span class="tf-label">TOTAL CAJAS</span>
+                    <span class="tf-val">{{ getTotalCajas() }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="actions-row space-between-btns" style="display: flex; gap: 12px; margin-top: 10px;">
+              <button class="btn-outline-red-sm flex-1" (click)="regresarPaso1()">Anterior</button>
+              <button class="btn-solid-red flex-1" style="padding: 12px; border-radius: 8px; font-size: 14px;" (click)="continuarResumen()">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+        }
+      }
+
+      <!-- ══ PASO 3: RESUMEN ══ -->
+      @if (currentStep === 3) {
+        @if (wizardType === 'inversion') {
+        <div class="step-content fade-in">
+          <div class="summary-top-cards">
+            <div class="summary-card">
+              <span class="card-label">Total Personal</span>
+              <span class="card-value">{{ trabajadores.length }}</span>
+              <span class="card-sub"><i class="fas fa-users text-red"></i> Operarios</span>
+            </div>
+            <div class="summary-card">
+              <span class="card-label">Horas Totales</span>
+              <!-- calculamos el total de horas -->
+              <span class="card-value">{{ (trabajadores.length * 8).toFixed(1) }}</span>
+              <span class="card-sub"><i class="far fa-clock text-red"></i> Acumuladas</span>
+            </div>
+          </div>
+
+          <div class="card-section summary-details">
+            <div class="card-header space-between bg-light-gray">
+              <span class="header-text-gray">Resumen de Registro</span>
+              <span class="badge-lote">Lote #42B</span>
+            </div>
+            <div class="card-body">
+              <div class="detail-row">
+                <div class="detail-col">
+                  <span class="detail-label">ACTIVIDAD</span>
+                  <span class="detail-value">Cosecha de Arándanos</span>
+                </div>
+                <div class="detail-col right-align">
+                  <span class="detail-label">FECHA</span>
+                  <span class="detail-value">24/05/2024</span>
+                </div>
+              </div>
+
+              <div class="workers-list-summary">
+                <span class="detail-label mb-2">LISTADO DE TRABAJADORES</span>
+                
+                @for (t of trabajadores; track t.dni) {
+                  <div class="worker-summary-card">
+                    <div class="ws-icon-wrap"><i class="far fa-user text-red"></i></div>
+                    <div class="ws-info">
+                      <span class="ws-name">{{ t.nombre }}</span>
+                      <span class="ws-dni">DNI: {{ t.dni }}</span>
+                    </div>
+                    <div class="ws-hours">
+                      <span class="wsh-val">{{ t.horas.toFixed(1) }} hrs</span>
+                      <span class="wsh-type" [class.text-red]="t.tipo === 'Extra'" [class.text-dark]="t.tipo === 'Normal'">{{ t.tipo }}</span>
+                    </div>
+                  </div>
+                }
+
+                <div class="view-more-box">
+                  <i class="fas fa-plus"></i> Ver otros 9 trabajadores
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="warning-alert bg-light-red" style="border-left: 4px solid #b3000b;">
+            <i class="fas fa-triangle-exclamation alert-icon-red"></i>
+            <div class="alert-content">
+              <strong class="text-red">Verificación Final</strong>
+              <p class="text-red-dark">Una vez enviado, el registro no podrá ser modificado sin autorización del jefe de fundo.</p>
+            </div>
+          </div>
+
+          <div class="final-actions">
+            <button class="btn-solid-red" (click)="finalizarRegistro()">
+              <i class="fas fa-check-circle"></i> Finalizar y Enviar Registro
+            </button>
+            <button class="btn-outline-red-full" (click)="regresarPaso2()">
+              Regresar a Editar
+            </button>
+          </div>
+        </div>
+        } @else {
+          <!-- PRODUCCIÓN WIZARD STEP 3 -->
+          <div class="step-content fade-in">
+            <div class="summary-top-cards">
+              <div class="summary-card align-left">
+                <span class="card-label-gray">PERSONAL TOTAL</span>
+                <div class="val-with-sub">
+                  <span class="card-value-lg">42</span>
+                  <span class="card-sub-gray">activos</span>
+                </div>
+              </div>
+              <div class="summary-card align-left">
+                <span class="card-label-gray">CAJAS ESTIMADAS</span>
+                <div class="val-with-sub">
+                  <span class="card-value-lg">1,200</span>
+                  <i class="fas fa-box text-gray"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="prod-real-box">
+              <span class="pr-label">PRODUCCIÓN REAL LOGRADA</span>
+              <div class="pr-val-row">
+                <span class="pr-val">1,184 <small>Bins</small></span>
+                <div class="pr-icon-wrap"><i class="fas fa-clipboard-check"></i></div>
+              </div>
+              <span class="pr-sub">98.6% del objetivo cumplido</span>
+            </div>
+
+            <div class="detail-header-row space-between">
+              <span class="dh-title">Detalle por Personal</span>
+              <span class="dh-export">Exportar CSV</span>
+            </div>
+
+            <div class="card-section summary-details mt-10">
+              <div class="card-body p-0">
+                <div class="workers-list-summary">
+                  <div class="worker-summary-card no-border mb-0" style="border-bottom: 1px solid #f3f4f6; border-radius: 0;">
+                    <div class="ws-icon-wrap bg-gray"><i class="far fa-user text-dark"></i></div>
+                    <div class="ws-info">
+                      <span class="ws-name font-14">Juan Pérez</span>
+                      <span class="ws-dni">ID: 4502-A</span>
+                    </div>
+                    <div class="ws-hours align-right">
+                      <span class="wsh-val text-dark">32</span>
+                      <span class="wsh-type fw-700">CAJAS</span>
+                    </div>
+                  </div>
+                  <div class="worker-summary-card no-border mb-0" style="border-bottom: 1px solid #f3f4f6; border-radius: 0;">
+                    <div class="ws-icon-wrap bg-gray"><i class="far fa-user text-dark"></i></div>
+                    <div class="ws-info">
+                      <span class="ws-name font-14">María Rodríguez</span>
+                      <span class="ws-dni">ID: 4509-B</span>
+                    </div>
+                    <div class="ws-hours align-right">
+                      <span class="wsh-val text-dark">41</span>
+                      <span class="wsh-type fw-700">CAJAS</span>
+                    </div>
+                  </div>
+                  <div class="worker-summary-card no-border mb-0" style="border-bottom: 1px solid #f3f4f6; border-radius: 0;">
+                    <div class="ws-icon-wrap bg-gray"><i class="far fa-user text-dark"></i></div>
+                    <div class="ws-info">
+                      <span class="ws-name font-14">Carlos Salazar</span>
+                      <span class="ws-dni">ID: 4511-A</span>
+                    </div>
+                    <div class="ws-hours align-right">
+                      <span class="wsh-val text-dark">28</span>
+                      <span class="wsh-type fw-700">CAJAS</span>
+                    </div>
+                  </div>
+                  <div class="view-more-box no-bg text-red">
+                    Ver 39 trabajadores más <i class="fas fa-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="warning-alert bg-light-red" style="border-left: 4px solid #b3000b;">
+              <i class="fas fa-triangle-exclamation alert-icon-red"></i>
+              <div class="alert-content">
+                <strong class="text-red">Verificación Final</strong>
+                <p class="text-red-dark">Asegúrese que todas las cajas hayan sido escaneadas y asignadas correctamente. Una vez enviado, el reporte será bloqueado para edición.</p>
+              </div>
+            </div>
+
+            <div class="final-actions">
+              <button class="btn-solid-red" (click)="finalizarRegistro()">
+                Finalizar y Enviar Reporte <i class="far fa-paper-plane"></i>
+              </button>
+              <button class="btn-outline-red-full" (click)="regresarPaso2()">
+                <i class="fas fa-pen"></i> Regresar a Editar
+              </button>
+            </div>
+          </div>
+        }
+      }
+      <div style="height: 24px;"></div>
+
     </div>
-  </ion-toolbar>
-
-  <div class="material-tabs">
-    <button class="mat-tab" [class.active]="activeTab === 'inversion'" (click)="setTab('inversion')">
-      Inversión
-    </button>
-    <button class="mat-tab" [class.active]="activeTab === 'produccion'" (click)="setTab('produccion')">
-      Producción
-    </button>
-  </div>
-</ion-header>
-
-<ion-content class="rp-content" [scrollY]="true">
-
-  <!-- ===== BODY ===== -->
-  <div class="rp-body">
-
-    <!-- ══ TAB: INVERSIÓN ══ -->
-    @if (activeTab === 'inversion') {
-      <div class="tab-content">
-
-        <!-- Campaña -->
-        <div class="field-group">
-          <label class="field-label">Campaña</label>
-          <div class="select-wrapper">
-            <select class="native-select" [(ngModel)]="campania">
-              <option value="2023-2024">2023-2024</option>
-              <option value="2024-2025">2024-2025</option>
-            </select>
-            <i class="fas fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Cultivo -->
-        <div class="field-group">
-          <label class="field-label">Cultivo</label>
-          <div class="select-wrapper">
-            <select class="native-select" [(ngModel)]="cultivo">
-              <option value="Uva de Mesa">Uva de Mesa</option>
-              <option value="Espárrago">Espárrago</option>
-              <option value="Arándano">Arándano</option>
-            </select>
-            <i class="fas fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Imagen Sector -->
-        <div class="sector-image-card">
-          <img src="vineyard-sector.png" alt="Sector Operativo" class="sector-img">
-          <div class="sector-overlay">
-            <i class="fas fa-location-dot sector-pin"></i>
-            <span class="sector-label">Sector Operativo A - Norte</span>
-          </div>
-        </div>
-
-        <!-- Fundo -->
-        <div class="field-group">
-          <label class="field-label">Fundo</label>
-          <div class="select-wrapper">
-            <select class="native-select" [(ngModel)]="fundo">
-              <option value="Fundo Los Olivos">Fundo Los Olivos</option>
-              <option value="Fundo El Pedregal">Fundo El Pedregal</option>
-            </select>
-            <i class="fas fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Lote -->
-        <div class="field-group">
-          <label class="field-label">Lote</label>
-          <div class="select-wrapper">
-            <select class="native-select" [(ngModel)]="lote">
-              <option value="Lote 01-A">Lote 01-A</option>
-              <option value="Lote 01-B">Lote 01-B</option>
-              <option value="Lote 02-A">Lote 02-A</option>
-            </select>
-            <i class="fas fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Sección Operación -->
-        <div class="section-header-row">
-          <div class="section-icon-wrap">
-            <i class="fas fa-users-gear section-icon-op"></i>
-          </div>
-          <h2 class="section-heading">Operación</h2>
-        </div>
-
-        <!-- Etapa -->
-        <div class="field-group">
-          <label class="field-label">Etapa (Phase)</label>
-          <div class="select-wrapper">
-            <select class="native-select" [(ngModel)]="etapa">
-              <option value="Cosecha">Cosecha</option>
-              <option value="Poda">Poda</option>
-              <option value="Riego">Riego</option>
-            </select>
-            <i class="fas fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Proceso -->
-        <div class="field-group">
-          <label class="field-label">Proceso</label>
-          <div class="select-wrapper">
-            <select class="native-select" [(ngModel)]="proceso">
-              <option value="Selección y Empaque">Selección y Empaque</option>
-              <option value="Lavado">Lavado</option>
-              <option value="Clasificación">Clasificación</option>
-            </select>
-            <i class="fas fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-      </div>
-    }
-
-    <!-- ══ TAB: PRODUCCIÓN ══ -->
-    @if (activeTab === 'produccion') {
-      <div class="tab-content">
-
-        <!-- Imagen Producción -->
-        <div class="sector-image-card">
-          <img src="produccion-field.png" alt="Configuración de Producción" class="sector-img">
-          <div class="sector-overlay">
-            <span class="sector-label">Configuración de Producción</span>
-          </div>
-        </div>
-
-        <!-- Sección Metas -->
-        <div class="section-header-row">
-          <div class="section-icon-wrap prod">
-            <i class="fas fa-chart-line section-icon-op"></i>
-          </div>
-          <h2 class="section-heading">Metas de Producción</h2>
-        </div>
-
-        <!-- Cajas Estimadas -->
-        <div class="field-group">
-          <label class="field-label-upper">CANTIDAD DE CAJAS/BINES ESTIMADAS</label>
-          <div class="input-unit-wrapper">
-            <input
-              type="number"
-              class="unit-input"
-              [(ngModel)]="cajas"
-              min="0"
-              placeholder="0">
-            <span class="unit-tag">u.</span>
-          </div>
-        </div>
-
-        <!-- Tipo de Empaque -->
-        <div class="field-group">
-          <label class="field-label-upper">TIPO DE EMPAQUE</label>
-          <div class="select-wrapper">
-            <select class="native-select" [(ngModel)]="tipoEmpaque">
-              <option value="" disabled>Seleccionar...</option>
-              <option value="Caja 8.2kg">Caja 8.2 kg</option>
-              <option value="Bin 300kg">Bin 300 kg</option>
-              <option value="Granel">Granel</option>
-            </select>
-            <i class="fas fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Calidad de Fruta -->
-        <div class="field-group">
-          <label class="field-label-upper">CALIDAD DE FRUTA</label>
-          <div class="calidad-toggle">
-            <button
-              class="calidad-btn"
-              [class.active]="calidadFruta === 'CAT1'"
-              (click)="setCalidad('CAT1')">
-              <i class="fas fa-star"></i> CAT 1
-            </button>
-            <button
-              class="calidad-btn"
-              [class.active]="calidadFruta === 'CAT2'"
-              (click)="setCalidad('CAT2')">
-              CAT 2
-            </button>
-          </div>
-        </div>
-
-        <!-- Rendimiento Esperado -->
-        <div class="field-group">
-          <div class="rendimiento-header">
-            <label class="field-label-upper">RENDIMIENTO ESPERADO</label>
-            <span class="badge-critico">crítico</span>
-          </div>
-          <div class="rendimiento-display">
-            <span class="rendimiento-value">{{ cajas > 0 ? (cajas * 0.82).toFixed(2) : '0.00' }}</span>
-            <span class="rendimiento-unit">kg/hr</span>
-          </div>
-          <p class="rendimiento-hint">Basado en promedio histórico de cuadrilla actual.</p>
-        </div>
-
-        <!-- Aviso de sincronización -->
-        <div class="sync-notice">
-          <i class="fas fa-rotate-right sync-notice-icon"></i>
-          <p class="sync-notice-text">La información se sincronizará automáticamente cuando se complete el registro.</p>
-        </div>
-
-      </div>
-    }
-
-    <!-- Botón Continuar -->
-    <ion-button expand="block" class="btn-continuar" (click)="continuar()">
-      Continuar
-      <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
-    </ion-button>
-
-    <!-- Espacio para que el contenido no quede bajo la tab bar -->
-    <div style="height: 24px;"></div>
-
-  </div>
-
-</ion-content>
+  </ion-content>
 </div>
