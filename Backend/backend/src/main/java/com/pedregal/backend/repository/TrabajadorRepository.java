@@ -8,13 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TrabajadorRepository extends JpaRepository<Trabajador, String> {
-
+public interface TrabajadorRepository extends JpaRepository<Trabajador, Long> {
     Optional<Trabajador> findByDni(String dni);
-
-    List<Trabajador> findByActivoTrue();
-
-    List<Trabajador> findByCuadrilla(String cuadrilla);
-
+    Optional<Trabajador> findBySyncId(String syncId);
     boolean existsByDni(String dni);
+    boolean existsBySyncId(String syncId);
+    List<Trabajador> findByActivoTrue();
+    List<Trabajador> findByAreaTrabajo(String areaTrabajo);
 }

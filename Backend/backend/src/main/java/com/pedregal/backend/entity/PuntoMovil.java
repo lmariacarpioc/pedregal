@@ -8,37 +8,31 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "trabajadores")
+@Table(name = "puntos_moviles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Trabajador {
+public class PuntoMovil {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String codigo;
+
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
-    private String apellido;
+    private String descripcion;
 
-    @Column(unique = true, nullable = false)
-    private String dni;
+    private String tipo; // CHECKPOINT, FRENTE_TRABAJO, ALMACEN, CAMPAMENTO
 
-    private String cargo;
+    private Double latitud;
 
-    @Column(name = "area_trabajo")
-    private String areaTrabajo;
+    private Double longitud;
 
-    @Column(name = "telefono")
-    private String telefono;
-
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
-
-    @Column(name = "salario_diario")
-    private Double salarioDiario;
+    private Double altitud;
 
     private boolean activo = true;
 

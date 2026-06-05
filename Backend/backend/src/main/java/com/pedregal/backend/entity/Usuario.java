@@ -8,37 +8,34 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "trabajadores")
+@Table(name = "usuarios")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Trabajador {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nombre;
-
-    @Column(nullable = false)
-    private String apellido;
-
     @Column(unique = true, nullable = false)
-    private String dni;
+    private String username;
 
-    private String cargo;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
-    @Column(name = "area_trabajo")
-    private String areaTrabajo;
+    @Column(name = "nombre_completo", nullable = false)
+    private String nombreCompleto;
 
-    @Column(name = "telefono")
-    private String telefono;
+    @Column(nullable = false)
+    private String rol; // ADMIN, JEFE_CAMPO, SUPERVISOR, ASISTENTE
 
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
+    @Column(unique = true)
+    private String email;
 
-    @Column(name = "salario_diario")
-    private Double salarioDiario;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jefe_id")
+    private Usuario jefe; // Jefe de campo (para supervisor) o Supervisor (para asistente)
 
     private boolean activo = true;
 

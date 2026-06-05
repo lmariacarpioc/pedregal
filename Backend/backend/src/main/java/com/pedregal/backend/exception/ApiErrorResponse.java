@@ -3,6 +3,7 @@ package com.pedregal.backend.exception;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * DTO para respuestas de error estandarizadas.
@@ -19,14 +20,11 @@ public class ApiErrorResponse {
     /** Código HTTP del error (400, 404, 500, etc.) */
     private int status;
 
-    /** Tipo de error legible */
-    private String error;
-
     /** Mensaje descriptivo del problema */
-    private String mensaje;
+    private String message;
 
-    /** Ruta del endpoint que generó el error */
-    private String path;
+    /** Lista de errores detallados */
+    private List<String> errors;
 
     /** Momento exacto del error */
     @Builder.Default

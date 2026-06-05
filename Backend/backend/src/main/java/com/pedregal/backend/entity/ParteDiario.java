@@ -5,42 +5,37 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "trabajadores")
+@Table(name = "parte_diario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Trabajador {
+public class ParteDiario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nombre;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario; // Supervisor/Asistente que registra
 
     @Column(nullable = false)
-    private String apellido;
+    private LocalDate fecha;
 
-    @Column(unique = true, nullable = false)
-    private String dni;
+    private String turno; // AM, PM, NOCHE
 
-    private String cargo;
+    private String clima; // SOLEADO, NUBLADO, LLUVIOSO
 
-    @Column(name = "area_trabajo")
-    private String areaTrabajo;
+    @Column(name = "observaciones_generales", columnDefinition = "TEXT")
+    private String observacionesGenerales;
 
-    @Column(name = "telefono")
-    private String telefono;
-
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
-
-    @Column(name = "salario_diario")
-    private Double salarioDiario;
-
-    private boolean activo = true;
+    private String estado; // BORRADOR, ENVIADO, APROBADO
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

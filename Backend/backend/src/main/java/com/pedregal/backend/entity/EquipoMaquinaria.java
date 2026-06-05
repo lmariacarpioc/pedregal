@@ -8,39 +8,33 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "trabajadores")
+@Table(name = "equipos_maquinaria")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Trabajador {
+public class EquipoMaquinaria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String codigo;
+
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
-    private String apellido;
+    private String tipo; // EXCAVADORA, VOLQUETE, CARGADOR, COMPACTADORA, OTROS
 
-    @Column(unique = true, nullable = false)
-    private String dni;
+    private String placa;
 
-    private String cargo;
+    private String estado; // OPERATIVO, EN_MANTENIMIENTO, INACTIVO
 
-    @Column(name = "area_trabajo")
-    private String areaTrabajo;
+    @Column(name = "operador_asignado")
+    private String operadorAsignado;
 
-    @Column(name = "telefono")
-    private String telefono;
-
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
-
-    @Column(name = "salario_diario")
-    private Double salarioDiario;
-
-    private boolean activo = true;
+    @Column(name = "horometro_actual")
+    private Double horometroActual;
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

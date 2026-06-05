@@ -1,7 +1,7 @@
 package com.pedregal.backend.controller;
 
-import com.pedregal.backend.entity.Trabajador;
-import com.pedregal.backend.service.TrabajadorService;
+import com.pedregal.backend.entity.Reporte;
+import com.pedregal.backend.service.ReporteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,29 +9,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/trabajadores")
+@RequestMapping("/api/reportes")
 @RequiredArgsConstructor
-public class TrabajadorController {
+public class ReporteController {
 
-    private final TrabajadorService service;
+    private final ReporteService service;
 
     @GetMapping
-    public ResponseEntity<List<Trabajador>> getAll() {
+    public ResponseEntity<List<Reporte>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Trabajador> getById(@PathVariable Long id) {
+    public ResponseEntity<Reporte> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Trabajador> create(@RequestBody Trabajador entity) {
+    public ResponseEntity<Reporte> create(@RequestBody Reporte entity) {
         return ResponseEntity.ok(service.save(entity));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Trabajador> update(@PathVariable Long id, @RequestBody Trabajador entity) {
+    public ResponseEntity<Reporte> update(@PathVariable Long id, @RequestBody Reporte entity) {
         entity.setId(id);
         return ResponseEntity.ok(service.save(entity));
     }

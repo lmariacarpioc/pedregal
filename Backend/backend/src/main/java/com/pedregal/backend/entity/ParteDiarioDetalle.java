@@ -8,39 +8,38 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "trabajadores")
+@Table(name = "parte_diario_detalle")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Trabajador {
+public class ParteDiarioDetalle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nombre;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parte_diario_id", nullable = false)
+    private ParteDiario parteDiario;
 
-    @Column(nullable = false)
-    private String apellido;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trabajador_id", nullable = false)
+    private Trabajador trabajador;
 
-    @Column(unique = true, nullable = false)
-    private String dni;
+    @Column(name = "hora_entrada")
+    private String horaEntrada;
 
-    private String cargo;
+    @Column(name = "hora_salida")
+    private String horaSalida;
 
-    @Column(name = "area_trabajo")
-    private String areaTrabajo;
+    @Column(name = "tarea_realizada", columnDefinition = "TEXT")
+    private String tareaRealizada;
 
-    @Column(name = "telefono")
-    private String telefono;
+    @Column(name = "estado_asistencia")
+    private String estadoAsistencia; // PRESENTE, FALTA, PERMISO, DESCANSO
 
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
-
-    @Column(name = "salario_diario")
-    private Double salarioDiario;
-
-    private boolean activo = true;
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

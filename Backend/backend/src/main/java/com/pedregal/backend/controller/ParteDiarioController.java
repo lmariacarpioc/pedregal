@@ -1,7 +1,7 @@
 package com.pedregal.backend.controller;
 
-import com.pedregal.backend.entity.Trabajador;
-import com.pedregal.backend.service.TrabajadorService;
+import com.pedregal.backend.entity.ParteDiario;
+import com.pedregal.backend.service.ParteDiarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,29 +9,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/trabajadores")
+@RequestMapping("/api/partes-diarios")
 @RequiredArgsConstructor
-public class TrabajadorController {
+public class ParteDiarioController {
 
-    private final TrabajadorService service;
+    private final ParteDiarioService service;
 
     @GetMapping
-    public ResponseEntity<List<Trabajador>> getAll() {
+    public ResponseEntity<List<ParteDiario>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Trabajador> getById(@PathVariable Long id) {
+    public ResponseEntity<ParteDiario> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Trabajador> create(@RequestBody Trabajador entity) {
+    public ResponseEntity<ParteDiario> create(@RequestBody ParteDiario entity) {
         return ResponseEntity.ok(service.save(entity));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Trabajador> update(@PathVariable Long id, @RequestBody Trabajador entity) {
+    public ResponseEntity<ParteDiario> update(@PathVariable Long id, @RequestBody ParteDiario entity) {
         entity.setId(id);
         return ResponseEntity.ok(service.save(entity));
     }

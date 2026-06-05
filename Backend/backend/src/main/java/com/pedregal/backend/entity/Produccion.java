@@ -8,39 +8,40 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "trabajadores")
+@Table(name = "produccion")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Trabajador {
+public class Produccion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nombre;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parte_diario_id")
+    private ParteDiario parteDiario;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "punto_movil_id")
+    private PuntoMovil puntoMovil;
 
     @Column(nullable = false)
-    private String apellido;
+    private String actividad;
 
-    @Column(unique = true, nullable = false)
-    private String dni;
+    @Column(name = "unidad_medida")
+    private String unidadMedida; // METROS, TONELADAS, VIAJES, UNIDADES, HORAS
 
-    private String cargo;
+    @Column(name = "cantidad_programada")
+    private Double cantidadProgramada;
 
-    @Column(name = "area_trabajo")
-    private String areaTrabajo;
+    @Column(name = "cantidad_ejecutada")
+    private Double cantidadEjecutada;
 
-    @Column(name = "telefono")
-    private String telefono;
+    private Double rendimiento;
 
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
-
-    @Column(name = "salario_diario")
-    private Double salarioDiario;
-
-    private boolean activo = true;
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

@@ -1,69 +1,40 @@
 package com.pedregal.backend.service;
 
 import com.pedregal.backend.entity.Trabajador;
+import com.pedregal.backend.exception.ResourceNotFoundException;
 import com.pedregal.backend.repository.TrabajadorRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TrabajadorService {
 
-    private final TrabajadorRepository trabajadorRepository;
+    private final TrabajadorRepository repository;
 
-    @Transactional(readOnly = true)
-    public List<Trabajador> listarTodos() {
-        return trabajadorRepository.findAll();
+    public List<Trabajador> findAll() {
+        return repository.findAll();
     }
 
-    @Transactional(readOnly = true)
-    public List<Trabajador> listarActivos() {
-        return trabajadorRepository.findByActivoTrue();
+    public List<Trabajador> findActivos() {
+        return repository.findByActivoTrue();
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Trabajador> buscarPorId(String id) {
-        return trabajadorRepository.findById(id);
+    public Trabajador findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Trabajador", id));
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Trabajador> buscarPorDni(String dni) {
-        return trabajadorRepository.findByDni(dni);
+    public Trabajador save(Trabajador entity) {
+        return repository.save(entity);
     }
 
-    @Transactional
-    public Trabajador guardar(Trabajador trabajador) {
-        log.info("Guardando trabajador: {} (DNI: {})", trabajador.getNombreCompleto(), trabajador.getDni());
-        return trabajadorRepository.save(trabajador);
-    }
-
-    @Transactional
-    public Trabajador actualizar(String id, Trabajador datosActualizados) {
-        Trabajador existente = trabajadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado con ID: " + id));
-
-        existente.setNombreCompleto(datosActualizados.getNombreCompleto());
-        existente.setDni(datosActualizados.getDni());
-        existente.setLaborAsignada(datosActualizados.getLaborAsignada());
-        existente.setCuadrilla(datosActualizados.getCuadrilla());
-        existente.setActivo(datosActualizados.getActivo());
-
-        log.info("Trabajador actualizado: {} (ID: {})", existente.getNombreCompleto(), id);
-        return trabajadorRepository.save(existente);
-    }
-
-    @Transactional
-    public void eliminar(String id) {
-        if (!trabajadorRepository.existsById(id)) {
-            throw new RuntimeException("Trabajador no encontrado con ID: " + id);
+    public void deleteById(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Trabajador", id);
         }
-        trabajadorRepository.deleteById(id);
-        log.info("Trabajador eliminado con ID: {}", id);
+        repository.deleteById(id);
     }
 }

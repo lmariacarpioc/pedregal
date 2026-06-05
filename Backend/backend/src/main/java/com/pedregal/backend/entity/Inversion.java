@@ -5,42 +5,44 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "trabajadores")
+@Table(name = "inversiones")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Trabajador {
+public class Inversion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nombre;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     @Column(nullable = false)
-    private String apellido;
+    private String concepto;
 
-    @Column(unique = true, nullable = false)
-    private String dni;
+    private String categoria; // MATERIAL, EQUIPO, TRANSPORTE, ALIMENTACION, OTROS
 
-    private String cargo;
+    @Column(nullable = false)
+    private Double monto;
 
-    @Column(name = "area_trabajo")
-    private String areaTrabajo;
+    @Column(name = "fecha_gasto", nullable = false)
+    private LocalDate fechaGasto;
 
-    @Column(name = "telefono")
-    private String telefono;
+    private String proveedor;
 
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
+    @Column(name = "numero_factura")
+    private String numeroFactura;
 
-    @Column(name = "salario_diario")
-    private Double salarioDiario;
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
 
-    private boolean activo = true;
+    private String estado; // PENDIENTE, APROBADO, RECHAZADO
 
     @Column(name = "sync_id", unique = true)
     private String syncId;
