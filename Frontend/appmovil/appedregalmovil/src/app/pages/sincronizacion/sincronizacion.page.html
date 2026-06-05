@@ -1,7 +1,78 @@
-<ion-content>
-  <div style="padding: 20px; text-align: center; color: #6b7280; font-family: Inter, sans-serif; margin-top: 40px;">
-    <i class="fas fa-sync-alt" style="font-size: 48px; color: #e5e7eb; display:block; margin-bottom: 12px;"></i>
-    <h2 style="font-size: 18px; color: #374151; margin: 0 0 8px;">Sincronización</h2>
-    <p style="font-size: 14px; margin: 0;">Próximamente disponible</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar style="--background: #fff;">
+    <ion-title style="color: #b91c1c; font-weight: bold; font-family: Inter, sans-serif; display: flex; align-items: center; font-size: 16px;">
+      <i class="fas fa-tractor" style="margin-right: 8px;"></i>
+      AGRISUPERVISE
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button style="color: #6b7280;">
+        <i class="fas fa-sync-alt" style="font-size: 18px;"></i>
+      </ion-button>
+      <ion-button style="color: #6b7280;">
+        <i class="far fa-user-circle" style="font-size: 20px;"></i>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content style="--background: #f9fafb; font-family: Inter, sans-serif;">
+  <div style="padding: 16px;">
+    
+    <!-- Sync Card -->
+    <ion-card style="margin: 0 0 24px 0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); background: white;">
+      <ion-card-content style="text-align: center; padding: 32px 16px;">
+        
+        <!-- Circle Progress -->
+        <div style="width: 140px; height: 140px; border-radius: 50%; border: 8px solid #b91c1c; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0 auto 20px;">
+          <span style="font-size: 24px; font-weight: 600; color: #b91c1c;">12</span>
+          <span style="font-size: 12px; color: #6b7280; font-weight: 500;">PENDIENTES</span>
+        </div>
+
+        <p style="color: #4b5563; font-size: 14px; margin: 0 0 8px;">Última sincronización: Hace 2 horas</p>
+        
+        <div style="display: flex; justify-content: center; align-items: center; color: #b91c1c; font-size: 14px; font-weight: 500; margin-bottom: 24px;">
+          <i class="fas fa-cloud" style="margin-right: 8px;"></i> Modo Offline Activo
+        </div>
+
+        <ion-button expand="block" style="--background: #b91c1c; --border-radius: 8px; font-weight: 600; height: 48px;">
+          <i class="fas fa-sync-alt" style="margin-right: 8px;"></i>
+          Sincronizar Ahora
+        </ion-button>
+        
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Header List -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="margin: 0; font-size: 15px; color: #374151; font-weight: 600;">Registros Pendientes</h3>
+      <ion-badge style="--background: #fee2e2; color: #b91c1c; font-weight: 600; padding: 6px 10px; border-radius: 16px;">Alta Prioridad</ion-badge>
+    </div>
+
+    <!-- List Items -->
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+      <ion-card *ngFor="let record of pendingRecords" style="margin: 0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <ion-item lines="none" style="--background: white; --padding-start: 12px;">
+          <div slot="start" [ngStyle]="{'background-color': record.iconBg, 'color': record.iconColor}" style="width: 40px; height: 40px; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+            <i [class]="record.icon" style="font-size: 18px;"></i>
+          </div>
+          <ion-label>
+            <h2 style="font-size: 15px; font-weight: 500; color: #374151; margin-bottom: 4px;">{{ record.title }}</h2>
+            <p style="font-size: 13px; color: #6b7280;">{{ record.details }}</p>
+          </ion-label>
+          <div slot="end" style="color: #b91c1c;">
+            <i class="fas fa-cloud-slash" style="font-size: 18px;"></i>
+          </div>
+        </ion-item>
+      </ion-card>
+    </div>
+
+    <!-- Info Box -->
+    <div style="background-color: #f3f4f6; border-radius: 8px; padding: 16px; display: flex; align-items: flex-start; margin-bottom: 24px; border-left: 4px solid #9ca3af;">
+      <i class="fas fa-info-circle" style="color: #6b7280; font-size: 18px; margin-right: 12px; margin-top: 2px;"></i>
+      <p style="margin: 0; font-size: 13px; color: #6b7280; line-height: 1.5;">
+        Los datos se guardan localmente cuando no hay conexión. Se sincronizarán automáticamente al detectar una red estable o al presionar el botón superior.
+      </p>
+    </div>
+
   </div>
 </ion-content>

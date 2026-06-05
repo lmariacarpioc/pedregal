@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, IonRippleEffect } from '@ionic/angular/standalone';
+import { IonContent, IonRippleEffect, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { syncOutline, menuOutline } from 'ionicons/icons';
 
@@ -11,6 +11,7 @@ export interface Colaborador {
   meta: number;
   avatarColor: string;
   avatarIcon: string;
+  enObservacion?: boolean;
 }
 
 @Component({
@@ -21,6 +22,9 @@ export interface Colaborador {
   styleUrls: ['./staff.page.css'],
 })
 export class StaffPage {
+
+  estadoVista: 'lista' | 'detalle' = 'lista';
+  colaboradorSeleccionado: Colaborador | null = null;
 
   rendimientoPromedio = 14.2;
   atencionRequerida   = 8;
@@ -35,12 +39,35 @@ export class StaffPage {
     { id: '#88095', nombre: 'Lucia Mendez',   rendimiento: 16.8, meta: 32, avatarColor: '#6b7280', avatarIcon: 'fa-hard-hat' },
   ];
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private toastCtrl: ToastController) {
     addIcons({ syncOutline, menuOutline });
   }
 
   intervenir(colaborador: Colaborador) {
-    console.log('Intervenir:', colaborador.nombre);
+    this.colaboradorSeleccionado = colaborador;
+    this.estadoVista = 'detalle';
+  }
+
+  volver() {
+    this.estadoVista = 'lista';
+    this.colaboradorSeleccionado = null;
+  }
+
+  async ponerEnObservacion() {
+    if (this.colaboradorSeleccionado) {
+      this.colaboradorSeleccionado.enObservacion = true;
+    }
+
+    const toast = await this.toastCtrl.create({
+      message: 'Registro guardado. Sincronización pendiente...',
+      duration: 3000,
+      position: 'bottom',
+      color: 'warning',
+      icon: 'sync-outline'
+    });
+    await toast.present();
+
+    this.volver();
   }
 
   irA(tab: string) {
