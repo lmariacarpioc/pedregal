@@ -1,298 +1,503 @@
-<div class="pagina-configuracion">
+<div class="cfg-wrapper">
 
-  <!-- ═══ ENCABEZADO ═══════════════════════════════════════ -->
-  <div class="encabezado">
-    <h1>Configuración del Sistema</h1>
-    <p>Administre los recursos estructurales, agrícolas y el acceso de usuarios para la operación del Pedregal.</p>
-  </div>
-
-  <!-- ═══ FILA: FUNDOS + CULTIVOS ══════════════════════════ -->
-  <div class="fila-dos-columnas">
-
-    <!-- GESTIÓN DE FUNDOS -->
-    <div class="tarjeta">
-      <div class="tarjeta-header">
-        <h2>🏔️ Gestión de Fundos</h2>
-        <button class="btn-agregar" (click)="abrirModalFundo()">+ Añadir Fundo</button>
+  <!-- ═══ TOPBAR ════════════════════════════════════════════ -->
+  <header class="cfg-topbar">
+    <div class="cfg-topbar-left">
+      <span class="cfg-topbar-titulo">Configuración</span>
+    </div>
+    <div class="cfg-topbar-right">
+      <button class="cfg-icon-btn" title="Sincronizar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M534.6 182.6C547.1 170.1 547.1 149.8 534.6 137.3L470.6 73.3C461.4 64.1 447.7 61.4 435.7 66.4C423.7 71.4 416 83.1 416 96L416 128L256 128C150 128 64 214 64 320C64 337.7 78.3 352 96 352C113.7 352 128 337.7 128 320C128 249.3 185.3 192 256 192L416 192L416 224C416 236.9 423.8 248.6 435.8 253.6C447.8 258.6 461.5 255.8 470.7 246.7L534.7 182.7zM105.4 457.4C92.9 469.9 92.9 490.2 105.4 502.7L169.4 566.7C178.6 575.9 192.3 578.6 204.3 573.6C216.3 568.6 224 556.9 224 544L224 512L384 512C490 512 576 426 576 320C576 302.3 561.7 288 544 288C526.3 288 512 302.3 512 320C512 390.7 454.7 448 384 448L224 448L224 416C224 403.1 216.2 391.4 204.2 386.4C192.2 381.4 178.5 384.2 169.3 393.3L105.3 457.3z"/>
+        </svg>
+      </button>
+      <button class="cfg-icon-btn" title="Notificaciones">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M320 64C337.7 64 352 78.3 352 96L352 113.3C421.7 128.5 474.7 190.4 474.7 264.7L474.7 346.7L522.5 440.3C527.3 449.8 526.9 461.1 521.3 470.2C515.7 479.3 505.7 484.7 495 484.7L145 484.7C134.3 484.7 124.3 479.3 118.7 470.2C113.1 461.1 112.7 449.8 117.5 440.3L165.3 346.7L165.3 264.7C165.3 190.4 218.3 128.5 288 113.3L288 96C288 78.3 302.3 64 320 64zM256 544C256 526.3 270.3 512 288 512L352 512C369.7 512 384 526.3 384 544C384 561.7 369.7 576 352 576L288 576C270.3 576 256 561.7 256 544z"/>
+        </svg>
+      </button>
+      <div class="cfg-user-block">
+        <div class="cfg-user-avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:18px;height:18px;fill:#555;">
+            <path d="M96 192C96 130.1 146.1 80 208 80C269.9 80 320 130.1 320 192C320 253.9 269.9 304 208 304C146.1 304 96 253.9 96 192zM32 528C32 430.8 110.8 352 208 352C305.2 352 384 430.8 384 528L384 534C384 557.2 365.2 576 342 576L74 576C50.8 576 32 557.2 32 534L32 528z"/>
+          </svg>
+        </div>
+        <span class="cfg-user-nombre">Perfil</span>
       </div>
-      <div class="lista-fundos">
-        <div class="item-fundo" *ngFor="let fundo of fundos; let i = index">
-          <div class="fundo-icono">🏔️</div>
-          <div class="fundo-info">
-            <strong>{{ fundo.nombre }}</strong>
-            <span>{{ fundo.ubicacion }} • {{ fundo.hectareas }} Hectáreas</span>
+    </div>
+  </header>
+
+  <!-- ═══ CONTENIDO ═════════════════════════════════════════ -->
+  <div class="cfg-scroll">
+
+    <!-- PAGE HEADER -->
+    <div class="cfg-page-header">
+      <div>
+        <h1 class="cfg-page-title">Configuración del Sistema</h1>
+        <p class="cfg-page-sub">Administre los recursos estructurales, agrícolas y el acceso de usuarios para la operación del Pedregal.</p>
+      </div>
+    </div>
+
+    <!-- ─── FILA 1: FUNDOS + CULTIVOS ────────────────────── -->
+    <div class="cfg-row-2col">
+
+      <!-- GESTIÓN DE FUNDOS -->
+      <div class="cfg-card">
+        <div class="cfg-card-header">
+          <div class="cfg-card-header-left">
+            <div class="cfg-card-icon cfg-card-icon--brown">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <path d="M320 0C302.3 0 288 14.3 288 32L288 54.4C190.6 68.2 112 151.5 112 256C112 369.1 204.1 448 320 448C435.9 448 528 369.1 528 256C528 151.5 449.4 68.2 352 54.4L352 32C352 14.3 337.7 0 320 0zM320 384C238.8 384 176 325.3 176 256C176 186.7 238.8 128 320 128C401.2 128 464 186.7 464 256C464 325.3 401.2 384 320 384zM320 480C293.5 480 268.4 475.5 245 467.3L176 512L176 608L464 608L464 512L395 467.3C371.6 475.5 346.5 480 320 480z"/>
+              </svg>
+            </div>
+            <h2 class="cfg-card-title">Gestión de Fundos</h2>
           </div>
-          <button class="btn-eliminar" (click)="eliminarFundo(i)" title="Eliminar">✕</button>
-        </div>
-        <div class="lista-vacia" *ngIf="fundos.length === 0">
-          <p>No hay fundos registrados aún.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- CULTIVOS -->
-    <div class="tarjeta">
-      <div class="tarjeta-header">
-        <h2>🌱 Cultivos</h2>
-      </div>
-      <div class="lista-cultivos">
-        <div class="item-cultivo" *ngFor="let cultivo of cultivos; let i = index">
-          <div class="cultivo-punto" [style.background-color]="cultivo.color"></div>
-          <span class="cultivo-nombre">{{ cultivo.nombre }}</span>
-          <span class="cultivo-variedades">{{ cultivo.variedades }} VARIEDADES</span>
-          <button class="btn-eliminar" (click)="eliminarCultivo(i)" title="Eliminar">✕</button>
-        </div>
-      </div>
-      <button class="btn-secundario" (click)="abrirModalCultivo()">+ Gestionar Variedades</button>
-    </div>
-
-  </div>
-
-  <!-- ═══ USUARIOS Y PERMISOS ═══════════════════════════════ -->
-  <div class="tarjeta">
-    <div class="tarjeta-header">
-      <h2>👥 Usuarios y Permisos</h2>
-      <div class="badges-conteo">
-        <span class="badge-rojo">Admin: {{ totalAdmins }}</span>
-        <span class="badge-gris">Staff: {{ totalStaff }}</span>
-      </div>
-    </div>
-
-    <div class="usuarios-layout">
-
-      <!-- Formulario -->
-      <div class="formulario-usuario">
-        <h3>REGISTRAR NUEVO USUARIO</h3>
-
-        <label>NOMBRE COMPLETO</label>
-        <input [(ngModel)]="nuevoUsuario.nombre" placeholder="Ej. María García" />
-
-        <label>CORREO ELECTRÓNICO</label>
-        <input [(ngModel)]="nuevoUsuario.email" type="email" placeholder="usuario@pedregal.com" />
-
-        <label>ROL DEL SISTEMA</label>
-        <select [(ngModel)]="nuevoUsuario.rol">
-          <option value="Administrador">Administrador</option>
-          <option value="Supervisor">Supervisor</option>
-          <option value="Operario">Operario</option>
-        </select>
-
-        <p class="mensaje-validacion" *ngIf="mensajeUsuario">{{ mensajeUsuario }}</p>
-        <button class="btn-crear" (click)="crearUsuario()">Crear Cuenta</button>
-      </div>
-
-      <!-- Lista usuarios -->
-      <div class="lista-usuarios">
-        <div class="tabla-header-usuarios">
-          <span>USUARIO</span>
-          <span>ROL</span>
-          <span>ESTADO</span>
-          <span>ACCIONES</span>
-        </div>
-
-        <div class="usuario-item" *ngFor="let usuario of usuarios; let i = index">
-          <div class="usuario-avatar">{{ getIniciales(usuario.nombre) }}</div>
-          <div class="usuario-datos">
-            <strong>{{ usuario.nombre }}</strong>
-            <small>{{ usuario.email }}</small>
-          </div>
-          <span class="usuario-rol">{{ usuario.rol }}</span>
-          <div
-            class="toggle-estado"
-            [class.activo]="usuario.estado"
-            (click)="toggleEstadoUsuario(usuario)"
-          >
-            <span class="toggle-circulo"></span>
-          </div>
-          <button class="btn-eliminar" (click)="eliminarUsuario(i)" title="Eliminar">✕</button>
-        </div>
-
-        <div class="lista-vacia" *ngIf="usuarios.length === 0">
-          <p>No hay usuarios registrados.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ═══ CONFIGURACIÓN DE LOTES ════════════════════════════ -->
-  <div class="tarjeta tarjeta-lotes">
-
-    <!-- Header -->
-    <div class="lotes-header">
-      <div class="lotes-header-titulo">
-        <span class="lotes-grid-icon">⊞</span>
-        <h2>Configuración de Lotes</h2>
-      </div>
-      <div class="lotes-header-acciones">
-
-        <!-- Dropdown fundo -->
-        <div class="dropdown-fundo-wrapper">
-          <button class="btn-ver-fundo" (click)="toggleDropdownFundo()">
-            Ver: {{ fundoSeleccionado }} 
-            <span class="chevron">▾</span>
+          <button class="cfg-btn-link" (click)="abrirModalFundo()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:11px;height:11px;fill:currentColor;">
+              <path d="M352 96C352 78.3 337.7 64 320 64C302.3 64 288 78.3 288 96L288 288L96 288C78.3 288 64 302.3 64 320C64 337.7 78.3 352 96 352L288 352L288 544C288 561.7 302.3 576 320 576C337.7 576 352 561.7 352 544L352 352L544 352C561.7 352 576 337.7 576 320C576 302.3 561.7 288 544 288L352 288L352 96z"/>
+            </svg>
+            Añadir Fundo
           </button>
-          <div class="dropdown-fundo-lista" *ngIf="mostrarDropdownFundo">
-            <div
-              class="dropdown-fundo-opcion"
-              *ngFor="let fundo of fundos"
-              (click)="seleccionarFundo(fundo.nombre)"
-              [class.activo]="fundo.nombre === fundoSeleccionado"
-            >
-              {{ fundo.nombre }}
+        </div>
+
+        <div class="cfg-lista">
+          <div class="cfg-item-fundo" *ngFor="let fundo of fundos; let i = index">
+            <div class="cfg-fundo-icono">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <path d="M320 0C302.3 0 288 14.3 288 32L288 54.4C190.6 68.2 112 151.5 112 256C112 369.1 204.1 448 320 448C435.9 448 528 369.1 528 256C528 151.5 449.4 68.2 352 54.4L352 32C352 14.3 337.7 0 320 0z"/>
+              </svg>
+            </div>
+            <div class="cfg-fundo-info">
+              <strong>{{ fundo.nombre }}</strong>
+              <span>{{ fundo.ubicacion }} &bull; {{ fundo.hectareas }} Hectáreas</span>
+            </div>
+            <button class="cfg-btn-eliminar" (click)="eliminarFundo(i)" title="Eliminar">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <path d="M150.6 150.6C163.1 138.1 183.4 138.1 195.9 150.6L320 274.7L444.1 150.6C456.6 138.1 476.9 138.1 489.4 150.6C501.9 163.1 501.9 183.4 489.4 195.9L365.3 320L489.4 444.1C501.9 456.6 501.9 476.9 489.4 489.4C476.9 501.9 456.6 501.9 444.1 489.4L320 365.3L195.9 489.4C183.4 501.9 163.1 501.9 150.6 489.4C138.1 476.9 138.1 456.6 150.6 444.1L274.7 320L150.6 195.9C138.1 183.4 138.1 163.1 150.6 150.6z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="cfg-lista-vacia" *ngIf="fundos.length === 0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:28px;height:28px;fill:#dee2e6;margin-bottom:8px;">
+              <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64z"/>
+            </svg>
+            <p>No hay fundos registrados.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CULTIVOS -->
+      <div class="cfg-card">
+        <div class="cfg-card-header">
+          <div class="cfg-card-header-left">
+            <div class="cfg-card-icon cfg-card-icon--green">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <path d="M544 0C526.3 0 512 14.3 512 32L512 64C512 170 450.8 262.9 361.4 308.2C337.8 221.9 263.3 156 172.1 140.9C155.5 138.1 140.3 149.1 137.5 165.7C134.7 182.3 145.7 197.5 162.3 200.3C228.8 211.3 281.5 261.5 298.1 327.2C268.3 337 236.7 342.4 204 343.9L152.8 270.4C143.4 256.9 125.1 253.6 111.6 263C98.1 272.4 94.8 290.7 104.2 304.2L156.9 379.9C131.6 391.2 108 406.4 86.5 425.4C74.2 436.2 73 455 83.8 467.3C94.6 479.6 113.4 480.8 125.7 470C176.7 425.6 243.2 400 314 400L320 400C444.2 400 545.7 302.6 575.4 176.7C584.8 138.1 576 32 576 32C576 14.3 561.7 0 544 0z"/>
+              </svg>
+            </div>
+            <h2 class="cfg-card-title">Cultivos</h2>
+          </div>
+        </div>
+
+        <div class="cfg-lista">
+          <div class="cfg-item-cultivo" *ngFor="let cultivo of cultivos; let i = index">
+            <div class="cfg-cultivo-punto" [style.background-color]="cultivo.color"></div>
+            <span class="cfg-cultivo-nombre">{{ cultivo.nombre }}</span>
+            <span class="cfg-cultivo-variedades">{{ cultivo.variedades }} VARIEDADES</span>
+            <button class="cfg-btn-eliminar" (click)="eliminarCultivo(i)" title="Eliminar">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <path d="M150.6 150.6C163.1 138.1 183.4 138.1 195.9 150.6L320 274.7L444.1 150.6C456.6 138.1 476.9 138.1 489.4 150.6C501.9 163.1 501.9 183.4 489.4 195.9L365.3 320L489.4 444.1C501.9 456.6 501.9 476.9 489.4 489.4C476.9 501.9 456.6 501.9 444.1 489.4L320 365.3L195.9 489.4C183.4 501.9 163.1 501.9 150.6 489.4C138.1 476.9 138.1 456.6 150.6 444.1L274.7 320L150.6 195.9C138.1 183.4 138.1 163.1 150.6 150.6z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="cfg-btn-secundario" (click)="abrirModalCultivo()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:11px;height:11px;fill:currentColor;">
+            <path d="M352 96C352 78.3 337.7 64 320 64C302.3 64 288 78.3 288 96L288 288L96 288C78.3 288 64 302.3 64 320C64 337.7 78.3 352 96 352L288 352L288 544C288 561.7 302.3 576 320 576C337.7 576 352 561.7 352 544L352 352L544 352C561.7 352 576 337.7 576 320C576 302.3 561.7 288 544 288L352 288L352 96z"/>
+          </svg>
+          Gestionar Variedades
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ─── USUARIOS Y PERMISOS ──────────────────────────── -->
+    <div class="cfg-card">
+      <div class="cfg-card-header">
+        <div class="cfg-card-header-left">
+          <div class="cfg-card-icon cfg-card-icon--blue">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+              <path d="M96 192C96 130.1 146.1 80 208 80C269.9 80 320 130.1 320 192C320 253.9 269.9 304 208 304C146.1 304 96 253.9 96 192zM32 528C32 430.8 110.8 352 208 352C305.2 352 384 430.8 384 528L384 534C384 557.2 365.2 576 342 576L74 576C50.8 576 32 557.2 32 534L32 528zM464 128C517 128 560 171 560 224C560 277 517 320 464 320C411 320 368 277 368 224C368 171 411 128 464 128zM464 368C543.5 368 608 432.5 608 512L608 534.4C608 557.4 589.4 576 566.4 576L421.6 576C428.2 563.5 432 549.2 432 534L432 528C432 476.5 414.6 429.1 385.5 391.3C408.1 376.6 435.1 368 464 368z"/>
+            </svg>
+          </div>
+          <h2 class="cfg-card-title">Usuarios y Permisos</h2>
+        </div>
+        <div class="cfg-badges-row">
+          <span class="cfg-badge cfg-badge--red">Admin: {{ totalAdmins }}</span>
+          <span class="cfg-badge cfg-badge--gray">Staff: {{ totalStaff }}</span>
+        </div>
+      </div>
+
+      <div class="cfg-usuarios-layout">
+
+        <!-- Formulario nuevo usuario -->
+        <div class="cfg-form-usuario">
+          <h3 class="cfg-form-titulo">REGISTRAR NUEVO USUARIO</h3>
+
+          <div class="cfg-form-group">
+            <label class="cfg-form-label">NOMBRE COMPLETO</label>
+            <input class="cfg-input"
+                   [(ngModel)]="nuevoUsuario.nombre"
+                   placeholder="Ej. María García" />
+          </div>
+
+          <div class="cfg-form-group">
+            <label class="cfg-form-label">CORREO ELECTRÓNICO</label>
+            <input class="cfg-input"
+                   [(ngModel)]="nuevoUsuario.email"
+                   type="email"
+                   placeholder="usuario@pedregal.com" />
+          </div>
+
+          <div class="cfg-form-group">
+            <label class="cfg-form-label">ROL DEL SISTEMA</label>
+            <select class="cfg-select" [(ngModel)]="nuevoUsuario.rol">
+              <option value="Administrador">Administrador</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Operario">Operario</option>
+            </select>
+          </div>
+
+          <div class="cfg-mensaje"
+               *ngIf="mensajeUsuario"
+               [class.cfg-mensaje--ok]="getMensajeTipo() === 'ok'"
+               [class.cfg-mensaje--error]="getMensajeTipo() === 'error'">
+            {{ getMensajeTexto() }}
+          </div>
+
+          <button class="cfg-btn-crear" (click)="crearUsuario()">Crear Cuenta</button>
+        </div>
+
+        <!-- Lista de usuarios -->
+        <div class="cfg-lista-usuarios">
+
+          <!-- Buscador + filtro -->
+          <div class="cfg-usuarios-controles">
+            <div class="cfg-search-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="cfg-search-icon">
+                <path d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z"/>
+              </svg>
+              <input class="cfg-search-input"
+                     [(ngModel)]="busquedaUsuario"
+                     placeholder="Buscar usuario..."/>
+            </div>
+            <select class="cfg-select-mini" [(ngModel)]="filtroRol">
+              <option value="">Todos los roles</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Operario">Operario</option>
+            </select>
+          </div>
+
+          <!-- Cabecera tabla -->
+          <div class="cfg-tabla-header">
+            <span class="cfg-th cfg-th--usuario">USUARIO</span>
+            <span class="cfg-th">ROL</span>
+            <span class="cfg-th cfg-th--centro">ESTADO</span>
+            <span class="cfg-th cfg-th--centro">ACCIONES</span>
+          </div>
+
+          <!-- Filas -->
+          <div class="cfg-usuario-fila" *ngFor="let usuario of usuariosFiltrados; let i = index">
+            <div class="cfg-usuario-col cfg-usuario-col--usuario">
+              <div class="cfg-avatar"
+                   [style.background-color]="getColorAvatar(usuario.nombre)">
+                {{ getIniciales(usuario.nombre) }}
+              </div>
+              <div class="cfg-usuario-datos">
+                <strong>{{ usuario.nombre }}</strong>
+                <small>{{ usuario.email }}</small>
+              </div>
+            </div>
+            <div class="cfg-usuario-col">
+              <span class="cfg-rol-badge"
+                [class.cfg-rol--admin]="usuario.rol === 'Administrador'"
+                [class.cfg-rol--supervisor]="usuario.rol === 'Supervisor'"
+                [class.cfg-rol--operario]="usuario.rol === 'Operario'">
+                {{ usuario.rol }}
+              </span>
+            </div>
+            <div class="cfg-usuario-col cfg-usuario-col--centro">
+              <button class="cfg-toggle"
+                      [class.cfg-toggle--on]="usuario.estado"
+                      (click)="toggleEstadoUsuario(usuario)">
+                <span class="cfg-toggle-circulo"></span>
+              </button>
+            </div>
+            <div class="cfg-usuario-col cfg-usuario-col--centro">
+              <button class="cfg-btn-eliminar" (click)="eliminarUsuario(i)" title="Eliminar usuario">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                  <path d="M150.6 150.6C163.1 138.1 183.4 138.1 195.9 150.6L320 274.7L444.1 150.6C456.6 138.1 476.9 138.1 489.4 150.6C501.9 163.1 501.9 183.4 489.4 195.9L365.3 320L489.4 444.1C501.9 456.6 501.9 476.9 489.4 489.4C476.9 501.9 456.6 501.9 444.1 489.4L320 365.3L195.9 489.4C183.4 501.9 163.1 501.9 150.6 489.4C138.1 476.9 138.1 456.6 150.6 444.1L274.7 320L150.6 195.9C138.1 183.4 138.1 163.1 150.6 150.6z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="cfg-lista-vacia" *ngIf="usuariosFiltrados.length === 0">
+            <p>No hay usuarios que coincidan con los filtros.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── CONFIGURACIÓN DE LOTES ───────────────────────── -->
+    <div class="cfg-card cfg-card--lotes">
+
+      <div class="cfg-card-header">
+        <div class="cfg-card-header-left">
+          <div class="cfg-card-icon cfg-card-icon--red">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+              <path d="M0 96C0 78.3 14.3 64 32 64L608 64C625.7 64 640 78.3 640 96L640 224C640 241.7 625.7 256 608 256L32 256C14.3 256 0 241.7 0 224L0 96zM0 384C0 366.3 14.3 352 32 352L608 352C625.7 352 640 366.3 640 384L640 512C640 529.7 625.7 544 608 544L32 544C14.3 544 0 529.7 0 512L0 384z"/>
+            </svg>
+          </div>
+          <h2 class="cfg-card-title">Configuración de Lotes</h2>
+        </div>
+        <div class="cfg-lotes-acciones">
+          <div class="cfg-dropdown-wrap">
+            <button class="cfg-btn-dropdown" (click)="toggleDropdownFundo()">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:12px;height:12px;fill:#6c757d;">
+                <path d="M320 0C302.3 0 288 14.3 288 32L288 54.4C190.6 68.2 112 151.5 112 256C112 369.1 204.1 448 320 448C435.9 448 528 369.1 528 256C528 151.5 449.4 68.2 352 54.4L352 32C352 14.3 337.7 0 320 0z"/>
+              </svg>
+              Ver: {{ fundoSeleccionado }}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:10px;height:10px;fill:#6c757d;margin-left:4px;">
+                <path d="M160 224C148.7 224 138.7 230.3 133.9 240.2C129.1 250.2 130.3 262 137.4 270.8L297.4 462.8C303.5 470.4 312.5 474.7 322.1 474.7C331.7 474.7 340.7 470.4 346.8 462.8L506.8 270.8C513.9 262 515 250.1 510.3 240.2C505.5 230.3 495.5 224 484.3 224L160 224z"/>
+              </svg>
+            </button>
+            <div class="cfg-dropdown-lista" *ngIf="mostrarDropdownFundo">
+              <div class="cfg-dropdown-item"
+                   *ngFor="let fundo of fundos"
+                   [class.cfg-dropdown-item--activo]="fundo.nombre === fundoSeleccionado"
+                   (click)="seleccionarFundo(fundo.nombre)">
+                {{ fundo.nombre }}
+              </div>
+            </div>
+          </div>
+          <button class="cfg-btn-dibujar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:13px;height:13px;fill:currentColor;">
+              <path d="M576 96C576 131.3 549.7 160.5 516.2 166.9L172.9 510.2C165.1 518 155.1 523.1 144.2 524.6L32.4 539.9C23.4 541.1 14.9 537.9 8.8 531.8C2.7 525.7 -0.5 517.2 0.7 508.2L16 396.4C17.5 385.5 22.6 375.5 30.4 367.7L373.7 24.4C380 18.1 388.5 14.4 397.4 14C406.3 13.6 415.1 16.5 421.9 22.3L548.5 132.3C563.8 146.1 576 171.1 576 96z"/>
+            </svg>
+            Dibujar Lote
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuerpo del mapa -->
+      <div class="cfg-lotes-cuerpo">
+
+        <!-- MAPA -->
+        <div class="cfg-mapa-area">
+          <img
+            src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80"
+            alt="Vista aérea del fundo"
+            class="cfg-mapa-img"
+          />
+
+          <!-- Leyenda -->
+          <div class="cfg-mapa-leyenda">
+            <div class="cfg-leyenda-fila">
+              <span class="cfg-leyenda-cuadro cfg-leyenda-cuadro--rojo"></span>
+              <span>Lotes Seleccionados ({{ lotesSeleccionados.length }})</span>
+            </div>
+            <div class="cfg-leyenda-fila">
+              <span class="cfg-leyenda-cuadro cfg-leyenda-cuadro--gris"></span>
+              <span>Áreas Sin Asignar</span>
+            </div>
+          </div>
+
+          <!-- Marcadores -->
+          <div class="cfg-marcador"
+               *ngFor="let lote of lotesDelFundo; let i = index"
+               [style.left.%]="lote.x"
+               [style.top.%]="lote.y"
+               [class.cfg-marcador--seleccionado]="lote.seleccionado"
+               (click)="seleccionarLote(lote)"
+               [title]="lote.nombre">
+            {{ i + 1 }}
+          </div>
+        </div>
+
+        <!-- PANEL INFO LOTE -->
+        <div class="cfg-panel-info">
+          <span class="cfg-panel-titulo">INFORMACIÓN DEL LOTE</span>
+
+          <!-- Sin selección -->
+          <div class="cfg-panel-vacio" *ngIf="!loteSeleccionado">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:36px;height:36px;fill:#dee2e6;">
+              <path d="M320 64C337.7 64 352 78.3 352 96L352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224L288 96C288 78.3 302.3 64 320 64zM320 320C337.7 320 352 334.3 352 352C352 369.7 337.7 384 320 384C302.3 384 288 369.7 288 352C288 334.3 302.3 320 320 320z"/>
+            </svg>
+            <p>Seleccione un lote en el mapa para ver sus detalles o editar su configuración.</p>
+          </div>
+
+          <!-- Con selección -->
+          <div class="cfg-panel-detalle" *ngIf="loteSeleccionado">
+            <div class="cfg-info-fila">
+              <span class="cfg-info-label">NOMBRE</span>
+              <span class="cfg-info-valor">{{ loteSeleccionado.nombre }}</span>
+            </div>
+            <div class="cfg-info-fila">
+              <span class="cfg-info-label">HECTÁREAS</span>
+              <span class="cfg-info-valor">{{ loteSeleccionado.hectareas }} ha</span>
+            </div>
+            <div class="cfg-info-fila">
+              <span class="cfg-info-label">CULTIVO</span>
+              <span class="cfg-info-valor">{{ loteSeleccionado.cultivo }}</span>
+            </div>
+            <div class="cfg-info-fila">
+              <span class="cfg-info-label">ESTADO</span>
+              <span class="cfg-estado-badge"
+                [class.cfg-estado--activo]="loteSeleccionado.estado === 'Activo'"
+                [class.cfg-estado--inactivo]="loteSeleccionado.estado === 'Inactivo'">
+                {{ loteSeleccionado.estado }}
+              </span>
+            </div>
+            <div class="cfg-panel-btns">
+              <button class="cfg-btn-editar-lote" (click)="editarLote()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:12px;height:12px;fill:currentColor;">
+                  <path d="M576 96C576 131.3 549.7 160.5 516.2 166.9L172.9 510.2C165.1 518 155.1 523.1 144.2 524.6L32.4 539.9C23.4 541.1 14.9 537.9 8.8 531.8C2.7 525.7 -0.5 517.2 0.7 508.2L16 396.4C17.5 385.5 22.6 375.5 30.4 367.7L373.7 24.4C380 18.1 388.5 14.4 397.4 14C406.3 13.6 415.1 16.5 421.9 22.3L548.5 132.3C563.8 146.1 576 171.1 576 96z"/>
+                </svg>
+                Editar Lote
+              </button>
+              <button class="cfg-btn-eliminar-lote" (click)="eliminarLote()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:12px;height:12px;fill:currentColor;">
+                  <path d="M192 96L192 64C192 28.7 220.7 0 256 0L384 0C419.3 0 448 28.7 448 64L448 96L576 96C593.7 96 608 110.3 608 128C608 145.7 593.7 160 576 160L544 160L544 512C544 547.3 515.3 576 480 576L160 576C124.7 576 96 547.3 96 512L96 160L64 160C46.3 160 32 145.7 32 128C32 110.3 46.3 96 64 96L192 96zM256 160L256 512L384 512L384 160L256 160z"/>
+                </svg>
+                Eliminar
+              </button>
+            </div>
+          </div>
+
+          <!-- Capacidad total -->
+          <div class="cfg-capacidad">
+            <div class="cfg-capacidad-fila">
+              <span>CAPACIDAD TOTAL</span>
+              <span class="cfg-capacidad-pct">{{ capacidadTotal }}%</span>
+            </div>
+            <div class="cfg-capacidad-track">
+              <div class="cfg-capacidad-fill" [style.width.%]="capacidadTotal"></div>
             </div>
           </div>
         </div>
-
-        <button class="btn-dibujar">
-          ✏️ Dibujar Lote
-        </button>
-
       </div>
     </div>
 
-    <!-- Cuerpo -->
-    <div class="lotes-cuerpo">
+  </div><!-- fin cfg-scroll -->
 
-      <!-- MAPA -->
-      <div class="lotes-mapa-area">
-
-        <img
-          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80"
-          alt="Vista aérea del fundo"
-          class="mapa-img"
-        />
-
-        <!-- Leyenda -->
-        <div class="mapa-leyenda">
-          <div class="leyenda-fila">
-            <span class="leyenda-cuadro rojo"></span>
-            <span>Lotes Seleccionados ({{ lotesSeleccionados.length }})</span>
-          </div>
-          <div class="leyenda-fila">
-            <span class="leyenda-cuadro gris"></span>
-            <span>Áreas Sin Asignar</span>
-          </div>
-        </div>
-
-        <!-- Marcadores de lotes -->
-        <div
-          class="marcador-lote"
-          *ngFor="let lote of lotesDelFundo; let i = index"
-          [style.left.%]="lote.x"
-          [style.top.%]="lote.y"
-          [class.seleccionado]="lote.seleccionado"
-          (click)="seleccionarLote(lote)"
-          [title]="lote.nombre"
-        >
-          {{ i + 1 }}
-        </div>
-
+  <!-- ═══ MODAL: AÑADIR FUNDO ════════════════════════════════ -->
+  <div class="cfg-overlay" *ngIf="mostrarModalFundo" (click)="cerrarModalFundo()"></div>
+  <div class="cfg-modal" *ngIf="mostrarModalFundo">
+    <div class="cfg-modal-header">
+      <h3>Añadir Nuevo Fundo</h3>
+      <button class="cfg-modal-close" (click)="cerrarModalFundo()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M150.6 150.6C163.1 138.1 183.4 138.1 195.9 150.6L320 274.7L444.1 150.6C456.6 138.1 476.9 138.1 489.4 150.6C501.9 163.1 501.9 183.4 489.4 195.9L365.3 320L489.4 444.1C501.9 456.6 501.9 476.9 489.4 489.4C476.9 501.9 456.6 501.9 444.1 489.4L320 365.3L195.9 489.4C183.4 501.9 163.1 501.9 150.6 489.4C138.1 476.9 138.1 456.6 150.6 444.1L274.7 320L150.6 195.9C138.1 183.4 138.1 163.1 150.6 150.6z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="cfg-modal-body">
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">NOMBRE DEL FUNDO *</label>
+        <input class="cfg-input" [(ngModel)]="nuevoFundo.nombre" placeholder="Ej. Fundo San José" />
       </div>
-
-      <!-- PANEL DERECHO -->
-      <div class="lotes-panel-info">
-
-        <span class="panel-seccion-titulo">INFORMACIÓN DEL LOTE</span>
-
-        <!-- Sin lote seleccionado -->
-        <div class="panel-sin-seleccion" *ngIf="!loteSeleccionado">
-          <div class="panel-sin-icono">🖱️</div>
-          <p>Seleccione un lote en el mapa para ver sus detalles o editar su configuración.</p>
-        </div>
-
-        <!-- Con lote seleccionado -->
-        <div class="panel-con-seleccion" *ngIf="loteSeleccionado">
-
-          <div class="info-campo">
-            <span class="info-label">NOMBRE</span>
-            <span class="info-valor">{{ loteSeleccionado.nombre }}</span>
-          </div>
-
-          <div class="info-campo">
-            <span class="info-label">HECTÁREAS</span>
-            <span class="info-valor">{{ loteSeleccionado.hectareas }} ha</span>
-          </div>
-
-          <div class="info-campo">
-            <span class="info-label">CULTIVO</span>
-            <span class="info-valor">{{ loteSeleccionado.cultivo }}</span>
-          </div>
-
-          <div class="info-campo">
-            <span class="info-label">ESTADO</span>
-            <span
-              class="estado-badge"
-              [class.activo]="loteSeleccionado.estado === 'Activo'"
-              [class.inactivo]="loteSeleccionado.estado === 'Inactivo'"
-            >
-              {{ loteSeleccionado.estado }}
-            </span>
-          </div>
-
-          <div class="panel-acciones-lote">
-            <button class="btn-editar-lote" (click)="editarLote()">✏️ Editar Lote</button>
-            <button class="btn-eliminar-lote" (click)="eliminarLote()">🗑️ Eliminar</button>
-          </div>
-
-        </div>
-
-        <!-- Capacidad Total -->
-        <div class="bloque-capacidad">
-          <div class="capacidad-fila">
-            <span>CAPACIDAD TOTAL</span>
-            <span>{{ capacidadTotal }}%</span>
-          </div>
-          <div class="capacidad-track">
-            <div class="capacidad-fill" [style.width.%]="capacidadTotal"></div>
-          </div>
-        </div>
-
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">UBICACIÓN *</label>
+        <input class="cfg-input" [(ngModel)]="nuevoFundo.ubicacion" placeholder="Ej. Ica, Perú" />
       </div>
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">HECTÁREAS *</label>
+        <input class="cfg-input" [(ngModel)]="nuevoFundo.hectareas" type="number" placeholder="Ej. 450" />
+      </div>
+      <div class="cfg-mensaje cfg-mensaje--error" *ngIf="mensajeFundo">{{ mensajeFundo }}</div>
+    </div>
+    <div class="cfg-modal-footer">
+      <button class="cfg-btn-cancelar" (click)="cerrarModalFundo()">Cancelar</button>
+      <button class="cfg-btn-guardar"  (click)="agregarFundo()">Guardar Fundo</button>
     </div>
   </div>
 
-  <!-- ═══ MODAL: AÑADIR FUNDO ═════════ -->
-  <div class="overlay" *ngIf="mostrarModalFundo" (click)="cerrarModalFundo()"></div>
-  <div class="modal" *ngIf="mostrarModalFundo">
-    <div class="modal-header">
-      <h3>🏔️ Añadir Nuevo Fundo</h3>
-      <button class="btn-cerrar-modal" (click)="cerrarModalFundo()">✕</button>
+  <!-- ═══ MODAL: AÑADIR CULTIVO ══════════════════════════════ -->
+  <div class="cfg-overlay" *ngIf="mostrarModalCultivo" (click)="cerrarModalCultivo()"></div>
+  <div class="cfg-modal" *ngIf="mostrarModalCultivo">
+    <div class="cfg-modal-header">
+      <h3>Gestionar Cultivo</h3>
+      <button class="cfg-modal-close" (click)="cerrarModalCultivo()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M150.6 150.6C163.1 138.1 183.4 138.1 195.9 150.6L320 274.7L444.1 150.6C456.6 138.1 476.9 138.1 489.4 150.6C501.9 163.1 501.9 183.4 489.4 195.9L365.3 320L489.4 444.1C501.9 456.6 501.9 476.9 489.4 489.4C476.9 501.9 456.6 501.9 444.1 489.4L320 365.3L195.9 489.4C183.4 501.9 163.1 501.9 150.6 489.4C138.1 476.9 138.1 456.6 150.6 444.1L274.7 320L150.6 195.9C138.1 183.4 138.1 163.1 150.6 150.6z"/>
+        </svg>
+      </button>
     </div>
-    <div class="modal-body">
-      <label>NOMBRE DEL FUNDO *</label>
-      <input [(ngModel)]="nuevoFundo.nombre" placeholder="Ej. Fundo San José" />
-      <label>UBICACIÓN *</label>
-      <input [(ngModel)]="nuevoFundo.ubicacion" placeholder="Ej. Ica, Perú" />
-      <label>HECTÁREAS *</label>
-      <input [(ngModel)]="nuevoFundo.hectareas" type="number" placeholder="Ej. 450" />
-      <p class="mensaje-validacion" *ngIf="mensajeFundo">{{ mensajeFundo }}</p>
+    <div class="cfg-modal-body">
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">NOMBRE DEL CULTIVO *</label>
+        <input class="cfg-input" [(ngModel)]="nuevoCultivo.nombre" placeholder="Ej. Uva de Mesa" />
+      </div>
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">NÚMERO DE VARIEDADES *</label>
+        <input class="cfg-input" [(ngModel)]="nuevoCultivo.variedades" type="number" placeholder="Ej. 8" />
+      </div>
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">COLOR REPRESENTATIVO</label>
+        <div class="cfg-color-row">
+          <input class="cfg-input-color" [(ngModel)]="nuevoCultivo.color" type="color" />
+          <span class="cfg-color-preview" [style.background-color]="nuevoCultivo.color"></span>
+          <span class="cfg-color-valor">{{ nuevoCultivo.color }}</span>
+        </div>
+      </div>
+      <div class="cfg-mensaje cfg-mensaje--error" *ngIf="mensajeCultivo">{{ mensajeCultivo }}</div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-cancelar" (click)="cerrarModalFundo()">Cancelar</button>
-      <button class="btn-guardar" (click)="agregarFundo()">Guardar Fundo</button>
+    <div class="cfg-modal-footer">
+      <button class="cfg-btn-cancelar" (click)="cerrarModalCultivo()">Cancelar</button>
+      <button class="cfg-btn-guardar"  (click)="agregarCultivo()">Guardar Cultivo</button>
     </div>
   </div>
 
-  <!-- ═══ MODAL: AÑADIR CULTIVO ════════ -->
-  <div class="overlay" *ngIf="mostrarModalCultivo" (click)="cerrarModalCultivo()"></div>
-  <div class="modal" *ngIf="mostrarModalCultivo">
-    <div class="modal-header">
-      <h3>🌱 Añadir Nuevo Cultivo</h3>
-      <button class="btn-cerrar-modal" (click)="cerrarModalCultivo()">✕</button>
+  <!-- ═══ MODAL: EDITAR LOTE ═════════════════════════════════ -->
+  <div class="cfg-overlay" *ngIf="mostrarModalEditarLote" (click)="cerrarModalEditarLote()"></div>
+  <div class="cfg-modal" *ngIf="mostrarModalEditarLote">
+    <div class="cfg-modal-header">
+      <h3>Editar Lote</h3>
+      <button class="cfg-modal-close" (click)="cerrarModalEditarLote()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M150.6 150.6C163.1 138.1 183.4 138.1 195.9 150.6L320 274.7L444.1 150.6C456.6 138.1 476.9 138.1 489.4 150.6C501.9 163.1 501.9 183.4 489.4 195.9L365.3 320L489.4 444.1C501.9 456.6 501.9 476.9 489.4 489.4C476.9 501.9 456.6 501.9 444.1 489.4L320 365.3L195.9 489.4C183.4 501.9 163.1 501.9 150.6 489.4C138.1 476.9 138.1 456.6 150.6 444.1L274.7 320L150.6 195.9C138.1 183.4 138.1 163.1 150.6 150.6z"/>
+        </svg>
+      </button>
     </div>
-    <div class="modal-body">
-      <label>NOMBRE DEL CULTIVO *</label>
-      <input [(ngModel)]="nuevoCultivo.nombre" placeholder="Ej. Uva de Mesa" />
-      <label>NÚMERO DE VARIEDADES *</label>
-      <input [(ngModel)]="nuevoCultivo.variedades" type="number" placeholder="Ej. 8" />
-      <label>COLOR REPRESENTATIVO</label>
-      <input [(ngModel)]="nuevoCultivo.color" type="color" />
-      <p class="mensaje-validacion" *ngIf="mensajeCultivo">{{ mensajeCultivo }}</p>
+    <div class="cfg-modal-body">
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">NOMBRE DEL LOTE</label>
+        <input class="cfg-input" [(ngModel)]="loteEditando.nombre" />
+      </div>
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">HECTÁREAS</label>
+        <input class="cfg-input" [(ngModel)]="loteEditando.hectareas" type="number" />
+      </div>
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">CULTIVO</label>
+        <select class="cfg-select" [(ngModel)]="loteEditando.cultivo">
+          <option *ngFor="let c of cultivos" [value]="c.nombre">{{ c.nombre }}</option>
+        </select>
+      </div>
+      <div class="cfg-form-group">
+        <label class="cfg-form-label">ESTADO</label>
+        <select class="cfg-select" [(ngModel)]="loteEditando.estado">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-cancelar" (click)="cerrarModalCultivo()">Cancelar</button>
-      <button class="btn-guardar" (click)="agregarCultivo()">Guardar Cultivo</button>
+    <div class="cfg-modal-footer">
+      <button class="cfg-btn-cancelar" (click)="cerrarModalEditarLote()">Cancelar</button>
+      <button class="cfg-btn-guardar"  (click)="guardarLote()">Guardar Cambios</button>
     </div>
   </div>
 

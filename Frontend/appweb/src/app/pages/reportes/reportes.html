@@ -1,298 +1,406 @@
-<div class="pagina-reportes">
+<div class="dashboard-wrapper">
 
-  
+  <!-- TOP BAR -->
+  <header class="dash-topbar">
+    <div class="dash-topbar-tabs">
+      <a class="dash-tab dash-tab--active" routerLink="/reportes">Reportes</a>
+      <a class="dash-tab" routerLink="/staff">Staff</a>
+    </div>
+    <div class="dash-topbar-right">
+      <button class="dash-icon-btn" title="Sincronizar" (click)="cargarDatos()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M534.6 182.6C547.1 170.1 547.1 149.8 534.6 137.3L470.6 73.3C461.4 64.1 447.7 61.4 435.7 66.4C423.7 71.4 416 83.1 416 96L416 128L256 128C150 128 64 214 64 320C64 337.7 78.3 352 96 352C113.7 352 128 337.7 128 320C128 249.3 185.3 192 256 192L416 192L416 224C416 236.9 423.8 248.6 435.8 253.6C447.8 258.6 461.5 255.8 470.7 246.7L534.7 182.7zM105.4 457.4C92.9 469.9 92.9 490.2 105.4 502.7L169.4 566.7C178.6 575.9 192.3 578.6 204.3 573.6C216.3 568.6 224 556.9 224 544L224 512L384 512C490 512 576 426 576 320C576 302.3 561.7 288 544 288C526.3 288 512 302.3 512 320C512 390.7 454.7 448 384 448L224 448L224 416C224 403.1 216.2 391.4 204.2 386.4C192.2 381.4 178.5 384.2 169.3 393.3L105.3 457.3z"/>
+        </svg>
+      </button>
+      <button class="dash-icon-btn" title="Notificaciones">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M320 64C337.7 64 352 78.3 352 96L352 113.3C421.7 128.5 474.7 190.4 474.7 264.7L474.7 346.7L522.5 440.3C527.3 449.8 526.9 461.1 521.3 470.2C515.7 479.3 505.7 484.7 495 484.7L145 484.7C134.3 484.7 124.3 479.3 118.7 470.2C113.1 461.1 112.7 449.8 117.5 440.3L165.3 346.7L165.3 264.7C165.3 190.4 218.3 128.5 288 113.3L288 96C288 78.3 302.3 64 320 64zM256 544C256 526.3 270.3 512 288 512L352 512C369.7 512 384 526.3 384 544C384 561.7 369.7 576 352 576L288 576C270.3 576 256 561.7 256 544z"/>
+        </svg>
+      </button>
+      <div class="dash-user-block">
+        <div class="dash-user-avatar-img">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:18px;height:18px;fill:#555;">
+            <path d="M96 192C96 130.1 146.1 80 208 80C269.9 80 320 130.1 320 192C320 253.9 269.9 304 208 304C146.1 304 96 253.9 96 192zM32 528C32 430.8 110.8 352 208 352C305.2 352 384 430.8 384 528L384 534C384 557.2 365.2 576 342 576L74 576C50.8 576 32 557.2 32 534L32 528z"/>
+          </svg>
+        </div>
+        <span class="dash-user-name">Perfil</span>
+      </div>
+    </div>
+  </header>
 
-  <!-- ================================
-       CONTENIDO PRINCIPAL
-  ================================= -->
-  <main class="contenido-principal">
+  <!-- MAIN LAYOUT -->
+  <div class="dash-main-layout">
+    <main class="dash-content">
 
-    <!-- ENCABEZADO + BOTONES DE ACCIÓN -->
-    <div class="encabezado">
-      <div class="encabezado-texto">
-        <h1>Reportes Detallados</h1>
-        <p>Análisis exhaustivo del rendimiento y cumplimiento agrícola</p>
+      <!-- PAGE HEADER -->
+      <div class="rep-page-header">
+        <div>
+          <h1 class="rep-page-title">Reportes Detallados</h1>
+          <p class="rep-page-sub">Análisis exhaustivo del rendimiento y cumplimiento agrícola</p>
+        </div>
+        <div class="rep-header-controls">
+          <div class="rep-date-select-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="rep-ctrl-icon">
+              <path d="M128 64C128 46.3 113.7 32 96 32C78.3 32 64 46.3 64 64L64 96L32 96C14.3 96 0 110.3 0 128L0 576C0 593.7 14.3 608 32 608L608 608C625.7 608 640 593.7 640 576L640 128C640 110.3 625.7 96 608 96L576 96L576 64C576 46.3 561.7 32 544 32C526.3 32 512 46.3 512 64L512 96L128 96L128 64zM64 224L576 224L576 544L64 544L64 224z"/>
+            </svg>
+            <select [(ngModel)]="periodoSeleccionado" (change)="cargarDatos()" class="rep-date-select">
+              <option value="7">Últimos 7 días</option>
+              <option value="30">Últimos 30 días</option>
+              <option value="90">Últimos 90 días</option>
+              <option value="365">Este año</option>
+            </select>
+          </div>
+          <button class="rep-btn-filtros" (click)="toggleFiltros()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="rep-ctrl-icon">
+              <path d="M0 96C0 78.3 14.3 64 32 64L608 64C625.7 64 640 78.3 640 96C640 113.7 625.7 128 608 128L32 128C14.3 128 0 113.7 0 96zM96 320C96 302.3 110.3 288 128 288L512 288C529.7 288 544 302.3 544 320C544 337.7 529.7 352 512 352L128 352C110.3 352 96 337.7 96 320zM224 544C224 526.3 238.3 512 256 512L384 512C401.7 512 416 526.3 416 544C416 561.7 401.7 576 384 576L256 576C238.3 576 224 561.7 224 544z"/>
+            </svg>
+            Filtros
+          </button>
+        </div>
       </div>
 
-      <div class="encabezado-acciones">
+      <!-- PANEL FILTROS (colapsable) -->
+      <div class="rep-filtros-panel" *ngIf="filtrosVisibles">
+        <div class="rep-filtros-grid">
+          <div class="rep-filtro-group">
+            <label>Cuadrilla</label>
+            <select [(ngModel)]="filtroCuadrilla" class="rep-filtro-input">
+              <option value="">Todas</option>
+              <option *ngFor="let c of cuadrillas" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="rep-filtro-group">
+            <label>Lote / Fundo</label>
+            <select [(ngModel)]="filtroLote" class="rep-filtro-input">
+              <option value="">Todos</option>
+              <option *ngFor="let l of lotes" [value]="l">{{ l }}</option>
+            </select>
+          </div>
+          <div class="rep-filtro-group">
+            <label>Calidad</label>
+            <select [(ngModel)]="filtroCalidad" class="rep-filtro-input">
+              <option value="">Todas</option>
+              <option value="EXCELENTE">Excelente</option>
+              <option value="ESTÁNDAR">Estándar</option>
+              <option value="REVISIÓN">Revisión</option>
+            </select>
+          </div>
+          <div class="rep-filtro-group rep-filtro-group--actions">
+            <button class="rep-btn-aplicar" (click)="aplicarFiltros()">Aplicar</button>
+            <button class="rep-btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
+          </div>
+        </div>
+      </div>
 
-        <!-- Dropdown Período -->
-        <div class="dropdown-periodo">
-            <button 
-              class="btn-periodo" 
-              type="button"
-              (click)="toggleDropdownPeriodo()"
-            >
-              📅 {{ periodoSeleccionado }} ▾
-            </button>
+      <!-- FILA 1: CUMPLIMIENTO + PRODUCCIÓN SEMANAL -->
+      <div class="rep-row-2col">
 
-            <div class="dropdown-menu" *ngIf="mostrarDropdownPeriodo">
-              <div
-                class="dropdown-item"
-                *ngFor="let p of periodos"
-                (click)="seleccionarPeriodo(p)"
-                [class.seleccionado]="p === periodoSeleccionado"
-              >
-                {{ p }}
+        <!-- CARD: CUMPLIMIENTO DE METAS -->
+        <div class="rep-card rep-card--cumplimiento">
+          <div class="rep-card-label">CUMPLIMIENTO DE METAS</div>
+          <div class="rep-cumplimiento-valor">{{ cumplimientoMeta | number:'1.1-1' }}%</div>
+          <div class="rep-cumplimiento-trend rep-trend--pos">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:10px;height:10px;fill:#38a169;display:inline-block;">
+              <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z"/>
+            </svg>
+            +{{ variacionMeta | number:'1.1-1' }}% vs mes anterior
+          </div>
+          <!-- Mini bar chart -->
+          <div class="rep-mini-bars">
+            <div *ngFor="let bar of miniBarsCumplimiento; let i = index"
+                 class="rep-mini-bar"
+                 [class.rep-mini-bar--active]="i === miniBarsCumplimiento.length - 1"
+                 [style.height]="bar + '%'">
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD: PRODUCCIÓN POR SEMANA -->
+        <div class="rep-card rep-card--produccion">
+          <div class="rep-card-header-row">
+            <div>
+              <div class="rep-card-title">Producción por Semana</div>
+              <div class="rep-card-sub">Toneladas recolectadas vs Proyección</div>
+            </div>
+            <div class="rep-legend-row">
+              <span class="rep-legend-dot rep-legend-dot--red"></span> REAL
+              <span class="rep-legend-dot rep-legend-dot--gray"></span> META
+            </div>
+          </div>
+          <div class="rep-barchart-area">
+            <div *ngFor="let sem of produccionSemanal; let i = index" class="rep-bar-group">
+              <div class="rep-bar-pair">
+                <div class="rep-bar rep-bar--meta" [style.height]="(sem.meta / maxProduccion * 120) + 'px'"></div>
+                <div class="rep-bar rep-bar--real" [style.height]="(sem.real / maxProduccion * 120) + 'px'"></div>
+              </div>
+              <div class="rep-bar-label">SEM {{ i + 1 }}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FILA 2: EFICIENCIA POR CUADRILLA + MAPA -->
+      <div class="rep-row-2col">
+
+        <!-- CARD: EFICIENCIA POR CUADRILLA -->
+        <div class="rep-card">
+          <div class="rep-card-title">Eficiencia por Cuadrilla</div>
+          <div class="rep-eficiencia-list">
+            <div *ngFor="let item of eficienciaCuadrillas" class="rep-eficiencia-row">
+              <div class="rep-eficiencia-nombre">{{ item.nombre }}</div>
+              <div class="rep-eficiencia-bar-wrap">
+                <div class="rep-eficiencia-bar"
+                     [style.width]="item.porcentaje + '%'"
+                     [class.rep-eficiencia-bar--verde]="item.porcentaje >= 90"
+                     [class.rep-eficiencia-bar--rojo]="item.porcentaje < 90">
+                </div>
+              </div>
+              <div class="rep-eficiencia-pct"
+                   [class.rep-pct--verde]="item.porcentaje >= 90"
+                   [class.rep-pct--rojo]="item.porcentaje < 90">
+                {{ item.porcentaje }}%
               </div>
             </div>
           </div>
-
-        <!-- Botón Filtros -->
-        <button class="btn-filtros" (click)="toggleFiltros()">
-          ≡ Filtros
-        </button>
-      </div>
-    </div>
-
-    <!-- PANEL DE FILTROS -->
-    <div class="panel-filtros" *ngIf="mostrarPanelFiltros">
-      <div class="filtros-fila">
-        <div class="filtro-grupo">
-          <label>CALIDAD</label>
-          <select [(ngModel)]="filtroCalidad">
-            <option value="">Todas</option>
-            <option value="EXCELENTE">Excelente</option>
-            <option value="ESTÁNDAR">Estándar</option>
-            <option value="REVISIÓN">Revisión</option>
-          </select>
         </div>
 
-        <div class="filtro-grupo">
-          <label>CUADRILLA</label>
-          <select [(ngModel)]="filtroCuadrilla">
-            <option value="">Todas</option>
-            <option value="Cuadrilla A">Cuadrilla A</option>
-            <option value="Cuadrilla B">Cuadrilla B</option>
-            <option value="Cuadrilla C">Cuadrilla C</option>
-          </select>
+        <!-- CARD: ESTADO DEL LOTE (MAPA) -->
+        <div class="rep-card rep-card--mapa">
+          <div class="rep-mapa-inner">
+            <!-- SVG mapa decorativo (consistente con dashboard) -->
+            <svg viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg" class="rep-map-svg">
+              <rect width="340" height="180" rx="8" fill="#c8d5b9"/>
+              <rect x="0" y="0" width="340" height="180" rx="8" fill="url(#mapGrad)"/>
+              <defs>
+                <linearGradient id="mapGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#b8c9a3"/>
+                  <stop offset="100%" stop-color="#d4cfc9"/>
+                </linearGradient>
+              </defs>
+              <!-- Bloques de lotes -->
+              <rect x="20" y="20" width="80" height="60" rx="4" fill="#a8b98a" stroke="#8fa870" stroke-width="1"/>
+              <rect x="110" y="20" width="80" height="60" rx="4" fill="#9fb080" stroke="#8fa870" stroke-width="1"/>
+              <rect x="200" y="20" width="80" height="60" rx="4" fill="#a8b98a" stroke="#8fa870" stroke-width="1"/>
+              <rect x="20" y="95" width="80" height="60" rx="4" fill="#9fb080" stroke="#8fa870" stroke-width="1"/>
+              <rect x="110" y="95" width="80" height="60" rx="4" fill="#bfcfa5" stroke="#8fa870" stroke-width="1"/>
+              <rect x="200" y="95" width="80" height="60" rx="4" fill="#a8b98a" stroke="#8fa870" stroke-width="1"/>
+              <!-- Caminos -->
+              <rect x="100" y="0" width="10" height="180" fill="#d9d0c4" opacity="0.6"/>
+              <rect x="190" y="0" width="10" height="180" fill="#d9d0c4" opacity="0.6"/>
+              <rect x="0" y="85" width="340" height="10" fill="#d9d0c4" opacity="0.6"/>
+              <!-- Marcador activo -->
+              <circle cx="150" cy="50" r="8" fill="#e53e3e"/>
+              <circle cx="150" cy="50" r="14" fill="#e53e3e" opacity="0.25"/>
+            </svg>
+            <!-- Tooltip del lote activo -->
+            <div class="rep-mapa-tooltip">
+              <div class="rep-mapa-tooltip-tag">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:10px;height:10px;fill:#e53e3e;">
+                  <path d="M320 0C213 0 128 85 128 192C128 336 320 576 320 576C320 576 512 336 512 192C512 85 427 0 320 0zM320 256C284.7 256 256 227.3 256 192C256 156.7 284.7 128 320 128C355.3 128 384 156.7 384 192C384 227.3 355.3 256 320 256z"/>
+                </svg>
+                Lote Activo: {{ loteActivo.nombre }}
+                <span class="rep-mapa-gps-badge">GPS</span>
+              </div>
+              <div class="rep-mapa-tooltip-body">
+                <div class="rep-mapa-tooltip-title">Estado del Lote</div>
+                <div class="rep-mapa-tooltip-desc">Recolección activa: {{ loteActivo.personas }} personas en campo</div>
+                <div class="rep-mapa-pills">
+                  <span class="rep-mapa-pill rep-mapa-pill--verde">ÓPTIMO</span>
+                  <span class="rep-mapa-pill rep-mapa-pill--azul">RIEGO: {{ loteActivo.riego }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="filtro-grupo">
-          <label>LOTE</label>
-          <input [(ngModel)]="filtroLote" placeholder="Buscar lote..." />
-        </div>
-
-        <div class="filtros-botones">
-          <button class="btn-limpiar"  (click)="limpiarFiltros()">Limpiar</button>
-          <button class="btn-aplicar"  (click)="aplicarFiltros()">Aplicar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==============================
-         FILA 1: Cumplimiento + Gráfico
-    ================================= -->
-    <div class="fila-dos-columnas">
-
-      <!-- CUMPLIMIENTO DE METAS -->
-      <div class="tarjeta">
-        <p class="label-superior">CUMPLIMIENTO DE METAS</p>
-        <h2 class="valor-grande">{{ cumplimientoMeta }}%</h2>
-        <p class="variacion positiva">↑ {{ variacionMes }} vs mes anterior</p>
-
-        <div class="mini-barras">
-          <div
-            class="mini-barra"
-            *ngFor="let s of datosSemanas"
-            [style.height.px]="getBarraAltura(s.real, 100) * 0.6"
-            [class.destacada]="s.real === 95"
-          ></div>
-        </div>
       </div>
 
-      <!-- PRODUCCIÓN POR SEMANA -->
-      <div class="tarjeta">
-        <div class="tarjeta-header">
+      <!-- TABLA: DATOS HISTÓRICOS -->
+      <div class="rep-card rep-card--tabla">
+        <div class="rep-tabla-header">
           <div>
-            <h3>Producción por Semana</h3>
-            <p class="subtitulo">Toneladas recolectadas vs Proyección</p>
+            <div class="rep-card-title">Datos Históricos</div>
+            <div class="rep-card-sub">Registro detallado de actividades diarias</div>
           </div>
-          <div class="leyenda">
-            <span class="leyenda-item rojo">● Real</span>
-            <span class="leyenda-item gris">● Meta</span>
+          <div class="rep-tabla-acciones">
+            <button class="rep-btn-export" (click)="exportarCSV()">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:13px;height:13px;fill:currentColor;">
+                <path d="M288 32C288 14.3 302.3 0 320 0C337.7 0 352 14.3 352 32L352 293.5L425.4 220.1C437.9 207.6 458.2 207.6 470.7 220.1C483.2 232.6 483.2 252.9 470.7 265.4L342.7 393.4C336.4 399.7 328.2 403.1 320 403.1C311.8 403.1 303.6 399.8 297.3 393.4L169.3 265.4C156.8 252.9 156.8 232.6 169.3 220.1C181.8 207.6 202.1 207.6 214.6 220.1L288 293.5L288 32zM32 416L608 416C625.7 416 640 430.3 640 448L640 576C640 593.7 625.7 608 608 608L32 608C14.3 608 0 593.7 0 576L0 448C0 430.3 14.3 416 32 416z"/>
+              </svg>
+              Exportar CSV
+            </button>
+            <button class="rep-btn-share" (click)="compartirReporte()">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:13px;height:13px;fill:currentColor;">
+                <path d="M480 352C444.7 352 413 367.5 391.3 392.3L222.4 304.1C223.4 298.8 224 293.5 224 288C224 282.5 223.4 277.2 222.4 271.9L391.3 183.7C413 208.5 444.7 224 480 224C551.7 224 608 167.7 608 96C608 24.3 551.7 -32 480 -32C408.3 -32 352 24.3 352 96C352 101.5 352.6 106.8 353.6 112.1L184.7 200.3C163 175.5 131.3 160 96 160C24.3 160 -32 216.3 -32 288C-32 359.7 24.3 416 96 416C131.3 416 163 400.5 184.7 375.7L353.6 463.9C352.6 469.2 352 474.5 352 480C352 551.7 408.3 608 480 608C551.7 608 608 551.7 608 480C608 408.3 551.7 352 480 352z"/>
+              </svg>
+              Compartir
+            </button>
           </div>
         </div>
 
-        <div class="grafico-barras">
-          <div class="grupo-barra" *ngFor="let s of datosSemanas">
-            <div class="barras-par">
-              <div
-                class="barra real"
-                [style.height.px]="getBarraAltura(s.real, 100) * 1.2"
-                [class.barra-destacada]="s.real > s.meta"
-              ></div>
-              <div
-                class="barra meta"
-                [style.height.px]="getBarraAltura(s.meta, 100) * 1.2"
-              ></div>
-            </div>
-            <span class="semana-label">{{ s.semana }}</span>
+        <!-- Tabla -->
+        <div class="rep-tabla-wrapper">
+          <table class="rep-tabla">
+            <thead>
+              <tr>
+                <th (click)="ordenarPor('id')" class="rep-th-sortable">
+                  ID REPORTE
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="rep-sort-icon" [class.rep-sort-icon--active]="ordenCampo === 'id'">
+                    <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64z"/>
+                  </svg>
+                </th>
+                <th (click)="ordenarPor('fecha')" class="rep-th-sortable">
+                  FECHA
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="rep-sort-icon" [class.rep-sort-icon--active]="ordenCampo === 'fecha'">
+                    <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64z"/>
+                  </svg>
+                </th>
+                <th>CUADRILLA</th>
+                <th>LOTE</th>
+                <th (click)="ordenarPor('produccion')" class="rep-th-sortable">
+                  PRODUCCIÓN (KG)
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="rep-sort-icon" [class.rep-sort-icon--active]="ordenCampo === 'produccion'">
+                    <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64z"/>
+                  </svg>
+                </th>
+                <th>CALIDAD</th>
+                <th>ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of paginaActual()" class="rep-tr">
+                <td class="rep-id">{{ row.id }}</td>
+                <td>{{ row.fecha }}</td>
+                <td><strong>{{ row.cuadrilla }}</strong></td>
+                <td>{{ row.lote }}</td>
+                <td><strong>{{ row.produccion | number:'1.1-1' }}</strong></td>
+                <td>
+                  <span class="rep-calidad-badge"
+                    [class.rep-calidad--excelente]="row.calidad === 'EXCELENTE'"
+                    [class.rep-calidad--estandar]="row.calidad === 'ESTÁNDAR'"
+                    [class.rep-calidad--revision]="row.calidad === 'REVISIÓN'">
+                    {{ row.calidad }}
+                  </span>
+                </td>
+                <td>
+                  <button class="rep-btn-detalle" (click)="verDetalle(row)">Detalles</button>
+                </td>
+              </tr>
+              <tr *ngIf="paginaActual().length === 0">
+                <td colspan="7" class="rep-empty">No hay registros para los filtros aplicados.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <div class="rep-pagination">
+          <span class="rep-pagination-info">
+            Mostrando {{ (paginaNum - 1) * itemsPorPagina + 1 }}–{{ min(paginaNum * itemsPorPagina, reportesFiltrados.length) }} de {{ reportesFiltrados.length | number }} registros
+          </span>
+          <div class="rep-pagination-controls">
+            <button class="rep-page-btn" [disabled]="paginaNum === 1" (click)="irPagina(paginaNum - 1)">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:10px;height:10px;">
+                <path d="M393.4 150.6C405.9 163.1 405.9 183.4 393.4 195.9L245.3 344L393.4 492.1C405.9 504.6 405.9 524.9 393.4 537.4C380.9 549.9 360.6 549.9 348.1 537.4L176.6 365.9C164.1 353.4 164.1 333.1 176.6 320.6L348.1 149.1C360.6 136.6 380.9 136.6 393.4 149.1z"/>
+              </svg>
+            </button>
+            <button *ngFor="let p of paginas()"
+                    class="rep-page-btn"
+                    [class.rep-page-btn--active]="p === paginaNum"
+                    (click)="irPagina(p)">
+              {{ p }}
+            </button>
+            <button class="rep-page-btn" [disabled]="paginaNum === totalPaginas()" (click)="irPagina(paginaNum + 1)">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:10px;height:10px;">
+                <path d="M246.6 150.6C234.1 163.1 234.1 183.4 246.6 195.9L394.7 344L246.6 492.1C234.1 504.6 234.1 524.9 246.6 537.4C259.1 549.9 279.4 549.9 291.9 537.4L463.4 365.9C475.9 353.4 475.9 333.1 463.4 320.6L291.9 149.1C279.4 136.6 259.1 136.6 246.6 149.1z"/>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
 
-    </div>
-
-    <!-- ==============================
-         FILA 2: Cuadrillas + Mapa
-    ================================= -->
-    <div class="fila-dos-columnas">
-
-      <!-- EFICIENCIA POR CUADRILLA -->
-      <div class="tarjeta">
-        <h3>Eficiencia por Cuadrilla</h3>
-
-        <div class="cuadrilla-item" *ngFor="let c of cuadrillas">
-          <div class="cuadrilla-nombre-pct">
-            <span>{{ c.nombre }}</span>
-            <strong [class.pct-alto]="c.eficiencia >= 90" [class.pct-medio]="c.eficiencia >= 75 && c.eficiencia < 90" [class.pct-bajo]="c.eficiencia < 75">
-              {{ c.eficiencia }}%
-            </strong>
-          </div>
-          <div class="barra-progreso">
-            <div
-              class="barra-fill"
-              [style.width.%]="c.eficiencia"
-              [class.fill-alto]="c.eficiencia >= 90"
-              [class.fill-medio]="c.eficiencia >= 75 && c.eficiencia < 90"
-              [class.fill-bajo]="c.eficiencia < 75"
-            ></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ESTADO DEL LOTE (MAPA) -->
-      <div class="tarjeta tarjeta-mapa">
-        <div class="mapa-fondo">
-          <div class="mapa-card">
-            <p class="mapa-subtitulo">📍 Lote Activo: San José IV</p>
-            <h4>Estado del Lote</h4>
-            <p class="mapa-desc">Recolección activa: 14 personas en campo</p>
-            <div class="mapa-badges">
-              <span class="badge-optimo">ÓPTIMO</span>
-              <span class="badge-riego">RIEGO: 100%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ==============================
-         TABLA: DATOS HISTÓRICOS
-    ================================= -->
-    <div class="tarjeta">
-      <div class="tabla-header">
-        <div>
-          <h3>Datos Históricos</h3>
-          <p class="subtitulo">Registro detallado de actividades diarias</p>
-        </div>
-        <div class="tabla-acciones">
-          <button class="btn-exportar" (click)="exportarCSV()">
-            📥 Exportar CSV
-          </button>
-          <button class="btn-compartir" (click)="abrirModalCompartir()">
-            🔗 Compartir
-          </button>
-        </div>
-      </div>
-
-      <!-- Tabla -->
-      <table class="tabla-datos">
-        <thead>
-          <tr>
-            <th>FECHA</th>
-            <th>CUADRILLA</th>
-            <th>LOTE</th>
-            <th>PRODUCCIÓN (KG)</th>
-            <th>CALIDAD</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let r of registrosPaginados">
-            <td>{{ r.fecha }}</td>
-            <td class="cuadrilla-link">{{ r.cuadrilla }}</td>
-            <td class="lote-link">{{ r.lote }}</td>
-            <td><strong>{{ r.produccion | number:'1.1-1' }}</strong></td>
-            <td>
-              <span [class]="'badge-calidad ' + getColorCalidad(r.calidad)">
-                {{ r.calidad }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- PAGINACIÓN -->
-      <div class="paginacion">
-        <span class="paginacion-info">
-          Mostrando {{ registrosPaginados.length }} de {{ registrosFiltrados.length }} registros
-        </span>
-        <div class="paginacion-controles">
-          <button
-            class="btn-pagina"
-            (click)="paginaAnterior()"
-            [disabled]="paginaActual === 1"
-          >‹</button>
-
-          <button
-            class="btn-pagina"
-            *ngFor="let p of paginas"
-            (click)="irAPagina(p)"
-            [class.pagina-activa]="p === paginaActual"
-          >{{ p }}</button>
-
-          <button
-            class="btn-pagina"
-            (click)="paginaSiguiente()"
-            [disabled]="paginaActual === totalPaginas"
-          >›</button>
-        </div>
-      </div>
-
-    </div>
-
-  </main>
-
-  <!-- ================================
-       MODAL: COMPARTIR
-  ================================= -->
-  <div class="overlay" *ngIf="mostrarModalCompartir" (click)="cerrarModalCompartir()"></div>
-  <div class="modal" *ngIf="mostrarModalCompartir">
-    <div class="modal-header">
-      <h3>🔗 Compartir Reporte</h3>
-      <button class="btn-cerrar-modal" (click)="cerrarModalCompartir()">✕</button>
-    </div>
-    <div class="modal-body">
-      <p class="modal-desc">Ingresa el correo del destinatario para enviar el reporte de <strong>{{ periodoSeleccionado }}</strong>.</p>
-      <label>CORREO ELECTRÓNICO</label>
-      <input
-        [(ngModel)]="emailCompartir"
-        type="email"
-        placeholder="destinatario@empresa.com"
-      />
-      <p class="mensaje-validacion" *ngIf="mensajeCompartir" [class.ok]="compartidoOk">
-        {{ mensajeCompartir }}
-      </p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancelar" (click)="cerrarModalCompartir()">Cancelar</button>
-      <button class="btn-guardar"  (click)="enviarReporte()">Enviar Reporte</button>
-    </div>
+    </main>
   </div>
 
-  <!-- ================================
-       TOAST DE NOTIFICACIONES
-  ================================= -->
-  <div
-    class="toast"
-    *ngIf="mostrarToast"
-    [class.toast-exito]="tipoToast === 'exito'"
-    [class.toast-error]="tipoToast === 'error'"
-    [class.toast-info]="tipoToast === 'info'"
-  >
-    {{ mensajeToast }}
+  <!-- MODAL DETALLE REPORTE -->
+  <div class="rep-modal-overlay" *ngIf="detalleVisible" (click)="cerrarDetalle()">
+    <div class="rep-modal" (click)="$event.stopPropagation()">
+      <div class="rep-modal-header">
+        <div>
+          <div class="rep-modal-id">{{ reporteSeleccionado?.id }}</div>
+          <h2 class="rep-modal-title">{{ reporteSeleccionado?.cuadrilla }}</h2>
+          <div class="rep-modal-sub">{{ reporteSeleccionado?.lote }} &bull; {{ reporteSeleccionado?.fecha }}</div>
+        </div>
+        <button class="rep-modal-close" (click)="cerrarDetalle()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:16px;height:16px;fill:#555;">
+            <path d="M150.6 150.6C163.1 138.1 183.4 138.1 195.9 150.6L320 274.7L444.1 150.6C456.6 138.1 476.9 138.1 489.4 150.6C501.9 163.1 501.9 183.4 489.4 195.9L365.3 320L489.4 444.1C501.9 456.6 501.9 476.9 489.4 489.4C476.9 501.9 456.6 501.9 444.1 489.4L320 365.3L195.9 489.4C183.4 501.9 163.1 501.9 150.6 489.4C138.1 476.9 138.1 456.6 150.6 444.1L274.7 320L150.6 195.9C138.1 183.4 138.1 163.1 150.6 150.6z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="rep-modal-body">
+        <div class="rep-modal-kpis">
+          <div class="rep-modal-kpi">
+            <span class="rep-modal-kpi-val">{{ reporteSeleccionado?.produccion | number:'1.1-1' }}</span>
+            <span class="rep-modal-kpi-lbl">kg producidos</span>
+          </div>
+          <div class="rep-modal-kpi">
+            <span class="rep-modal-kpi-val">{{ reporteSeleccionado?.personal }}</span>
+            <span class="rep-modal-kpi-lbl">personas en campo</span>
+          </div>
+          <div class="rep-modal-kpi">
+            <span class="rep-modal-kpi-val">{{ reporteSeleccionado?.eficiencia }}%</span>
+            <span class="rep-modal-kpi-lbl">eficiencia</span>
+          </div>
+        </div>
+        <div class="rep-modal-info-grid">
+          <div class="rep-modal-info-row">
+            <span class="rep-modal-info-label">Supervisor</span>
+            <span class="rep-modal-info-val">{{ reporteSeleccionado?.supervisor }}</span>
+          </div>
+          <div class="rep-modal-info-row">
+            <span class="rep-modal-info-label">Labor</span>
+            <span class="rep-modal-info-val">{{ reporteSeleccionado?.labor }}</span>
+          </div>
+          <div class="rep-modal-info-row">
+            <span class="rep-modal-info-label">Calidad</span>
+            <span class="rep-modal-info-val">
+              <span class="rep-calidad-badge"
+                [class.rep-calidad--excelente]="reporteSeleccionado?.calidad === 'EXCELENTE'"
+                [class.rep-calidad--estandar]="reporteSeleccionado?.calidad === 'ESTÁNDAR'"
+                [class.rep-calidad--revision]="reporteSeleccionado?.calidad === 'REVISIÓN'">
+                {{ reporteSeleccionado?.calidad }}
+              </span>
+            </span>
+          </div>
+          <div class="rep-modal-info-row">
+            <span class="rep-modal-info-label">Costo Improductividad</span>
+            <span class="rep-modal-info-val rep-modal-info-val--red">S/. {{ reporteSeleccionado?.costoImprod | number:'1.2-2' }}</span>
+          </div>
+          <div class="rep-modal-info-row">
+            <span class="rep-modal-info-label">Horas trabajadas</span>
+            <span class="rep-modal-info-val">{{ reporteSeleccionado?.horas }} hrs</span>
+          </div>
+          <div class="rep-modal-info-row">
+            <span class="rep-modal-info-label">Meta del día</span>
+            <span class="rep-modal-info-val">{{ reporteSeleccionado?.meta | number:'1.0-0' }} kg</span>
+          </div>
+        </div>
+      </div>
+      <div class="rep-modal-footer">
+        <button class="rep-btn-export rep-btn-export--full" (click)="exportarPDF()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:14px;height:14px;fill:currentColor;">
+            <path d="M288 32C288 14.3 302.3 0 320 0C337.7 0 352 14.3 352 32L352 293.5L425.4 220.1C437.9 207.6 458.2 207.6 470.7 220.1C483.2 232.6 483.2 252.9 470.7 265.4L342.7 393.4C336.4 399.7 328.2 403.1 320 403.1C311.8 403.1 303.6 399.8 297.3 393.4L169.3 265.4C156.8 252.9 156.8 232.6 169.3 220.1C181.8 207.6 202.1 207.6 214.6 220.1L288 293.5L288 32zM32 416L608 416C625.7 416 640 430.3 640 448L640 576C640 593.7 625.7 608 608 608L32 608C14.3 608 0 593.7 0 576L0 448C0 430.3 14.3 416 32 416z"/>
+          </svg>
+          Exportar PDF
+        </button>
+        <button class="rep-btn-share" (click)="compartirReporte()">Compartir</button>
+      </div>
+    </div>
   </div>
 
 </div>
+
+  
+
+  
