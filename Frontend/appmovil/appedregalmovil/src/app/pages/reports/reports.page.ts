@@ -152,6 +152,12 @@ export class ReportsPage {
     rep.expanded = !rep.expanded;
   }
 
+  deleteReporte(rep: any, event: Event) {
+    event.stopPropagation();
+    this.reportesList = this.reportesList.filter((r: any) => r.id !== rep.id);
+    localStorage.setItem('reportes_resumen', JSON.stringify(this.reportesList));
+  }
+
   ionViewWillEnter() {
     const list = localStorage.getItem('reportes_resumen');
     if (list) {
@@ -159,7 +165,12 @@ export class ReportsPage {
     }
   }
 
+  isSubmitting = false;
+
   async finalizarRegistro() {
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
+
     // 1. Guardar reporte completo para Staff (Individual)
     const fullReportStr = localStorage.getItem('trabajadores_reporte_completo');
     let fullReportForStaff: any[] = fullReportStr ? JSON.parse(fullReportStr) : [];
@@ -214,11 +225,10 @@ export class ReportsPage {
     // 2. Poblar tab de reportes con un Resumen General (Agrupado por Lote)
     if (!this.reportesList) this.reportesList = [];
     
-    // Evitar duplicado de lote en el resumen para no confundir, o permitir múltiples?
-    // Permitimos múltiples pero con ID único basado en tiempo o tipo.
-    const uniqueId = 'LOTE: ' + this.lote + (this.wizardType === 'inversion' ? ' (INV)' : ' (PROD)');
-    this.reportesList = this.reportesList.filter(r => r.id !== uniqueId);
-
+    // Generar ID único usando timestamp para evitar sobreescribir reportes del mismo lote
+    const uniqueId = 'LOTE: ' + (this.lote || 'General') + (this.wizardType === 'inversion' ? ' (INV)' : ' (PROD)') + ' - ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    // Ya no filtramos por ID, permitimos múltiples reportes
     if (this.wizardType === 'inversion') {
       const totalHoras = this.trabajadores.reduce((acc, curr) => acc + curr.horas, 0);
       this.reportesList.push({
@@ -267,17 +277,12 @@ export class ReportsPage {
     const currentQueueStr = localStorage.getItem('sync_queue');
     let currentQueue = currentQueueStr ? JSON.parse(currentQueueStr) : [];
     
-    // Evitar agregar el mismo reporte a la cola múltiples veces en una sesión demo rápida
     const syncTitle = 'Reporte Diario - ' + (this.wizardType === 'inversion' ? 'Inversión' : 'Producción');
-    const existingIndex = currentQueue.findIndex((q: any) => q.title === syncTitle && q.details.includes(this.lote));
-    if (existingIndex > -1) {
-       currentQueue.splice(existingIndex, 1);
-    }
 
     currentQueue.push({
       type: 'report',
       title: syncTitle,
-      details: 'Lote: ' + this.lote + ' • ' + dnis.length + ' trabajadores',
+      details: 'Lote: ' + (this.lote || 'General') + ' • ' + dnis.length + ' trabajadores',
       date: new Date().toISOString()
     });
     localStorage.setItem('sync_queue', JSON.stringify(currentQueue));
@@ -292,6 +297,9 @@ export class ReportsPage {
     await toast.present();
     this.currentStep = 1; // Devolver a la vista principal
     this.activeTab = 'reportes'; // Ir a la pestaña de reportes
+    setTimeout(() => {
+      this.isSubmitting = false;
+    }, 1000);
   }
 
   irA(tab: string) {

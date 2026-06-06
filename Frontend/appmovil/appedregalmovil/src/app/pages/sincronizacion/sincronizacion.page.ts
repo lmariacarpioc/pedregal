@@ -93,6 +93,7 @@ export class SincronizacionPage {
     
     setTimeout(async () => {
       localStorage.removeItem('sync_queue');
+      localStorage.removeItem('reportes_resumen');
       this.lastSyncDate = new Date();
       localStorage.setItem('last_sync_date', this.lastSyncDate.toISOString());
       this.pendingRecords = [];

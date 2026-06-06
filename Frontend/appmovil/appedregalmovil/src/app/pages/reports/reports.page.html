@@ -317,13 +317,18 @@
                     <span class="rc-id"><i class="far fa-id-card"></i> {{ rep.id }}</span>
                   </div>
                 </div>
-                <div class="rc-status-badge" 
-                     [class.badge-high]="rep.yield === 'High'" 
-                     [class.badge-avg]="rep.yield === 'Average'" 
-                     [class.badge-low]="rep.yield === 'Low'">
-                  @if (rep.yield === 'High') { <i class="fas fa-arrow-up"></i> Alto }
-                  @if (rep.yield === 'Average') { <i class="fas fa-minus"></i> Promedio }
-                  @if (rep.yield === 'Low') { <i class="fas fa-arrow-down"></i> Bajo }
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div class="rc-status-badge" 
+                       [class.badge-high]="rep.yield === 'High'" 
+                       [class.badge-avg]="rep.yield === 'Average'" 
+                       [class.badge-low]="rep.yield === 'Low'">
+                    @if (rep.yield === 'High') { <i class="fas fa-arrow-up"></i> Alto }
+                    @if (rep.yield === 'Average') { <i class="fas fa-minus"></i> Promedio }
+                    @if (rep.yield === 'Low') { <i class="fas fa-arrow-down"></i> Bajo }
+                  </div>
+                  <button (click)="deleteReporte(rep, $event)" style="background: none; border: none; color: #ef4444; font-size: 16px; padding: 4px;">
+                    <i class="far fa-trash-can"></i>
+                  </button>
                 </div>
               </div>
               
