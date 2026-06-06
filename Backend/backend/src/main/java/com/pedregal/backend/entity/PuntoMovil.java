@@ -26,7 +26,7 @@ public class PuntoMovil {
 
     private String descripcion;
 
-    private String tipo; // CHECKPOINT, FRENTE_TRABAJO, ALMACEN, CAMPAMENTO
+    private String tipo;
 
     private Double latitud;
 

@@ -1668,3 +1668,44 @@
   background: white;
 }
 
+/* TOAST NOTIFICACIÓN */
+.custom-toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  animation: slideInUp 0.3s ease-out;
+}
+.custom-toast {
+  display: flex;
+  align-items: center;
+  background-color: #38a169;
+  color: white;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  min-width: 300px;
+}
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  fill: white;
+  margin-right: 12px;
+}
+.toast-content {
+  display: flex;
+  flex-direction: column;
+}
+.toast-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.toast-message {
+  font-size: 13px;
+  opacity: 0.9;
+}
+@keyframes slideInUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

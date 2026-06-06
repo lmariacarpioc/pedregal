@@ -23,19 +23,19 @@ public class ParteDiario {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario; // Supervisor/Asistente que registra
+    private Usuario usuario;
 
     @Column(nullable = false)
     private LocalDate fecha;
 
-    private String turno; // AM, PM, NOCHE
+    private String turno;
 
-    private String clima; // SOLEADO, NUBLADO, LLUVIOSO
+    private String clima;
 
     @Column(name = "observaciones_generales", columnDefinition = "TEXT")
     private String observacionesGenerales;
 
-    private String estado; // BORRADOR, ENVIADO, APROBADO
+    private String estado;
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

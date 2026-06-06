@@ -74,6 +74,11 @@
       </div>
 
       <!-- Botón Ingresar -->
+      @if (errorMessage()) {
+        <div class="error-message">
+          {{ errorMessage() }}
+        </div>
+      }
       <ion-button
         expand="block"
         type="submit"

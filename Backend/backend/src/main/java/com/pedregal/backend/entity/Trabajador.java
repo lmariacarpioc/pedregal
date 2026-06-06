@@ -35,7 +35,7 @@ public class Trabajador {
     @Column(name = "telefono")
     private String telefono;
 
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
+    private String categoria;
 
     @Column(name = "salario_diario")
     private Double salarioDiario;

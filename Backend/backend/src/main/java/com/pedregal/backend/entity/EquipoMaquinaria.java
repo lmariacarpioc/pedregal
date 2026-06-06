@@ -24,11 +24,11 @@ public class EquipoMaquinaria {
     @Column(nullable = false)
     private String nombre;
 
-    private String tipo; // EXCAVADORA, VOLQUETE, CARGADOR, COMPACTADORA, OTROS
+    private String tipo;
 
     private String placa;
 
-    private String estado; // OPERATIVO, EN_MANTENIMIENTO, INACTIVO
+    private String estado;
 
     @Column(name = "operador_asignado")
     private String operadorAsignado;

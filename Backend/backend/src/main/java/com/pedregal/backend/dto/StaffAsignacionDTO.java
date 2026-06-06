@@ -14,7 +14,7 @@ public class StaffAsignacionDTO {
     private String trabajadorSyncId;
     private String puntoMovilSyncId;
     private String parteDiarioSyncId;
-    private String fechaAsignacion; // yyyy-MM-dd
+    private String fechaAsignacion;
     private String turno;
     private String funcionAsignada;
 }

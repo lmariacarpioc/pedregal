@@ -17,7 +17,7 @@ public class TrabajadorDTO {
     private String cargo;
     private String areaTrabajo;
     private String telefono;
-    private String categoria; // OBRERO, EMPLEADO, CONTRATISTA
+    private String categoria;
     private Double salarioDiario;
     private boolean activo;
 }

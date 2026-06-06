@@ -19,10 +19,12 @@ import {
   star,
 } from 'ionicons/icons';
 
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonContent, IonButton, IonIcon, FormsModule],
+  imports: [CommonModule, IonHeader, IonToolbar, IonContent, IonButton, IonIcon, FormsModule],
   templateUrl: './reports.page.html',
   styleUrls: ['./reports.page.css'],
 })
@@ -49,9 +51,9 @@ export class ReportsPage {
   // ── Personal fields (Inversión) ───────────────────────────────
   nuevoDni = '';
   trabajadores = [
-    { dni: '45829301', nombre: 'Mendoza Torres, Juan Carlos', horas: 8, rend: 'ALTO', tipo: 'Normal' },
-    { dni: '70192834', nombre: 'Quispe Huamán, Elena Luz', horas: 8, rend: 'MED', tipo: 'Normal' },
-    { dni: '41029384', nombre: 'Salazar Rojas, Roberto', horas: 6, rend: 'BAJO', tipo: 'Extra' }
+    { dni: '45829301', nombre: 'Mendoza Torres, Juan Carlos', horas: 8, rend: 'ALTO', tipo: 'Normal', motivo: 'Normal' },
+    { dni: '70192834', nombre: 'Quispe Huamán, Elena Luz', horas: 8, rend: 'MED', tipo: 'Normal', motivo: 'Normal' },
+    { dni: '41029384', nombre: 'Salazar Rojas, Roberto', horas: 6, rend: 'BAJO', tipo: 'Extra', motivo: 'Falta de Material' }
   ];
 
   // ── Producción Wizard fields ───────────────────────────────
@@ -63,11 +65,12 @@ export class ReportsPage {
   ];
 
   // ── Reportes fields ───────────────────────────────
-  reportesList = [
-    { id: 'PR-4492', nombre: 'Ricardo Mendoza', rdtoCurrent: 42.5, manualInput: 0.0, yield: 'High', avatarType: 'img', avatar: 'https://i.pravatar.cc/150?u=1' },
-    { id: 'PR-8821', nombre: 'Elena Vasquez', rdtoCurrent: 38.2, manualInput: 38.2, yield: 'Average', avatarType: 'img', avatar: 'https://i.pravatar.cc/150?u=2' },
-    { id: 'PR-1102', nombre: 'Jorge Pineda', rdtoCurrent: 33.9, manualInput: 0.0, yield: 'Low', avatarType: 'text', avatar: 'JP' }
-  ];
+  reportesList: any[] = [];
+
+  // ── Modal fields ───────────────────────────────
+  mostrarModalTrabajador = false;
+  nuevoDniModal = '';
+  nuevoNombreModal = '';
 
   constructor(private router: Router, private toastCtrl: ToastController) {
     addIcons({ arrowForwardOutline, syncOutline, peopleOutline, statsChartOutline, starOutline, star });
@@ -110,7 +113,175 @@ export class ReportsPage {
     return this.trabajadoresProd.reduce((acc, curr) => acc + curr.cajas, 0);
   }
 
+  abrirModalTrabajador() {
+    this.mostrarModalTrabajador = true;
+  }
+
+  cerrarModalTrabajador() {
+    this.mostrarModalTrabajador = false;
+    this.nuevoDniModal = '';
+    this.nuevoNombreModal = '';
+  }
+
+  guardarNuevoTrabajador() {
+    if (!this.nuevoDniModal || !this.nuevoNombreModal) return;
+    
+    const dniStr = this.nuevoDniModal.toString();
+
+    if (this.wizardType === 'inversion') {
+      this.trabajadores.push({
+        dni: dniStr,
+        nombre: this.nuevoNombreModal.toUpperCase(),
+        horas: 8,
+        rend: 'MED',
+        tipo: 'Normal',
+        motivo: 'Normal'
+      });
+    } else {
+      this.trabajadoresProd.push({
+        dni: dniStr,
+        nombre: this.nuevoNombreModal.toUpperCase(),
+        cajas: 0,
+        horas: 8.0
+      });
+    }
+    this.cerrarModalTrabajador();
+  }
+
+  toggleExpand(rep: any) {
+    rep.expanded = !rep.expanded;
+  }
+
+  ionViewWillEnter() {
+    const list = localStorage.getItem('reportes_resumen');
+    if (list) {
+      this.reportesList = JSON.parse(list);
+    }
+  }
+
   async finalizarRegistro() {
+    // 1. Guardar reporte completo para Staff (Individual)
+    const fullReportStr = localStorage.getItem('trabajadores_reporte_completo');
+    let fullReportForStaff: any[] = fullReportStr ? JSON.parse(fullReportStr) : [];
+    
+    // Remover duplicados (si el trabajador ya estaba, lo actualizamos)
+    const dnis = this.wizardType === 'inversion' 
+                 ? this.trabajadores.map(t => t.dni) 
+                 : this.trabajadoresProd.map(t => t.dni);
+                 
+    fullReportForStaff = fullReportForStaff.filter(r => !dnis.includes(r.dni));
+
+    if (this.wizardType === 'inversion') {
+      this.trabajadores.forEach(t => {
+        fullReportForStaff.push({
+          id: 'IN-' + t.dni.toString().substring(0, 4),
+          dni: t.dni,
+          nombre: t.nombre,
+          rdtoCurrent: t.horas,
+          manualInput: 0,
+          yield: t.rend === 'ALTO' ? 'High' : t.rend === 'BAJO' ? 'Low' : 'Average',
+          avatarType: 'text',
+          avatar: t.nombre.substring(0, 2).toUpperCase(),
+          actividad: this.etapa,
+          lote: this.lote,
+          horas: t.horas,
+          cajas: 0,
+          expanded: false
+        });
+      });
+    } else {
+      this.trabajadoresProd.forEach(t => {
+        const yieldVal = t.cajas >= 15 ? 'High' : t.cajas < 8 ? 'Low' : 'Average';
+        fullReportForStaff.push({
+          id: 'PR-' + t.dni.toString().substring(0, 4),
+          dni: t.dni,
+          nombre: t.nombre,
+          rdtoCurrent: t.cajas,
+          manualInput: t.cajas,
+          yield: yieldVal,
+          avatarType: 'text',
+          avatar: t.nombre.substring(0, 2).toUpperCase(),
+          actividad: 'Cosecha ' + this.calidadFruta,
+          lote: this.lote,
+          horas: t.horas,
+          cajas: t.cajas,
+          expanded: false
+        });
+      });
+    }
+    localStorage.setItem('trabajadores_reporte_completo', JSON.stringify(fullReportForStaff));
+
+    // 2. Poblar tab de reportes con un Resumen General (Agrupado por Lote)
+    if (!this.reportesList) this.reportesList = [];
+    
+    // Evitar duplicado de lote en el resumen para no confundir, o permitir múltiples?
+    // Permitimos múltiples pero con ID único basado en tiempo o tipo.
+    const uniqueId = 'LOTE: ' + this.lote + (this.wizardType === 'inversion' ? ' (INV)' : ' (PROD)');
+    this.reportesList = this.reportesList.filter(r => r.id !== uniqueId);
+
+    if (this.wizardType === 'inversion') {
+      const totalHoras = this.trabajadores.reduce((acc, curr) => acc + curr.horas, 0);
+      this.reportesList.push({
+        id: uniqueId,
+        dni: '',
+        nombre: 'Resumen Inversión',
+        rdtoCurrent: totalHoras, // No se usa en la UI actualizada, pero por si acaso
+        manualInput: 0,
+        yield: 'Average',
+        avatarType: 'text',
+        avatar: 'IN',
+        actividad: this.etapa,
+        lote: this.lote,
+        horas: totalHoras,
+        cajas: 0,
+        expanded: false
+      });
+    } else {
+      const totalCajas = this.getTotalCajas();
+      const totalHoras = this.trabajadoresProd.reduce((acc, curr) => acc + curr.horas, 0);
+      this.reportesList.push({
+        id: uniqueId,
+        dni: '',
+        nombre: 'Resumen Producción',
+        rdtoCurrent: totalCajas,
+        manualInput: totalCajas,
+        yield: 'High',
+        avatarType: 'text',
+        avatar: 'PR',
+        actividad: 'Cosecha ' + this.calidadFruta,
+        lote: this.lote,
+        horas: totalHoras,
+        cajas: totalCajas,
+        expanded: false
+      });
+    }
+    localStorage.setItem('reportes_resumen', JSON.stringify(this.reportesList));
+
+    // 3. Guardar trabajadores presentes en localStorage para que la vista Staff los lea
+    const presentesStr = localStorage.getItem('trabajadores_presentes');
+    let presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
+    dnis.forEach(d => { if (!presentes.includes(d)) presentes.push(d); });
+    localStorage.setItem('trabajadores_presentes', JSON.stringify(presentes));
+
+    // 4. Agregar a la cola de sincronización
+    const currentQueueStr = localStorage.getItem('sync_queue');
+    let currentQueue = currentQueueStr ? JSON.parse(currentQueueStr) : [];
+    
+    // Evitar agregar el mismo reporte a la cola múltiples veces en una sesión demo rápida
+    const syncTitle = 'Reporte Diario - ' + (this.wizardType === 'inversion' ? 'Inversión' : 'Producción');
+    const existingIndex = currentQueue.findIndex((q: any) => q.title === syncTitle && q.details.includes(this.lote));
+    if (existingIndex > -1) {
+       currentQueue.splice(existingIndex, 1);
+    }
+
+    currentQueue.push({
+      type: 'report',
+      title: syncTitle,
+      details: 'Lote: ' + this.lote + ' • ' + dnis.length + ' trabajadores',
+      date: new Date().toISOString()
+    });
+    localStorage.setItem('sync_queue', JSON.stringify(currentQueue));
+
     const toast = await this.toastCtrl.create({
       message: 'Registro guardado. Sincronización pendiente...',
       duration: 3000,

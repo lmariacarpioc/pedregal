@@ -25,8 +25,8 @@ public class DashboardService {
         return DashboardDTO.builder()
                 .totalTrabajadores(trabajadorRepository.findByActivoTrue().size())
                 .partesDiariosHoy(parteDiarioRepository.countByFecha(hoy))
-                .produccionSemanal(0) // Se calculará con query real cuando haya datos
-                .inversionMensual(0)  // Se calculará con query real cuando haya datos
+                .produccionSemanal(0)
+                .inversionMensual(0)
                 .build();
     }
 }

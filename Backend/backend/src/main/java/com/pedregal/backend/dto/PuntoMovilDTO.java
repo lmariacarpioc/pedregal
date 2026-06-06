@@ -14,7 +14,7 @@ public class PuntoMovilDTO {
     private String codigo;
     private String nombre;
     private String descripcion;
-    private String tipo; // CHECKPOINT, FRENTE_TRABAJO, ALMACEN, CAMPAMENTO
+    private String tipo;
     private Double latitud;
     private Double longitud;
     private Double altitud;

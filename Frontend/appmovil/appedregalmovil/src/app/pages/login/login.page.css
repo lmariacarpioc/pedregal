@@ -201,6 +201,15 @@ ion-input {
 
 .forgot-link:hover { opacity: 0.75; }
 
+.error-message {
+  color: #b3000b;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 12px;
+  font-weight: 600;
+  animation: fadeInDown 0.3s ease;
+}
+
 /* ---- Botón Ingresar ---- */
 .btn-submit {
   --background: linear-gradient(135deg, #c8000d 0%, #8f0009 100%);

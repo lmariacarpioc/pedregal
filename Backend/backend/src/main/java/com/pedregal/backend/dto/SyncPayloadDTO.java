@@ -15,6 +15,7 @@ public class SyncPayloadDTO {
     private String dispositivoId;
     private String timestamp;
     private List<TrabajadorDTO> trabajadores;
+    private List<UsuarioDTO> usuarios;
     private List<ParteDiarioDTO> partesDiarios;
     private List<PuntoMovilDTO> puntosMoviles;
     private List<StaffAsignacionDTO> staffAsignaciones;
