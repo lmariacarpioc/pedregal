@@ -22,14 +22,22 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
     }
 
+    public Usuario login(String username, String password) {
+        Usuario usuario = repository.findByUsername(username)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos"));
+
+        if (!usuario.getPasswordHash().equals(password)) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos");
+        }
+        return usuario;
+    }
+
     public Usuario save(Usuario entity) {
-        // Here we could add logic to ensure:
-        // Si rol es SUPERVISOR, debe tener un JEFE_CAMPO como jefe_id
-        // Si rol es ASISTENTE, debe tener un SUPERVISOR como jefe_id
+
         if (entity.getJefe() != null) {
             Usuario jefe = repository.findById(entity.getJefe().getId())
                     .orElseThrow(() -> new RuntimeException("Jefe no encontrado"));
-            
+
             if ("SUPERVISOR".equals(entity.getRol()) && !"JEFE_CAMPO".equals(jefe.getRol())) {
                 throw new IllegalArgumentException("El jefe de un Supervisor debe ser un Jefe de Campo");
             }

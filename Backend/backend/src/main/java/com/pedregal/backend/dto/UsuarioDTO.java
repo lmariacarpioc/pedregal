@@ -14,7 +14,7 @@ public class UsuarioDTO {
     private String username;
     private String passwordHash;
     private String nombreCompleto;
-    private String rol; // ADMIN, JEFE_CAMPO, SUPERVISOR, ASISTENTE
+    private String rol;
     private String email;
     private Long jefeId;
     private String jefeSyncId;

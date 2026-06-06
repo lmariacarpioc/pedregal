@@ -13,11 +13,11 @@ public class InversionDTO {
     private String syncId;
     private String usuarioSyncId;
     private String concepto;
-    private String categoria; // MATERIAL, EQUIPO, TRANSPORTE, ALIMENTACION, OTROS
+    private String categoria;
     private Double monto;
-    private String fechaGasto; // yyyy-MM-dd
+    private String fechaGasto;
     private String proveedor;
     private String numeroFactura;
     private String descripcion;
-    private String estado; // PENDIENTE, APROBADO, RECHAZADO
+    private String estado;
 }

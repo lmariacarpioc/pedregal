@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-
-
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 export interface ITrabajador {
   dni: string;
@@ -103,20 +104,68 @@ const JEFES_INICIALES: IJefeCampo[] = [
     ]
   }
 ];
- 
 
 @Injectable({
   providedIn: 'root'
 })
 export class Trabajador {
 
-   private jefesDeCampo: IJefeCampo[] = [];
+  private jefesDeCampo: IJefeCampo[] = [];
   private partesDiarios: IParteDiario[] = [];
  
-  constructor() {
+  constructor(private http: HttpClient) {
     this._cargarDesdeStorage();
+    // Iniciar sincronización en background
+    this.sincronizarConBackend();
   }
  
+  // ─── SYNC ────────────────────────────────────────────────────
+  
+  async sincronizarConBackend() {
+    try {
+      const data: any = await firstValueFrom(this.http.get(`${environment.apiUrl}/sync/download`));
+      this.procesarPayloadSync(data);
+    } catch (error) {
+      console.error('No se pudo sincronizar con el backend, usando datos locales:', error);
+    }
+  }
+
+  private procesarPayloadSync(payload: any) {
+    // Reconstruir Jefes de Campo
+    const supervisores = (payload.usuarios || []).filter((u: any) => u.rol === 'JEFE_CAMPO' || u.rol === 'SUPERVISOR');
+    
+    this.jefesDeCampo = supervisores.map((sup: any) => {
+      // Filtrar trabajadores que están asignados a la zona de este supervisor
+      const trabs = (payload.trabajadores || []).map((t: any) => ({
+        dni: t.dni,
+        nombre: `${t.nombre} ${t.apellido}`,
+        labor: t.cargo || 'Cosecha',
+        lote: t.areaTrabajo || 'General',
+        horasLaboradas: 8,
+        costoTraducido: 0,
+        cajas: 0,
+        metaBase: 10,
+        rendimiento: 0,
+        estado: t.activo ? 'Óptimo' : 'Crítico',
+        epps: 'Sí',
+        restricciones: 'Ninguna'
+      }));
+
+      return {
+        id: sup.syncId || `SUP-${sup.id}`,
+        nombre: sup.nombreCompleto,
+        rol: sup.rol,
+        zona: 'Asignación General',
+        totalACargo: trabs.length,
+        avatar: sup.nombreCompleto ? sup.nombreCompleto.substring(0, 2).toUpperCase() : 'US',
+        trabajadores: trabs
+      };
+    });
+
+    // Guardar cambios locales
+    this._guardarJefes();
+  }
+
   // ─── STORAGE ─────────────────────────────────────────────────
  
   private _cargarDesdeStorage(): void {
@@ -256,6 +305,36 @@ export class Trabajador {
       this.actualizarCajasDesdePartePersonal(parte.personal);
     }
     this._guardarPartes();
+    this.subirParteAlBackend(parte);
+  }
+
+  private subirParteAlBackend(parte: IParteDiario) {
+    const payload = {
+      dispositivoId: 'web',
+      timestamp: new Date().toISOString(),
+      partesDiarios: [
+        {
+          syncId: parte.id,
+          fecha: parte.fecha,
+          turno: 'Mañana', // default for now
+          clima: 'Despejado', // default
+          estado: parte.estado,
+          usuarioSyncId: parte.jefeId,
+          detalles: parte.personal.map(p => ({
+            syncId: `det-${parte.id}-${p.dni}`,
+            trabajadorSyncId: p.dni, // Assuming DNI is used as syncId for now
+            estadoAsistencia: p.asistencia,
+            horaEntrada: '06:00',
+            horaSalida: '14:00'
+          }))
+        }
+      ]
+    };
+
+    this.http.post(`${environment.apiUrl}/sync/upload`, payload).subscribe({
+      next: (res) => console.log('Parte sincronizado con backend', res),
+      error: (err) => console.error('Error al subir parte al backend', err)
+    });
   }
  
   getPartesDiarios(): IParteDiario[] { return this.partesDiarios; }

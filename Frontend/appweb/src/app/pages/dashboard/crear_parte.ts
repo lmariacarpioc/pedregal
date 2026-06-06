@@ -24,6 +24,8 @@ export class Crear_Parte implements OnInit {
     rol: ''
   };
  
+  mensajeExito = ''; // Notification message
+
   // Pasos 1-4
   busquedaPersonal = '';
   verTodos = false;
@@ -294,9 +296,16 @@ export class Crear_Parte implements OnInit {
     if (this.pasoActual < 4) this.pasoActual++;
   }
  
+  mostrarNotificacion(mensaje: string): void {
+    this.mensajeExito = mensaje;
+    setTimeout(() => {
+      this.mensajeExito = '';
+    }, 3000);
+  }
+
   guardarBorrador(): void {
     this._persistirParte('borrador');
-    alert('Borrador guardado exitosamente.');
+    this.mostrarNotificacion('Borrador guardado exitosamente.');
   }
  
   finalizarParte(): void {
@@ -305,8 +314,10 @@ export class Crear_Parte implements OnInit {
       return;
     }
     this._persistirParte('finalizado');
-    alert('¡Parte diario finalizado y enviado! Los datos se reflejarán en el Dashboard.');
-    this.cerrar();
+    this.mostrarNotificacion('¡Parte diario finalizado y enviado! Los datos se reflejarán en el Dashboard.');
+    setTimeout(() => {
+      this.cerrar();
+    }, 1500);
   }
  
   private _persistirParte(estado: 'borrador' | 'finalizado'): void {

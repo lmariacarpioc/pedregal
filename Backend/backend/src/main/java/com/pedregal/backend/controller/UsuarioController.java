@@ -25,6 +25,11 @@ public class UsuarioController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Usuario> login(@RequestBody com.pedregal.backend.dto.LoginRequestDTO request) {
+        return ResponseEntity.ok(service.login(request.getUsername(), request.getPassword()));
+    }
+
     @PostMapping
     public ResponseEntity<Usuario> create(@RequestBody Usuario entity) {
         return ResponseEntity.ok(service.save(entity));

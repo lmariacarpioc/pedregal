@@ -28,14 +28,14 @@ public class Usuario {
     private String nombreCompleto;
 
     @Column(nullable = false)
-    private String rol; // ADMIN, JEFE_CAMPO, SUPERVISOR, ASISTENTE
+    private String rol;
 
     @Column(unique = true)
     private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jefe_id")
-    private Usuario jefe; // Jefe de campo (para supervisor) o Supervisor (para asistente)
+    private Usuario jefe;
 
     private boolean activo = true;
 

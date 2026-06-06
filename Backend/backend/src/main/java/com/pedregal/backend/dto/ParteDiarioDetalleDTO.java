@@ -16,6 +16,6 @@ public class ParteDiarioDetalleDTO {
     private String horaEntrada;
     private String horaSalida;
     private String tareaRealizada;
-    private String estadoAsistencia; // PRESENTE, FALTA, PERMISO, DESCANSO
+    private String estadoAsistencia;
     private String observaciones;
 }

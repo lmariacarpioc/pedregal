@@ -22,6 +22,11 @@ public class SyncController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/download")
+    public ResponseEntity<SyncPayloadDTO> downloadSync(@RequestParam(required = false, defaultValue = "web") String dispositivoId) {
+        return ResponseEntity.ok(syncService.downloadSync(dispositivoId));
+    }
+
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getSyncStatus() {
         return ResponseEntity.ok(Map.of(

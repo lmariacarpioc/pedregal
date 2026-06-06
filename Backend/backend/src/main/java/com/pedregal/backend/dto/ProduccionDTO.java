@@ -14,7 +14,7 @@ public class ProduccionDTO {
     private String parteDiarioSyncId;
     private String puntoMovilSyncId;
     private String actividad;
-    private String unidadMedida; // METROS, TONELADAS, VIAJES, UNIDADES, HORAS
+    private String unidadMedida;
     private Double cantidadProgramada;
     private Double cantidadEjecutada;
     private Double rendimiento;

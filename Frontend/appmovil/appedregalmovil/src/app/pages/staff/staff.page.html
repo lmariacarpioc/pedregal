@@ -42,91 +42,166 @@
       <p class="page-subtitle">Supervisión de rendimiento en campo</p>
     </div>
 
-    <!-- KPI Chips -->
-    <div class="kpi-chips">
-      <div class="kpi-chip">
-        <div class="kpi-chip-icon green">
-          <i class="fas fa-arrow-trend-up"></i>
-        </div>
-        <div class="kpi-chip-text">
-          <span class="kpi-chip-label">Rendimiento Promedio</span>
-          <span class="kpi-chip-value green">{{ rendimientoPromedio }} kg/hr</span>
-        </div>
-      </div>
-      <div class="kpi-chip">
-        <div class="kpi-chip-icon orange">
-          <i class="fas fa-triangle-exclamation"></i>
-        </div>
-        <div class="kpi-chip-text">
-          <span class="kpi-chip-label">Atención Requerida</span>
-          <span class="kpi-chip-value orange">{{ atencionRequerida }} Colaboradores</span>
-        </div>
-      </div>
+    <!-- Pestañas -->
+    <div class="material-tabs">
+      <button class="mat-tab" [class.active]="activeTab === 'rendimiento'" (click)="setTab('rendimiento')">
+        Rendimiento
+      </button>
+      <button class="mat-tab" [class.active]="activeTab === 'asistencia'" (click)="setTab('asistencia')">
+        Asistencia
+      </button>
     </div>
 
-    <!-- ══ BAJO RENDIMIENTO ══ -->
-    <div class="section-header">
-      <div class="section-title-row">
-        <div class="section-bar bajo"></div>
-        <h2 class="section-title">Bajo Rendimiento</h2>
-      </div>
-      <span class="badge-accion">Acción Requerida</span>
-    </div>
-
-    @for (col of colaboradoresBajo; track col.id) {
-      <div class="colaborador-card bajo-card">
-        <div class="card-top-row">
-          <div class="avatar-wrap" [style.background]="col.avatarColor + '22'">
-            <i class="fas fa-hard-hat avatar-icon" [style.color]="col.avatarColor"></i>
+    @if (activeTab === 'rendimiento') {
+      <!-- KPI Chips -->
+      <div class="kpi-chips mt-16">
+        <div class="kpi-chip">
+          <div class="kpi-chip-icon green">
+            <i class="fas fa-arrow-trend-up"></i>
           </div>
-          <div class="col-info">
-            <p class="col-nombre">{{ col.nombre }}</p>
-            <p class="col-id">ID: {{ col.id }}</p>
-          </div>
-          <div class="col-rendimiento">
-            <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
-            <p class="col-meta negativo">{{ col.meta }}% vs meta</p>
+          <div class="kpi-chip-text">
+            <span class="kpi-chip-label">Rendimiento Promedio</span>
+            <span class="kpi-chip-value green">{{ rendimientoPromedio }} kg/hr</span>
           </div>
         </div>
-        @if (col.enObservacion) {
-          <div class="observacion-box mt-10" style="background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 10px; text-align: center; color: #b3000b; font-size: 13px; font-weight: 600; margin-top: 10px;">
-            <i class="fas fa-eye"></i> En Observación
+        <div class="kpi-chip">
+          <div class="kpi-chip-icon orange">
+            <i class="fas fa-triangle-exclamation"></i>
           </div>
-        } @else {
-          <button class="btn-intervenir ion-activatable" (click)="intervenir(col)">
-            <i class="fas fa-crosshairs"></i>
-            Intervenir
-            <ion-ripple-effect></ion-ripple-effect>
-          </button>
+          <div class="kpi-chip-text">
+            <span class="kpi-chip-label">Atención Requerida</span>
+            <span class="kpi-chip-value orange">{{ atencionRequerida }} Colaboradores</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ BAJO RENDIMIENTO ══ -->
+      <div class="section-header mt-16">
+        <div class="section-title-row">
+          <div class="section-bar bajo"></div>
+          <h2 class="section-title">Bajo Rendimiento</h2>
+        </div>
+        <span class="badge-accion">Acción Requerida</span>
+      </div>
+
+      @if (colaboradoresBajo.length === 0) {
+        <div class="empty-state-mini">
+          <p>No hay personal con bajo rendimiento.</p>
+        </div>
+      }
+
+      @for (col of colaboradoresBajo; track col.id) {
+        <div class="colaborador-card bajo-card">
+          <div class="card-top-row">
+            <div class="avatar-wrap" [style.background]="col.avatarColor + '22'">
+              <i class="fas fa-hard-hat avatar-icon" [style.color]="col.avatarColor"></i>
+            </div>
+            <div class="col-info">
+              <p class="col-nombre">{{ col.nombre }}</p>
+              <p class="col-id">ID: {{ col.id }}</p>
+            </div>
+            <div class="col-rendimiento">
+              <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
+              <p class="col-meta negativo">{{ col.meta }}% vs meta</p>
+            </div>
+          </div>
+          @if (col.enObservacion) {
+            <div class="observacion-box mt-10" style="background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 10px; text-align: center; color: #b3000b; font-size: 13px; font-weight: 600; margin-top: 10px;">
+              <i class="fas fa-eye"></i> En Observación
+            </div>
+          } @else {
+            <button class="btn-intervenir ion-activatable" (click)="verDetalle(col, 'bajo')">
+              <i class="fas fa-crosshairs"></i>
+              Intervenir
+              <ion-ripple-effect></ion-ripple-effect>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- ══ ALTO RENDIMIENTO ══ -->
+      <div class="section-header mt-20">
+        <div class="section-title-row">
+          <div class="section-bar alto"></div>
+          <h2 class="section-title">Alto Rendimiento</h2>
+        </div>
+        <span class="badge-lectura">Lectura únicamente</span>
+      </div>
+
+      @for (col of colaboradoresAlto; track col.id) {
+        <div class="colaborador-card alto-card" (click)="verDetalle(col, 'alto')" style="cursor: pointer;">
+          <div class="card-top-row">
+            <div class="avatar-wrap gray">
+              <i class="fas fa-hard-hat avatar-icon gray"></i>
+            </div>
+            <div class="col-info">
+              <p class="col-nombre">{{ col.nombre }}</p>
+              <p class="col-id">ID: {{ col.id }}</p>
+            </div>
+            <div class="col-rendimiento">
+              <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
+              <p class="col-meta positivo">+{{ col.meta }}% vs meta</p>
+            </div>
+          </div>
+        </div>
+      }
+    } @else {
+      <!-- TAB ASISTENCIA -->
+      <!-- ══ ASISTIDOS ══ -->
+      <div class="section-header mt-16">
+        <div class="section-title-row">
+          <div class="section-bar" style="background: #10b981;"></div>
+          <h2 class="section-title">Asistieron Hoy</h2>
+        </div>
+      </div>
+      
+      @for (col of todas; track col.id) {
+        @if (col.presente) {
+          <div class="colaborador-card alto-card" style="margin-bottom: 10px;">
+            <div class="card-top-row">
+              <div class="avatar-wrap" style="background: #dcfce7;">
+                <i class="fas fa-check avatar-icon" style="color: #166534;"></i>
+              </div>
+              <div class="col-info">
+                <p class="col-nombre">{{ col.nombre }}</p>
+                <p class="col-id">ID: {{ col.id }}</p>
+              </div>
+              <div class="col-rendimiento">
+                <span class="badge-lectura" style="background: #dcfce7; color: #166534;">Presente</span>
+              </div>
+            </div>
+          </div>
         }
-      </div>
-    }
+      }
 
-    <!-- ══ ALTO RENDIMIENTO ══ -->
-    <div class="section-header">
-      <div class="section-title-row">
-        <div class="section-bar alto"></div>
-        <h2 class="section-title">Alto Rendimiento</h2>
-      </div>
-      <span class="badge-lectura">Lectura únicamente</span>
-    </div>
-
-    @for (col of colaboradoresAlto; track col.id) {
-      <div class="colaborador-card alto-card">
-        <div class="card-top-row">
-          <div class="avatar-wrap gray">
-            <i class="fas fa-hard-hat avatar-icon gray"></i>
+      <!-- ══ AUSENTES ══ -->
+      @if (colaboradoresAusentes.length > 0) {
+        <div class="section-header mt-20">
+          <div class="section-title-row">
+            <div class="section-bar" style="background: #9ca3af;"></div>
+            <h2 class="section-title">Ausentes o No Asignados</h2>
           </div>
-          <div class="col-info">
-            <p class="col-nombre">{{ col.nombre }}</p>
-            <p class="col-id">ID: {{ col.id }}</p>
-          </div>
-          <div class="col-rendimiento">
-            <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
-            <p class="col-meta positivo">+{{ col.meta }}% vs meta</p>
-          </div>
+          <span class="badge-lectura" style="background: #f3f4f6; color: #6b7280;">Falta / Permiso</span>
         </div>
-      </div>
+
+        @for (col of colaboradoresAusentes; track col.id) {
+          <div class="colaborador-card alto-card" style="opacity: 0.7; background: #f9fafb; cursor: pointer;" (click)="verDetalle(col, 'ausente')">
+            <div class="card-top-row">
+              <div class="avatar-wrap gray">
+                <i class="fas fa-user-times avatar-icon" style="color: #9ca3af;"></i>
+              </div>
+              <div class="col-info">
+                <p class="col-nombre" style="color: #6b7280; text-decoration: line-through;">{{ col.nombre }}</p>
+                <p class="col-id">ID: {{ col.id }}</p>
+              </div>
+              <div class="col-rendimiento">
+                <p class="col-valor" style="color: #9ca3af;">-- kg/hr</p>
+                <p class="col-meta" style="color: #9ca3af;">Sin registro</p>
+              </div>
+            </div>
+          </div>
+        }
+      }
     }
 
     <!-- Espacio final para que el último item no quede tapado -->
@@ -135,11 +210,19 @@
     } @else {
       <!-- REPORTE DE ALERTA -->
       <div class="page-title-section fade-in">
-        <div class="alert-badge text-red fw-700 font-12 mb-2" style="color: #b3000b; font-weight: 700; font-size: 12px; margin-bottom: 8px;">
-          <i class="fas fa-triangle-exclamation"></i> ACCIÓN REQUERIDA
-        </div>
-        <h1 class="page-title mt-2">Reporte de Alerta</h1>
-        <p class="page-subtitle">Supervisión de rendimiento crítico para personal de campo.</p>
+        @if (rendimientoSeleccionado === 'bajo') {
+          <div class="alert-badge text-red fw-700 font-12 mb-2" style="color: #b3000b; font-weight: 700; font-size: 12px; margin-bottom: 8px;">
+            <i class="fas fa-triangle-exclamation"></i> ACCIÓN REQUERIDA
+          </div>
+          <h1 class="page-title mt-2">Reporte de Alerta</h1>
+          <p class="page-subtitle">Supervisión de rendimiento crítico para personal de campo.</p>
+        } @else {
+          <div class="alert-badge fw-700 font-12 mb-2" style="color: #10b981; font-weight: 700; font-size: 12px; margin-bottom: 8px;">
+            <i class="fas fa-star"></i> BUEN DESEMPEÑO
+          </div>
+          <h1 class="page-title mt-2">Detalle de Rendimiento</h1>
+          <p class="page-subtitle">Consulta de métricas de desempeño del personal.</p>
+        }
       </div>
 
       <div class="colaborador-card fade-in mb-16 p-16" style="margin-bottom: 16px; padding: 16px;">
@@ -148,11 +231,17 @@
             <i class="fas fa-user-circle text-gray" style="font-size: 50px; color: #9ca3af;"></i>
           </div>
           <div class="col-info" style="margin-left: 12px;">
-            <p class="col-id font-11 mb-1" style="font-size: 11px; margin-bottom: 4px; color: #6b7280;">ID: {{ colaboradorSeleccionado?.id }}-B</p>
+            <p class="col-id font-11 mb-1" style="font-size: 11px; margin-bottom: 4px; color: #6b7280;">ID: {{ colaboradorSeleccionado?.id }}</p>
             <p class="col-nombre fw-700 font-16 mb-2" style="font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #1a1a1a;">{{ colaboradorSeleccionado?.nombre }}</p>
-            <p class="text-red fw-700 font-10" style="color: #b3000b; font-weight: 700; font-size: 10px;">
-              <i class="fas fa-arrow-trend-down"></i> BAJO RENDIMIENTO DETECTADO
-            </p>
+            @if (rendimientoSeleccionado === 'bajo') {
+              <p class="text-red fw-700 font-10" style="color: #b3000b; font-weight: 700; font-size: 10px;">
+                <i class="fas fa-arrow-trend-down"></i> BAJO RENDIMIENTO DETECTADO
+              </p>
+            } @else {
+              <p class="fw-700 font-10" style="color: #10b981; font-weight: 700; font-size: 10px;">
+                <i class="fas fa-arrow-trend-up"></i> ALTO RENDIMIENTO DETECTADO
+              </p>
+            }
           </div>
         </div>
       </div>
@@ -160,86 +249,76 @@
       <div class="metrics-row fade-in mb-16" style="display: flex; gap: 12px; margin-bottom: 16px;">
         <div class="metric-card" style="flex: 1; background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #fee2e2;">
           <p class="mc-label" style="font-size: 11px; font-weight: 700; color: #6b7280; margin-bottom: 6px;">Rendimiento Actual</p>
-          <p class="mc-val text-red" style="font-size: 20px; font-weight: 800; color: #b3000b; margin-bottom: 8px;">42% <span class="mc-sub" style="font-size: 11px; font-weight: 500; color: #6b7280;">de cuota</span></p>
-          <div class="progress-bar-wrap" style="background: #f3f4f6; height: 6px; border-radius: 4px; overflow: hidden;"><div class="progress-bar red" style="background: #b3000b; height: 100%; border-radius: 4px; width: 42%;"></div></div>
+          <p class="mc-val text-red" style="font-size: 20px; font-weight: 800; margin-bottom: 8px;" [style.color]="detalleRendimientoActual >= 100 ? '#10b981' : (detalleRendimientoActual >= 80 ? '#f59e0b' : '#b3000b')">{{ detalleRendimientoActual }}% <span class="mc-sub" style="font-size: 11px; font-weight: 500; color: #6b7280;">de cuota</span></p>
+          <div class="progress-bar-wrap" style="background: #f3f4f6; height: 6px; border-radius: 4px; overflow: hidden;"><div class="progress-bar red" [style.background]="detalleRendimientoActual >= 100 ? '#10b981' : (detalleRendimientoActual >= 80 ? '#f59e0b' : '#b3000b')" [style.width]="detalleRendimientoActual + '%'" style="height: 100%; border-radius: 4px;"></div></div>
         </div>
         <div class="metric-card" style="flex: 1; background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #fee2e2;">
           <p class="mc-label" style="font-size: 11px; font-weight: 700; color: #6b7280; margin-bottom: 6px;">Meta</p>
-          <p class="mc-val" style="font-size: 20px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px;">85% <span class="mc-sub" style="font-size: 11px; font-weight: 500; color: #6b7280;">mínimo</span></p>
-          <div class="progress-bar-wrap" style="background: #f3f4f6; height: 6px; border-radius: 4px; overflow: hidden;"><div class="progress-bar black" style="background: #1a1a1a; height: 100%; border-radius: 4px; width: 85%;"></div></div>
+          <p class="mc-val" style="font-size: 20px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px;">100% <span class="mc-sub" style="font-size: 11px; font-weight: 500; color: #6b7280;">mínimo</span></p>
+          <div class="progress-bar-wrap" style="background: #f3f4f6; height: 6px; border-radius: 4px; overflow: hidden;"><div class="progress-bar black" style="background: #1a1a1a; height: 100%; border-radius: 4px; width: 100%;"></div></div>
         </div>
       </div>
 
       <div class="colaborador-card fade-in p-16 mb-16" style="padding: 16px; margin-bottom: 16px;">
         <div class="space-between mb-16" style="display: flex; justify-content: space-between; margin-bottom: 16px;">
           <span class="fw-700 font-13" style="font-weight: 700; font-size: 13px; color: #1a1a1a;">Asistencia (últimos 7 días)</span>
-          <span class="text-red fw-700 font-11" style="color: #b3000b; font-weight: 700; font-size: 11px;">60% Consistencia</span>
+          <span class="text-red fw-700 font-11" style="color: #b3000b; font-weight: 700; font-size: 11px;" [style.color]="detalleConsistencia < 100 ? '#b3000b' : '#10b981'">{{ detalleConsistencia }}% Consistencia</span>
         </div>
         <div class="attendance-row" style="display: flex; justify-content: space-between; align-items: center;">
-          <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><i class="fas fa-check-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i><span style="font-size: 9px; font-weight: 700; color: #6b7280;">LUN</span></div>
-          <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><i class="far fa-times-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i><span style="font-size: 9px; font-weight: 700; color: #6b7280;">MAR</span></div>
-          <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><i class="fas fa-check-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i><span style="font-size: 9px; font-weight: 700; color: #6b7280;">MIE</span></div>
-          <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><i class="far fa-times-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i><span style="font-size: 9px; font-weight: 700; color: #6b7280;">JUE</span></div>
-          <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><i class="fas fa-check-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i><span style="font-size: 9px; font-weight: 700; color: #6b7280;">VIE</span></div>
-          <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><i class="fas fa-ellipsis-h text-gray font-20" style="color: #9ca3af; font-size: 20px;"></i><span style="font-size: 9px; font-weight: 700; color: #6b7280;">SAB</span></div>
-          <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><i class="fas fa-ellipsis-h text-gray font-20" style="color: #9ca3af; font-size: 20px;"></i><span style="font-size: 9px; font-weight: 700; color: #6b7280;">DOM</span></div>
+          @for (dia of asistenciaDias; track dia.name) {
+            <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+              @if (dia.status === 'presente') {
+                <i class="fas fa-check-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i>
+              } @else if (dia.status === 'ausente') {
+                <i class="fas fa-times-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i>
+              } @else {
+                <i class="fas fa-ellipsis-h" style="color: #9ca3af; font-size: 20px;"></i>
+              }
+              <span style="font-size: 9px; font-weight: 700; color: #6b7280;">{{ dia.name }}</span>
+            </div>
+          }
         </div>
       </div>
 
       <h3 class="section-title fade-in mt-20 mb-10" style="margin-top: 20px; margin-bottom: 10px;">Historial de 3 Días</h3>
       
       <div class="history-cards fade-in">
-         <div class="colaborador-card history-card" style="padding: 16px; margin-bottom: 12px;">
-           <div class="space-between" style="display: flex; justify-content: space-between; align-items: center;">
-             <div>
-               <p class="hc-date" style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 4px;">Jueves, 24 Oct</p>
-               <p class="hc-sub" style="font-size: 12px; color: #6b7280;">Producción: 180 kg</p>
-             </div>
-             <div class="align-right" style="text-align: right;">
-               <span class="badge-critico" style="background: #fee2e2; color: #b3000b; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 12px; display: inline-block;">CRÍTICO</span>
-               <p class="hc-meta" style="font-size: 12px; font-weight: 600; color: #ef4444; margin-top: 6px;">-55% vs Meta</p>
-             </div>
-           </div>
-         </div>
-
-         <div class="colaborador-card history-card" style="padding: 16px; margin-bottom: 12px;">
-           <div class="space-between" style="display: flex; justify-content: space-between; align-items: center;">
-             <div>
-               <p class="hc-date" style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 4px;">Miércoles, 23 Oct</p>
-               <p class="hc-sub" style="font-size: 12px; color: #6b7280;">Producción: 210 kg</p>
-             </div>
-             <div class="align-right" style="text-align: right;">
-               <span class="badge-bajo" style="background: #f3f4f6; color: #4b5563; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 12px; display: inline-block;">BAJO</span>
-               <p class="hc-meta" style="font-size: 12px; font-weight: 600; color: #6b7280; margin-top: 6px;">-30% vs Meta</p>
-             </div>
-           </div>
-         </div>
-
-         <div class="colaborador-card history-card" style="padding: 16px; margin-bottom: 12px;">
-           <div class="space-between" style="display: flex; justify-content: space-between; align-items: center;">
-             <div>
-               <p class="hc-date" style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 4px;">Martes, 22 Oct</p>
-               <p class="hc-sub text-gray" style="font-size: 12px; color: #9ca3af;">Sin Actividad Registrada</p>
-             </div>
-             <div class="align-right" style="text-align: right;">
-               <span class="badge-falta" style="background: #b3000b; color: white; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 12px; display: inline-block;">FALTA</span>
-               <p class="hc-meta text-red" style="font-size: 12px; font-weight: 600; color: #ef4444; margin-top: 6px;">Ausencia</p>
-             </div>
-           </div>
-         </div>
+        @for (item of detalleHistorial; track item.fecha) {
+          <div class="colaborador-card history-card" style="padding: 16px; margin-bottom: 12px;">
+            <div class="space-between" style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <p class="hc-date" style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 4px;">{{ item.fecha }}</p>
+                <p class="hc-sub" [class.text-gray]="item.estado === 'FALTA'" style="font-size: 12px; color: #6b7280;">{{ item.produccion }}</p>
+              </div>
+              <div class="align-right" style="text-align: right;">
+                <span [class]="item.estado === 'CRÍTICO' ? 'badge-critico' : (item.estado === 'FALTA' ? 'badge-falta' : (item.estado === 'ALTO' ? 'badge-alto' : 'badge-bajo'))" 
+                      [style.background]="item.estado === 'CRÍTICO' ? '#fee2e2' : (item.estado === 'FALTA' ? '#b3000b' : (item.estado === 'ALTO' ? '#dcfce7' : '#f3f4f6'))"
+                      [style.color]="item.estado === 'CRÍTICO' ? '#b3000b' : (item.estado === 'FALTA' ? 'white' : (item.estado === 'ALTO' ? '#166534' : '#4b5563'))"
+                      style="font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 12px; display: inline-block;">
+                  {{ item.estado }}
+                </span>
+                <p class="hc-meta" [style.color]="item.estado === 'CRÍTICO' || item.estado === 'FALTA' ? '#ef4444' : '#6b7280'" style="font-size: 12px; font-weight: 600; margin-top: 6px;">{{ item.metaText }}</p>
+              </div>
+            </div>
+          </div>
+        }
       </div>
 
-      <div class="comment-box fade-in" style="margin-top: 20px;">
-        <label style="display: block; font-size: 12px; font-weight: 700; color: #4b5563; margin-bottom: 8px;">Motivo de Observación</label>
-        <textarea rows="3" placeholder="Escriba un breve comentario..." style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 14px; font-family: inherit; resize: none; background: #fff;"></textarea>
-      </div>
+      @if (rendimientoSeleccionado === 'bajo') {
+        <div class="comment-box fade-in" style="margin-top: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #4b5563; margin-bottom: 8px;">Motivo de Observación</label>
+          <textarea rows="3" placeholder="Escriba un breve comentario..." style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 14px; font-family: inherit; resize: none; background: #fff;"></textarea>
+        </div>
 
-      <button class="btn-solid-red full-w fade-in" style="width: 100%; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 600; background: #b3000b; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 16px;" (click)="ponerEnObservacion()">
-        <i class="fas fa-eye"></i> Poner en Observación
-      </button>
-      <p class="text-center text-gray font-11 mt-10 mb-20 fade-in" style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 10px; margin-bottom: 24px; padding-bottom: 24px;">
-        Al confirmar, el trabajador pasará a estado de observación y se sincronizará el reporte.
-      </p>
+        <button class="btn-solid-red full-w fade-in" style="width: 100%; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 600; background: #b3000b; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 16px;" (click)="ponerEnObservacion()">
+          <i class="fas fa-eye"></i> Poner en Observación
+        </button>
+        <p class="text-center text-gray font-11 mt-10 mb-20 fade-in" style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 10px; margin-bottom: 24px; padding-bottom: 24px;">
+          Al confirmar, el trabajador pasará a estado de observación y se sincronizará el reporte.
+        </p>
+      } @else {
+        <div style="height: 40px;"></div>
+      }
 
     }
 
