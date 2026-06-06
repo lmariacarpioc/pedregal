@@ -1,3 +1,6 @@
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Trabajador } from './trabajador';
 
 describe('Trabajador (servicio)', () => {
@@ -6,9 +9,15 @@ describe('Trabajador (servicio)', () => {
   beforeEach(() => {
     // Limpiamos localStorage antes de cada test
     localStorage.clear();
-    svc = new Trabajador();
-  });
-
+    TestBed.configureTestingModule({
+      providers: [
+        Trabajador,
+        provideHttpClient(),
+        provideHttpClientTesting() // mock de HttpClient, no hace llamadas reales
+      ]
+    });
+    svc = TestBed.inject(Trabajador);
+      });
   it('debería cargar los jefes iniciales si localStorage está vacío', () => {
     const jefes = svc.getJefesDeCampo();
     expect(jefes.length).toBe(3);

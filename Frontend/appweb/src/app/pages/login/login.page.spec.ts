@@ -24,10 +24,10 @@ describe('LoginPage', () => {
     expect(h2.textContent).toContain('EL PEDREGAL');
   });
 
-  it('debería tener un campo de email y uno de contraseña', () => {
+  it('debería tener un campo de username y uno de contraseña', () => {
     const inputs = fixture.nativeElement.querySelectorAll('input');
     expect(inputs.length).toBeGreaterThanOrEqual(2);
-    expect(inputs[0].type).toBe('email');
+    expect(inputs[0].type).toBe('text');
     expect(inputs[1].type).toBe('password');
   });
 });
