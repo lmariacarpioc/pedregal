@@ -10,6 +10,8 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForwardOutline } from 'ionicons/icons';
+import { AuthService } from '../../services/auth.service';
+import { SyncService } from '../../services/sync.service';
 
 @Component({
   selector: 'app-login',
@@ -23,8 +25,13 @@ export class LoginPage {
   password = signal('');
   rememberMe = signal(false);
   showPassword = signal(false);
+  errorMessage = signal('');
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private syncService: SyncService
+  ) {
     addIcons({ arrowForwardOutline });
   }
 
@@ -32,8 +39,15 @@ export class LoginPage {
     this.showPassword.set(!this.showPassword());
   }
 
-  ingresar() {
-    // Por ahora navegación directa sin validación real
-    this.router.navigateByUrl('/registro-diario');
+  async ingresar() {
+    this.errorMessage.set('');
+    const valid = await this.authService.login(this.username(), this.password());
+    if (valid) {
+      // Intentar sincronizar datos iniciales (no bloquea si falla por offline)
+      await this.syncService.downloadSyncData();
+      this.router.navigateByUrl('/registro-diario');
+    } else {
+      this.errorMessage.set('Credenciales inválidas');
+    }
   }
 }

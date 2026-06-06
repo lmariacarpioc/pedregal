@@ -14,10 +14,10 @@ import java.util.List;
 public class ParteDiarioDTO {
     private String syncId;
     private String usuarioSyncId;
-    private String fecha; // yyyy-MM-dd
-    private String turno; // AM, PM, NOCHE
-    private String clima; // SOLEADO, NUBLADO, LLUVIOSO
+    private String fecha;
+    private String turno;
+    private String clima;
     private String observacionesGenerales;
-    private String estado; // BORRADOR, ENVIADO, APROBADO
+    private String estado;
     private List<ParteDiarioDetalleDTO> detalles;
 }

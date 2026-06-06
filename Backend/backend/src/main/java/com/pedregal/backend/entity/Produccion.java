@@ -30,7 +30,7 @@ public class Produccion {
     private String actividad;
 
     @Column(name = "unidad_medida")
-    private String unidadMedida; // METROS, TONELADAS, VIAJES, UNIDADES, HORAS
+    private String unidadMedida;
 
     @Column(name = "cantidad_programada")
     private Double cantidadProgramada;

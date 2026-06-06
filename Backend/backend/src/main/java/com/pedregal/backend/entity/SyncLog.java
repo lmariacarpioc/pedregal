@@ -29,7 +29,7 @@ public class SyncLog {
     private LocalDateTime fechaSync;
 
     @Column(name = "tipo_sync")
-    private String tipoSync; // UPLOAD, DOWNLOAD
+    private String tipoSync;
 
     @Column(name = "total_registros")
     private Integer totalRegistros;
@@ -43,7 +43,7 @@ public class SyncLog {
     @Column(name = "registros_fallidos")
     private Integer registrosFallidos;
 
-    private String estado; // EXITOSO, PARCIAL, FALLIDO
+    private String estado;
 
     @Column(columnDefinition = "TEXT")
     private String errores;

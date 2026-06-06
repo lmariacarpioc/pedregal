@@ -13,10 +13,10 @@ public class ReporteDTO {
     private String syncId;
     private String usuarioSyncId;
     private String titulo;
-    private String tipoReporte; // DIARIO, SEMANAL, MENSUAL, INCIDENTE, AVANCE
-    private String fechaInicio; // yyyy-MM-dd
-    private String fechaFin;   // yyyy-MM-dd
+    private String tipoReporte;
+    private String fechaInicio;
+    private String fechaFin;
     private String contenido;
     private String conclusiones;
-    private String estado; // BORRADOR, ENVIADO, REVISADO
+    private String estado;
 }

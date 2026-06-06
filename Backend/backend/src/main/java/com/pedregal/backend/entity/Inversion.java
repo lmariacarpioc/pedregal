@@ -26,7 +26,7 @@ public class Inversion {
     @Column(nullable = false)
     private String concepto;
 
-    private String categoria; // MATERIAL, EQUIPO, TRANSPORTE, ALIMENTACION, OTROS
+    private String categoria;
 
     @Column(nullable = false)
     private Double monto;
@@ -42,7 +42,7 @@ public class Inversion {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    private String estado; // PENDIENTE, APROBADO, RECHAZADO
+    private String estado;
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

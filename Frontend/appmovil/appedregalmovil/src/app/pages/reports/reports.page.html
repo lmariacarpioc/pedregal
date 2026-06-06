@@ -1,4 +1,27 @@
 <div class="ion-page">
+<!-- MODAL NUEVO TRABAJADOR -->
+@if (mostrarModalTrabajador) {
+  <div class="modal-overlay fade-in">
+    <div class="modal-content">
+      <h3 class="modal-title">Agregar Nuevo Trabajador</h3>
+      <p class="modal-sub">Ingrese los datos para agregarlo al padrón offline.</p>
+      
+      <div class="form-group mt-16">
+        <label>Nombre Completo</label>
+        <input type="text" [(ngModel)]="nuevoNombreModal" placeholder="Ej. Juan Perez" class="form-input">
+      </div>
+      <div class="form-group mt-10">
+        <label>DNI</label>
+        <input type="number" [(ngModel)]="nuevoDniModal" placeholder="Ej. 12345678" class="form-input">
+      </div>
+      
+      <div class="modal-actions mt-20">
+        <button class="btn-cancel" (click)="cerrarModalTrabajador()">Cancelar</button>
+        <button class="btn-solid-red" style="padding: 12px; border-radius: 8px; width: 100%;" (click)="guardarNuevoTrabajador()">Agregar</button>
+      </div>
+    </div>
+  </div>
+}
   <ion-header class="ion-no-border">
     @if (currentStep === 1) {
       <ion-toolbar class="rp-toolbar">
@@ -258,56 +281,111 @@
         <!-- ══ TAB: REPORTES ══ -->
         @if (activeTab === 'reportes') {
           <div class="tab-content reportes-tab">
-            <div class="shift-badge">
-              <i class="far fa-clock"></i> ACTIVE SHIFT 06:00 - 14:00
+            <div class="shift-info-card">
+              <div class="shift-icon"><i class="far fa-clock"></i></div>
+              <div class="shift-details">
+                <span class="shift-title">Turno Activo</span>
+                <span class="shift-time">06:00 - 14:00</span>
+              </div>
+              <div class="shift-status">En curso</div>
             </div>
             
-            <div class="search-bar-wrap">
-              <i class="fas fa-search"></i>
-              <input type="text" placeholder="Search worker by name or ID...">
+            <div class="search-bar-modern">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" placeholder="Buscar por nombre o ID...">
             </div>
 
-            <div class="reportes-list">
-              @for (rep of reportesList; track rep.id) {
-                <div class="reporte-card">
-                  <div class="rc-header">
-                    <div class="rc-avatar">
-                      @if (rep.avatarType === 'img') {
-                        <img [src]="rep.avatar" alt="avatar">
-                      } @else {
-                        <div class="text-avatar">{{ rep.avatar }}</div>
-                      }
-                    </div>
-                    <div class="rc-info">
-                      <div class="rc-name">{{ rep.nombre }}</div>
-                      <div class="rc-id">ID: {{ rep.id }}</div>
-                    </div>
-                    <div class="rc-yield-badge" [class.yield-high]="rep.yield === 'High'" [class.yield-avg]="rep.yield === 'Average'" [class.yield-low]="rep.yield === 'Low'">
-                      <i class="fas fa-arrow-trend-up" *ngIf="rep.yield === 'High'"></i>
-                      <i class="fas fa-minus" *ngIf="rep.yield === 'Average'"></i>
-                      <i class="fas fa-arrow-trend-down" *ngIf="rep.yield === 'Low'"></i>
-                      Yield {{ rep.yield }}
+          @if (reportesList.length === 0) {
+            <div class="empty-state">
+              <i class="fas fa-clipboard-list empty-icon"></i>
+              <p class="empty-title">Sin Reportes</p>
+              <p class="empty-subtitle">Los trabajadores aparecerán aquí al finalizar su turno o asignar cajas.</p>
+            </div>
+          }
+
+          @for (rep of reportesList; track rep.id) {
+            <div class="report-card" (click)="toggleExpand(rep)">
+              <div class="rc-header">
+                <div class="rc-profile">
+                  @if (rep.avatarType === 'img') {
+                    <img [src]="rep.avatar" class="rc-avatar-img" alt="Avatar">
+                  } @else {
+                    <div class="rc-avatar-initials">{{ rep.avatar }}</div>
+                  }
+                  <div class="rc-user-info">
+                    <h4 class="rc-name">{{ rep.nombre }}</h4>
+                    <span class="rc-id"><i class="far fa-id-card"></i> {{ rep.id }}</span>
+                  </div>
+                </div>
+                <div class="rc-status-badge" 
+                     [class.badge-high]="rep.yield === 'High'" 
+                     [class.badge-avg]="rep.yield === 'Average'" 
+                     [class.badge-low]="rep.yield === 'Low'">
+                  @if (rep.yield === 'High') { <i class="fas fa-arrow-up"></i> Alto }
+                  @if (rep.yield === 'Average') { <i class="fas fa-minus"></i> Promedio }
+                  @if (rep.yield === 'Low') { <i class="fas fa-arrow-down"></i> Bajo }
+                </div>
+              </div>
+              
+              <div class="rc-stats-row">
+                <div class="stat-item">
+                  <span class="stat-label">Total Horas</span>
+                  <div class="stat-value">
+                    <span class="val-number" [class.text-red]="rep.yield === 'Low'">{{ rep.horas }}</span>
+                    <span class="val-unit">h</span>
+                  </div>
+                </div>
+                <div class="stat-divider"></div>
+                @if (rep.avatar !== 'IN') {
+                  <div class="stat-item right">
+                    <span class="stat-label">Total Cajas</span>
+                    <div class="stat-value highlight">
+                      <i class="fas fa-box"></i>
+                      <span class="val-number">{{ rep.manualInput || rep.cajas }}</span>
                     </div>
                   </div>
-                  <div class="rc-stats">
-                    <div class="rc-stat-col">
-                      <label>RDTO. CURRENT</label>
-                      <span class="rc-val-black" [class.rc-val-red]="rep.yield === 'High'">{{ rep.rdtoCurrent }}/hr</span>
+                } @else {
+                  <div class="stat-item right">
+                    <span class="stat-label">Total Trabajadores</span>
+                    <div class="stat-value highlight" style="border-color: transparent; background: transparent;">
+                      <i class="fas fa-users" style="color: #6b7280;"></i>
+                      <span class="val-number" style="color: #6b7280;">{{ rep.rdtoCurrent / 8 | number:'1.0-0' }}</span>
                     </div>
-                    <div class="rc-stat-col">
-                      <label>MANUAL INPUT</label>
-                      <div class="rc-input-box">{{ rep.manualInput === 0 ? '0.0' : rep.manualInput }}</div>
+                  </div>
+                }
+              </div>
+
+              <!-- Expanded Details -->
+              @if (rep.expanded) {
+                <div class="rc-expanded-area slide-down">
+                  <div class="expanded-grid">
+                    <div class="ex-item">
+                      <span class="ex-lbl">Actividad</span>
+                      <span class="ex-val">{{ rep.actividad }}</span>
+                    </div>
+                    <div class="ex-item">
+                      <span class="ex-lbl">Lote</span>
+                      <span class="ex-val">{{ rep.lote }}</span>
+                    </div>
+                    <div class="ex-item">
+                      <span class="ex-lbl">Horas</span>
+                      <span class="ex-val">{{ rep.horas }} h</span>
+                    </div>
+                    <div class="ex-item">
+                      <span class="ex-lbl">Meta</span>
+                      <span class="ex-val">{{ (rep.horas * 0.82).toFixed(1) }} kg</span>
                     </div>
                   </div>
                 </div>
               }
             </div>
+          }
           </div>
         }
 
         <!-- Botón Continuar -->
         @if (activeTab !== 'reportes') {
-          <ion-button expand="block" class="btn-continuar" (click)="continuar()">
+          <ion-button expand="block" class="btn-continuar" (click)="continuar()" [disabled]="!lote || (activeTab === 'produccion' && (!cajas || cajas <= 0 || !tipoEmpaque))">
             Continuar
             <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
           </ion-button>
@@ -354,7 +432,8 @@
               <span class="badge-total">Total: {{ trabajadores.length < 10 ? '0' + trabajadores.length : trabajadores.length }}</span>
             </div>
             <div class="card-body p-0">
-              <table class="workers-table">
+              <div style="overflow-x: auto; width: 100%;">
+              <table class="workers-table" style="width: 100%; min-width: 450px;">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -362,6 +441,7 @@
                     <th>Apellidos y<br>Nombres</th>
                     <th>Horas</th>
                     <th>Rend.</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -370,21 +450,29 @@
                       <td class="text-gray-light">{{ (i + 1) < 10 ? '0' + (i + 1) : (i + 1) }}</td>
                       <td>{{ t.dni }}</td>
                       <td><strong class="text-dark">{{ t.nombre }}</strong></td>
-                      <td>
-                        <div class="hours-box">{{ t.horas }}</div>
+                      <td style="text-align: center;">
+                        <input type="number" class="prod-input" [(ngModel)]="t.horas">
                       </td>
                       <td>
-                        <div class="flex-center">
-                          <span class="rend-badge" [class.rend-alto]="t.rend === 'ALTO'" [class.rend-med]="t.rend === 'MED'" [class.rend-bajo]="t.rend === 'BAJO'">{{ t.rend }}</span>
-                          <button class="btn-delete" (click)="eliminarTrabajador(t.dni)"><i class="far fa-trash-can"></i></button>
-                        </div>
+                        <select class="native-select" [(ngModel)]="t.rend" style="font-size: 12px; padding: 4px; border-radius: 4px;">
+                          <option value="ALTO">ALTO</option>
+                          <option value="MED">MED</option>
+                          <option value="BAJO">BAJO</option>
+                        </select>
+                      </td>
+                      <td>
+                        <button class="btn-delete" (click)="eliminarTrabajador(t.dni)"><i class="far fa-trash-can"></i></button>
                       </td>
                     </tr>
                   }
                 </tbody>
               </table>
-          <div class="actions-row center-align" style="display: flex; flex-direction: column; gap: 12px;">
-            <button class="btn-outline-red-sm" style="width: 100%;" (click)="continuarResumen()">Continuar al Resumen</button>
+              </div>
+          <div class="actions-row center-align" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <div style="display: flex; gap: 10px; width: 100%;">
+              <button class="btn-outline-red-sm" style="flex: 1;" (click)="continuarResumen()" [disabled]="trabajadores.length === 0">Continuar al Resumen</button>
+              <button class="btn-solid-red" style="flex: 1; padding: 12px; border-radius: 8px;" (click)="abrirModalTrabajador()"><i class="fas fa-plus"></i> Nuevo</button>
+            </div>
             <button class="btn-regresar-ghost" (click)="regresarPaso1()">
               <i class="fas fa-arrow-left"></i> Regresar a Datos
             </button>
@@ -415,7 +503,8 @@
 
             <div class="card-section list-section">
               <div class="card-body p-0">
-                <table class="workers-table prod-table">
+                <div style="overflow-x: auto; width: 100%;">
+                <table class="workers-table prod-table" style="width: 100%; min-width: 320px;">
                   <thead>
                     <tr>
                       <th>TRABAJADOR</th>
@@ -444,6 +533,7 @@
                     }
                   </tbody>
                 </table>
+                </div>
                 <div class="table-footer-row">
                   <span class="tf-text">{{ trabajadoresProd.length }} Trabajadores registrados</span>
                   <div class="tf-total">
@@ -454,9 +544,12 @@
               </div>
             </div>
             
-            <div class="actions-row space-between-btns" style="display: flex; gap: 12px; margin-top: 10px;">
-              <button class="btn-outline-red-sm flex-1" (click)="regresarPaso1()">Anterior</button>
-              <button class="btn-solid-red flex-1" style="padding: 12px; border-radius: 8px; font-size: 14px;" (click)="continuarResumen()">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+            <div class="actions-row space-between-btns" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+              <div style="display: flex; gap: 10px; width: 100%;">
+                <button class="btn-solid-red flex-1" style="padding: 12px; border-radius: 8px; font-size: 14px;" (click)="continuarResumen()" [disabled]="trabajadoresProd.length === 0">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-outline-red-sm flex-1" (click)="abrirModalTrabajador()"><i class="fas fa-plus"></i> Nuevo</button>
+              </div>
+              <button class="btn-outline-red-sm flex-1" style="border:none; color: #6b7280; background: none;" (click)="regresarPaso1()">Anterior</button>
             </div>
           </div>
         }
@@ -513,11 +606,7 @@
                     </div>
                   </div>
                 }
-
-                <div class="view-more-box">
-                  <i class="fas fa-plus"></i> Ver otros 9 trabajadores
                 </div>
-              </div>
             </div>
           </div>
 
@@ -545,14 +634,14 @@
               <div class="summary-card align-left">
                 <span class="card-label-gray">PERSONAL TOTAL</span>
                 <div class="val-with-sub">
-                  <span class="card-value-lg">42</span>
+                  <span class="card-value-lg">{{ trabajadoresProd.length }}</span>
                   <span class="card-sub-gray">activos</span>
                 </div>
               </div>
               <div class="summary-card align-left">
                 <span class="card-label-gray">CAJAS ESTIMADAS</span>
                 <div class="val-with-sub">
-                  <span class="card-value-lg">1,200</span>
+                  <span class="card-value-lg">{{ cajas | number }}</span>
                   <i class="fas fa-box text-gray"></i>
                 </div>
               </div>
@@ -561,10 +650,10 @@
             <div class="prod-real-box">
               <span class="pr-label">PRODUCCIÓN REAL LOGRADA</span>
               <div class="pr-val-row">
-                <span class="pr-val">1,184 <small>Bins</small></span>
+                <span class="pr-val">{{ getTotalCajas() | number }} <small>Cajas/Bins</small></span>
                 <div class="pr-icon-wrap"><i class="fas fa-clipboard-check"></i></div>
               </div>
-              <span class="pr-sub">98.6% del objetivo cumplido</span>
+              <span class="pr-sub">{{ cajas > 0 ? ((getTotalCajas() / cajas) * 100).toFixed(1) : '0.0' }}% del objetivo cumplido</span>
             </div>
 
             <div class="detail-header-row space-between">
@@ -575,42 +664,19 @@
             <div class="card-section summary-details mt-10">
               <div class="card-body p-0">
                 <div class="workers-list-summary">
+                  @for (t of trabajadoresProd; track t.dni) {
                   <div class="worker-summary-card no-border mb-0" style="border-bottom: 1px solid #f3f4f6; border-radius: 0;">
                     <div class="ws-icon-wrap bg-gray"><i class="far fa-user text-dark"></i></div>
                     <div class="ws-info">
-                      <span class="ws-name font-14">Juan Pérez</span>
-                      <span class="ws-dni">ID: 4502-A</span>
+                      <span class="ws-name font-14">{{ t.nombre }}</span>
+                      <span class="ws-dni">ID: {{ t.dni }}</span>
                     </div>
                     <div class="ws-hours align-right">
-                      <span class="wsh-val text-dark">32</span>
+                      <span class="wsh-val text-dark">{{ t.cajas }}</span>
                       <span class="wsh-type fw-700">CAJAS</span>
                     </div>
                   </div>
-                  <div class="worker-summary-card no-border mb-0" style="border-bottom: 1px solid #f3f4f6; border-radius: 0;">
-                    <div class="ws-icon-wrap bg-gray"><i class="far fa-user text-dark"></i></div>
-                    <div class="ws-info">
-                      <span class="ws-name font-14">María Rodríguez</span>
-                      <span class="ws-dni">ID: 4509-B</span>
-                    </div>
-                    <div class="ws-hours align-right">
-                      <span class="wsh-val text-dark">41</span>
-                      <span class="wsh-type fw-700">CAJAS</span>
-                    </div>
-                  </div>
-                  <div class="worker-summary-card no-border mb-0" style="border-bottom: 1px solid #f3f4f6; border-radius: 0;">
-                    <div class="ws-icon-wrap bg-gray"><i class="far fa-user text-dark"></i></div>
-                    <div class="ws-info">
-                      <span class="ws-name font-14">Carlos Salazar</span>
-                      <span class="ws-dni">ID: 4511-A</span>
-                    </div>
-                    <div class="ws-hours align-right">
-                      <span class="wsh-val text-dark">28</span>
-                      <span class="wsh-type fw-700">CAJAS</span>
-                    </div>
-                  </div>
-                  <div class="view-more-box no-bg text-red">
-                    Ver 39 trabajadores más <i class="fas fa-chevron-down"></i>
-                  </div>
+                  }
                 </div>
               </div>
             </div>

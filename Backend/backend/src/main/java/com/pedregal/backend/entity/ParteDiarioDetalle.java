@@ -36,7 +36,7 @@ public class ParteDiarioDetalle {
     private String tareaRealizada;
 
     @Column(name = "estado_asistencia")
-    private String estadoAsistencia; // PRESENTE, FALTA, PERMISO, DESCANSO
+    private String estadoAsistencia;
 
     @Column(columnDefinition = "TEXT")
     private String observaciones;

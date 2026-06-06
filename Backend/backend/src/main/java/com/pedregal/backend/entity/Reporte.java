@@ -27,7 +27,7 @@ public class Reporte {
     private String titulo;
 
     @Column(name = "tipo_reporte", nullable = false)
-    private String tipoReporte; // DIARIO, SEMANAL, MENSUAL, INCIDENTE, AVANCE
+    private String tipoReporte;
 
     @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
@@ -41,7 +41,7 @@ public class Reporte {
     @Column(columnDefinition = "TEXT")
     private String conclusiones;
 
-    private String estado; // BORRADOR, ENVIADO, REVISADO
+    private String estado;
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

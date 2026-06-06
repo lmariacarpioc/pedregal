@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ParteDiarioDetalleRepository extends JpaRepository<ParteDiarioDetalle, Long> {
     Optional<ParteDiarioDetalle> findBySyncId(String syncId);
     boolean existsBySyncId(String syncId);
+    java.util.List<ParteDiarioDetalle> findByParteDiarioId(Long parteDiarioId);
 }
