@@ -7,6 +7,7 @@ import{Configuracion} from './pages/configuracion/configuracion';
 import { Reportes } from './pages/reportes/reportes';
 import{EditarTrabajador} from './pages/staff/editar_trabajador';
 import { Crear_Parte } from './pages/dashboard/crear_parte';
+import { NotFound } from './pages/not-found/not-found';
 
 export const routes: Routes = [
     {
@@ -30,6 +31,7 @@ export const routes: Routes = [
 {path: 'reportes', component: Reportes},
 {path: 'dashboard/crear_parte', component: Crear_Parte}
    ]
-   }
+   },
+   { path: '**', component: NotFound }
   
 ];
