@@ -28,7 +28,7 @@ export const routes: Routes = [
 {path: 'staff/editar_trabajador/:dni', component: EditarTrabajador},
 {path: 'configuracion', component: Configuracion},
 {path: 'reportes', component: Reportes},
-{path: 'dashboard/crear_parte', component: Crear_Parte}
+{path: 'dashboard/crear-parte', component: Crear_Parte}
    ]
    }
   
