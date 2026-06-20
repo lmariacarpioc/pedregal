@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ProduccionDTO {
     private String syncId;
     private String parteDiarioSyncId;
-    private String puntoMovilSyncId;
+
     private String actividad;
     private String unidadMedida;
     private Double cantidadProgramada;

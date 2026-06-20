@@ -18,6 +18,10 @@ export class SyncService {
         if (data.usuarios) localStorage.setItem('agro_sync_usuarios', JSON.stringify(data.usuarios));
         if (data.trabajadores) localStorage.setItem('agro_sync_trabajadores', JSON.stringify(data.trabajadores));
         if (data.partesDiarios) localStorage.setItem('agro_sync_partes', JSON.stringify(data.partesDiarios));
+
+        if (data.reportes) localStorage.setItem('agro_sync_reportes', JSON.stringify(data.reportes));
+        if (data.inversiones) localStorage.setItem('agro_sync_inversiones', JSON.stringify(data.inversiones));
+        if (data.produccion) localStorage.setItem('agro_sync_produccion', JSON.stringify(data.produccion));
         return true;
       }
       return false;
@@ -27,24 +31,40 @@ export class SyncService {
     }
   }
 
-  async uploadPartesDiarios(): Promise<boolean> {
+  async uploadSyncQueue(): Promise<boolean> {
     try {
       const localesRaw = localStorage.getItem('agro_mobile_partes_locales');
-      if (!localesRaw) return true; // Nada que subir
-      
-      const partesLocales = JSON.parse(localesRaw);
-      if (partesLocales.length === 0) return true;
+      const partesLocales = localesRaw ? JSON.parse(localesRaw) : [];
 
-      const payload = {
+      const queueRaw = localStorage.getItem('sync_queue');
+      const queueItems = queueRaw ? JSON.parse(queueRaw) : [];
+
+      if (partesLocales.length === 0 && queueItems.length === 0) return true; // Nada que subir
+
+      const payload: any = {
         dispositivoId: 'mobile',
         timestamp: new Date().toISOString(),
-        partesDiarios: partesLocales
+        partesDiarios: partesLocales,
+        reportes: [],
+        inversiones: [],
+        produccion: []
       };
+
+      queueItems.forEach((item: any) => {
+        if (item.type === 'reporte' || item.type === 'report') {
+          payload.reportes.push(item.data);
+        } else if (item.type === 'inversion') {
+          payload.inversiones.push(item.data);
+        } else if (item.type === 'produccion') {
+          payload.produccion.push(item.data);
+        }
+      });
 
       await firstValueFrom(this.http.post(`${environment.apiUrl}/sync/upload`, payload));
       
-      // Limpiar partes locales después de subirlos con éxito
+      // Limpiar datos locales después de subirlos con éxito
       localStorage.removeItem('agro_mobile_partes_locales');
+      localStorage.removeItem('sync_queue');
       return true;
     } catch (error) {
       console.error('Upload sync error', error);

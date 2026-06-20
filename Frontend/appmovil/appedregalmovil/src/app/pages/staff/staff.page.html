@@ -81,7 +81,7 @@
           <div class="section-bar bajo"></div>
           <h2 class="section-title">Bajo Rendimiento</h2>
         </div>
-        <span class="badge-accion">Acción Requerida</span>
+        <span class="badge-accion">Accion Requerida</span>
       </div>
 
       @if (colaboradoresBajo.length === 0) {
@@ -105,18 +105,47 @@
               <p class="col-meta negativo">{{ col.meta }}% vs meta</p>
             </div>
           </div>
-          @if (col.enObservacion) {
-            <div class="observacion-box mt-10" style="background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 10px; text-align: center; color: #b3000b; font-size: 13px; font-weight: 600; margin-top: 10px;">
-              <i class="fas fa-eye"></i> En Observación
-            </div>
-          } @else {
-            <button class="btn-intervenir ion-activatable" (click)="verDetalle(col, 'bajo')">
-              <i class="fas fa-crosshairs"></i>
-              Intervenir
-              <ion-ripple-effect></ion-ripple-effect>
-            </button>
-          }
+          <button class="btn-intervenir ion-activatable" (click)="verDetalle(col, 'bajo')">
+            <i class="fas fa-crosshairs"></i>
+            Intervenir
+            <ion-ripple-effect></ion-ripple-effect>
+          </button>
         </div>
+      }
+
+      <!-- ══ EN OBSERVACION ══ -->
+      @if (colaboradoresObservacion.length > 0) {
+        <div class="section-header mt-20">
+          <div class="section-title-row">
+            <div class="section-bar" style="background: #f59e0b;"></div>
+            <h2 class="section-title">En Observacion</h2>
+          </div>
+          <span class="badge-lectura" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">Seguimiento</span>
+        </div>
+
+        @for (col of colaboradoresObservacion; track col.id) {
+          <div class="colaborador-card" style="border-left: 3px solid #f59e0b; margin-bottom: 12px;">
+            <div class="card-top-row">
+              <div class="avatar-wrap" style="background: #fef3c7;">
+                <i class="fas fa-eye" style="color: #d97706; font-size: 16px;"></i>
+              </div>
+              <div class="col-info">
+                <p class="col-nombre">{{ col.nombre }}</p>
+                <p class="col-id">ID: {{ col.id }}</p>
+              </div>
+              <div class="col-rendimiento">
+                <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
+                <p class="col-meta" style="color: #d97706;">Observado</p>
+              </div>
+            </div>
+            @if (col.motivoObservacion) {
+              <div style="background: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 10px; margin-top: 10px;">
+                <p style="font-size: 11px; font-weight: 700; color: #92400e; margin: 0 0 4px;">MOTIVO:</p>
+                <p style="font-size: 13px; color: #78350f; margin: 0;">{{ col.motivoObservacion }}</p>
+              </div>
+            }
+          </div>
+        }
       }
 
       <!-- ══ ALTO RENDIMIENTO ══ -->
@@ -125,7 +154,7 @@
           <div class="section-bar alto"></div>
           <h2 class="section-title">Alto Rendimiento</h2>
         </div>
-        <span class="badge-lectura">Lectura únicamente</span>
+        <span class="badge-lectura">Lectura unicamente</span>
       </div>
 
       @for (col of colaboradoresAlto; track col.id) {
@@ -306,15 +335,15 @@
 
       @if (rendimientoSeleccionado === 'bajo') {
         <div class="comment-box fade-in" style="margin-top: 20px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #4b5563; margin-bottom: 8px;">Motivo de Observación</label>
-          <textarea rows="3" placeholder="Escriba un breve comentario..." style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 14px; font-family: inherit; resize: none; background: #fff;"></textarea>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #4b5563; margin-bottom: 8px;">Motivo de Observacion</label>
+          <textarea [(ngModel)]="motivoObservacionActual" rows="3" placeholder="Escriba el motivo de la observacion..." style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 14px; font-family: inherit; resize: none; background: #fff; box-sizing: border-box;"></textarea>
         </div>
 
         <button class="btn-solid-red full-w fade-in" style="width: 100%; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 600; background: #b3000b; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 16px;" (click)="ponerEnObservacion()">
-          <i class="fas fa-eye"></i> Poner en Observación
+          <i class="fas fa-eye"></i> Poner en Observacion
         </button>
         <p class="text-center text-gray font-11 mt-10 mb-20 fade-in" style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 10px; margin-bottom: 24px; padding-bottom: 24px;">
-          Al confirmar, el trabajador pasará a estado de observación y se sincronizará el reporte.
+          Al confirmar, el trabajador pasara a estado de observacion y se sincronizara el reporte.
         </p>
       } @else {
         <div style="height: 40px;"></div>

@@ -23,94 +23,140 @@
   <!-- ===== BODY SCROLLABLE ===== -->
   <div class="rd-body">
 
-    <!-- Título de página -->
-    <div class="page-title-section">
-      <h1 class="page-title">Registro de Asistencia</h1>
-      <p class="page-subtitle">Field Management &amp; Daily Control</p>
-    </div>
-
-    <!-- Alerta Importante -->
-    <div class="alert-box">
-      <div class="alert-icon">
-        <i class="fas fa-triangle-exclamation"></i>
-      </div>
-      <div class="alert-content">
-        <p class="alert-title">Importante</p>
-        <p class="alert-text">
-          Asegúrese de que el personal cuente con su fotocheck visible antes de proceder con el registro.
-        </p>
-      </div>
-    </div>
-
-    <!-- Card de Fecha y Hora -->
-    <div class="registration-card">
-
-      <div class="field-group">
-        <label class="field-label">Fecha de Registro</label>
-        <div class="field-value-row">
-          <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
-          <span class="field-value">{{ fechaRegistro() }}</span>
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VISTA HISTORIAL                          -->
+    <!-- ══════════════════════════════════════════ -->
+    @if (mostrarHistorial) {
+      <div class="page-title-section" style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <button class="btn-back-inline" (click)="regresarAlRegistro()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div>
+          <h1 class="page-title" style="font-size: 20px;">Historial de Asistencia</h1>
+          <p class="page-subtitle">Últimos 3 días registrados</p>
         </div>
       </div>
 
-      <div class="field-divider"></div>
+      @if (historialFiltrado.length === 0) {
+        <div class="empty-hist-state">
+          <ion-icon name="list-outline" style="font-size: 40px; color: #d1d5db;"></ion-icon>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 8px;">Sin registros de los últimos 3 días.</p>
+        </div>
+      }
 
-      <div class="field-group">
-        <label class="field-label">Hora de Ingreso</label>
-        <div class="field-value-row">
-          <ion-icon name="time-outline" class="field-icon"></ion-icon>
-          <span class="field-value">{{ horaIngreso() }}</span>
+      @for (reg of historialFiltrado; track reg.timestamp) {
+        <div class="hist-card">
+          <div class="hist-icon-wrap">
+            <i class="fas fa-user-clock" style="color: #b3000b; font-size: 18px;"></i>
+          </div>
+          <div class="hist-info">
+            <p class="hist-nombre">{{ reg.nombreUsuario }}</p>
+            <p class="hist-fecha">{{ reg.fecha }}</p>
+          </div>
+          <div class="hist-hora">
+            <span class="hist-hora-badge">{{ reg.hora }}</span>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VISTA REGISTRO PRINCIPAL                 -->
+    <!-- ══════════════════════════════════════════ -->
+    @if (!mostrarHistorial) {
+
+      <!-- Título de página -->
+      <div class="page-title-section">
+        <h1 class="page-title">Registro de Asistencia</h1>
+        <p class="page-subtitle">Field Management &amp; Daily Control</p>
+      </div>
+
+      <!-- Alerta Importante -->
+      <div class="alert-box">
+        <div class="alert-icon">
+          <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <div class="alert-content">
+          <p class="alert-title">Importante</p>
+          <p class="alert-text">
+            Asegúrese de que el personal cuente con su fotocheck visible antes de proceder con el registro.
+          </p>
         </div>
       </div>
 
-      <!-- Botón Continuar -->
-      <ion-button
-        expand="block"
-        class="btn-continuar"
-        (click)="continuar()">
-        Continuar
-        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
-      </ion-button>
+      <!-- Card de Fecha y Hora -->
+      <div class="registration-card">
 
-    </div>
+        <div class="field-group">
+          <label class="field-label">Fecha de Registro</label>
+          <div class="field-value-row">
+            <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
+            <span class="field-value">{{ fechaRegistro() }}</span>
+          </div>
+        </div>
 
-    <!-- Botón Ver Historial -->
-    <button class="btn-historial ion-activatable" (click)="verHistorial()">
-      <ion-icon name="refresh-outline"></ion-icon>
-      Ver Historial de Hoy
-      <ion-ripple-effect></ion-ripple-effect>
-    </button>
+        <div class="field-divider"></div>
 
-    <!-- Imagen del Fundo -->
-    <div class="fundo-image-card">
-      <img src="fundo-pedregal.png" alt="Fundo El Pedregal - Sector Norte" class="fundo-img">
-      <div class="fundo-overlay">
-        <span class="fundo-label">Fundo El Pedregal - Sector Norte</span>
+        <div class="field-group">
+          <label class="field-label">Hora de Ingreso</label>
+          <div class="field-value-row">
+            <ion-icon name="time-outline" class="field-icon"></ion-icon>
+            <span class="field-value">{{ horaIngreso() }}</span>
+          </div>
+        </div>
+
+        <!-- Botón Continuar -->
+        <ion-button
+          expand="block"
+          class="btn-continuar"
+          (click)="continuar()">
+          Continuar
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+
       </div>
-    </div>
+
+      <!-- Botón Ver Historial -->
+      <button class="btn-historial ion-activatable" (click)="verHistorial()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Ver Historial de Asistencia
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+
+      <!-- Imagen del Fundo -->
+      <div class="fundo-image-card">
+        <img src="fundo-pedregal.png" alt="Fundo El Pedregal - Sector Norte" class="fundo-img">
+        <div class="fundo-overlay">
+          <span class="fundo-label">Fundo El Pedregal - Sector Norte</span>
+        </div>
+      </div>
+
+    }
 
   </div>
 
-  <!-- ===== BOTTOM NAVIGATION ===== -->
+  <!-- ===== BOTTOM NAVIGATION (tabs bloqueados hasta Continuar) ===== -->
   <div class="bottom-nav">
-    <button class="nav-item active" (click)="irA('dashboard')">
+    <button class="nav-item active">
       <div class="nav-icon-wrap active">
         <i class="fas fa-th-large"></i>
       </div>
       <span>Dashboard</span>
     </button>
-    <button class="nav-item" (click)="irA('reports')">
+    <!-- Reports, Staff y Sync deshabilitados visualmente -->
+    <button class="nav-item nav-item--disabled" disabled>
       <i class="fas fa-chart-bar nav-icon-plain"></i>
       <span>Reports</span>
     </button>
-    <button class="nav-item" (click)="irA('staff')">
+    <button class="nav-item nav-item--disabled" disabled>
       <i class="fas fa-users nav-icon-plain"></i>
       <span>Staff</span>
     </button>
-    <button class="nav-item" (click)="irA('sync')">
+    <button class="nav-item nav-item--disabled" disabled>
       <i class="fas fa-sync-alt nav-icon-plain"></i>
       <span>Sync</span>
     </button>
   </div>
 
 </ion-content>
+

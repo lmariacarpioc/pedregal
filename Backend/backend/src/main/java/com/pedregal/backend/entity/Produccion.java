@@ -22,9 +22,7 @@ public class Produccion {
     @JoinColumn(name = "parte_diario_id")
     private ParteDiario parteDiario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "punto_movil_id")
-    private PuntoMovil puntoMovil;
+
 
     @Column(nullable = false)
     private String actividad;
