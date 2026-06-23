@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -35,6 +35,7 @@ export interface IAlerta {
   styleUrl: './dashboard.page.css'
 })
 export class DashboardPage implements OnInit {
+  Math = Math;
 
   textoBusqueda: string = '';
   alertasVisible: boolean = false;
@@ -52,10 +53,76 @@ export class DashboardPage implements OnInit {
   // Reporte
   partesFinalizados: any[] = [];
 
-  constructor(private router: Router, private trabajador: Trabajador) {}
+  constructor(private router: Router, private trabajador: Trabajador, private cdr: ChangeDetectorRef) {}
 
-  ngOnInit(): void {
-    this.cargarDatos();
+  cargando = true;
+
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.trabajador.sincronizarConBackend();
+    } finally {
+      this.cargarDatos();
+      this.cargando = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // Rendimiento global para la campana de Gauss
+  rendimientoGlobal: number = 0;
+  
+  // Variables para la interacción con la Campana de Gauss
+  gaussHover: boolean = false;
+  hoverX: number = 0;
+  hoverY: number = 0;
+  hoverPct: number = 0;
+
+  get gapRendimiento(): number {
+    return this.rendimientoGlobal - 100;
+  }
+
+  get gaussPathReal(): string {
+    // Si el rendimiento global es 0, la curva está en el fondo
+    if (this.rendimientoGlobal === 0) {
+      return "M 10,150 C 150,150 200,150 310,150 C 420,150 470,150 610,150";
+    }
+    
+    // Mapeamos el rendimiento (0-100) a un centro X (10-610) y una altura Y (150-6)
+    const pct = Math.min(Math.max(this.rendimientoGlobal, 10), 120) / 100;
+    const peakX = 10 + (600 * pct);
+    const peakY = Math.max(6, 150 - (144 * pct));
+    
+    return `M 10,150 C ${peakX - 150},150 ${peakX - 100},${peakY} ${peakX},${peakY} C ${peakX + 100},${peakY} ${peakX + 150},150 610,150`;
+  }
+  
+  get gaussLabelX(): number {
+    const pct = Math.min(Math.max(this.rendimientoGlobal, 10), 120) / 100;
+    return 10 + (600 * pct);
+  }
+
+  onGaussHover(event: MouseEvent): void {
+    this.gaussHover = true;
+    
+    // Obtener coordenadas relativas al SVG
+    const svg = event.currentTarget as SVGSVGElement;
+    const pt = svg.createSVGPoint();
+    pt.x = event.clientX;
+    pt.y = event.clientY;
+    const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse());
+    
+    this.hoverX = svgP.x;
+    
+    // Calcular porcentaje basado en la coordenada X (10 a 610 = 0% a 120%)
+    let pct = ((this.hoverX - 10) / 600) * 120;
+    this.hoverPct = Math.max(0, Math.min(120, Math.round(pct)));
+    
+    // Calcular Y aproximado en la campana (simulando distribución normal)
+    const mediaX = this.gaussLabelX;
+    const varianza = 5000;
+    const alturaMaxima = Math.max(6, 150 - (144 * (this.rendimientoGlobal / 100)));
+    const altura = 150 - alturaMaxima;
+    
+    const exp = -Math.pow(this.hoverX - mediaX, 2) / (2 * varianza);
+    this.hoverY = 150 - (altura * Math.exp(exp));
   }
 
   cargarDatos(): void {
@@ -64,6 +131,13 @@ export class DashboardPage implements OnInit {
     this.costoImproductividad  = this.trabajador.getCostoImproductividad();
     this.grupos                = this.trabajador.getRankingGrupos();
     this.partesFinalizados     = this.trabajador.getPartesFinalizados();
+    
+    if (this.grupos.length > 0) {
+      this.rendimientoGlobal = Math.round(this.grupos.reduce((s, g) => s + g.rendimiento, 0) / this.grupos.length);
+    } else {
+      this.rendimientoGlobal = 0;
+    }
+    
     this._generarAlertas();
   }
 
@@ -81,7 +155,9 @@ export class DashboardPage implements OnInit {
       const criticos = ts.filter(t => t.estado === 'Crítico').length;
       const regulares = ts.filter(t => t.estado === 'Regular').length;
 
-      if (rendProm < 60) {
+      // Solo alertar si el rendimiento es mayor a 0 (para no alertar al inicio del día)
+      // O si hay trabajadores explícitamente marcados como 'Crítico'
+      if ((rendProm > 0 && rendProm < 60) || criticos > 0) {
         nuevas.push({
           tipo: 'critico',
           tipoLabel: 'RENDIMIENTO CRÍTICO',
@@ -92,7 +168,7 @@ export class DashboardPage implements OnInit {
           mensaje: `${criticos} trabajador(es) en estado crítico. Rendimiento promedio ${rendProm}% — por debajo del umbral mínimo. Se requiere intervención inmediata.`,
           descartada: false
         });
-      } else if (rendProm < 80) {
+      } else if (rendProm >= 60 && rendProm < 80) {
         nuevas.push({
           tipo: 'bajo',
           tipoLabel: 'RENDIMIENTO BAJO',

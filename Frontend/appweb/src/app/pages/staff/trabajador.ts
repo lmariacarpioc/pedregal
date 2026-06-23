@@ -54,57 +54,6 @@ const STORAGE_KEYS = {
   PARTES: 'agro_partes_diarios',
 };
 
-const JEFES_INICIALES: IJefeCampo[] = [
-  {
-    id: 'SUP-001', nombre: 'Brígida Torres', rol: 'Jefe de Campo / Cuadrilla A',
-    zona: 'Lote 12 - Fundo Yaurilla', totalACargo: 10, avatar: 'BT',
-    trabajadores: [
-      { dni: '45678912', nombre: 'Juan Carlos Ramos', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 180, cajas: 5, metaBase: 10, rendimiento: 50, estado: 'Crítico', epps: 'Sí (Guantes, Tijera, Lentes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-      { dni: '40897654', nombre: 'Carlos Mendoza Loza', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 9, metaBase: 10, rendimiento: 90, estado: 'Óptimo', epps: 'Sí (Guantes, Tijera, Lentes)', restricciones: 'Evitar cargas pesadas', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'A+', alergias: 'Ninguna' },
-      { dni: '44321678', nombre: 'Pedro Palacios Vega', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 45, cajas: 7.5, metaBase: 10, rendimiento: 75, estado: 'Regular', epps: 'Sí (Guantes, Tijera)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'B+', alergias: 'Ninguna' },
-      { dni: '41234567', nombre: 'Ana Gamarra Ruiz', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 210, cajas: 4, metaBase: 10, rendimiento: 40, estado: 'Crítico', epps: 'Sí (Guantes, Lentes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'O-', alergias: 'Ninguna' },
-      { dni: '42345678', nombre: 'Luis Alberto Rojas', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 11, metaBase: 10, rendimiento: 110, estado: 'Óptimo', epps: 'Sí (Guantes, Tijera, Lentes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'A-', alergias: 'Ninguna' },
-      { dni: '43456789', nombre: 'María Elena Flores', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 20, cajas: 8, metaBase: 10, rendimiento: 80, estado: 'Regular', epps: 'Sí (Guantes, Lentes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'B-', alergias: 'Ninguna' },
-      { dni: '45567890', nombre: 'Jorge Díaz Hurtado', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 195, cajas: 4.8, metaBase: 10, rendimiento: 48, estado: 'Crítico', epps: 'Sí (Guantes, Tijera)', restricciones: 'Problemas lumbares', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-      { dni: '46678901', nombre: 'Lucía Méndez Castro', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 9.5, metaBase: 10, rendimiento: 95, estado: 'Óptimo', epps: 'Sí (Guantes, Tijera, Lentes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'A+', alergias: 'Ninguna' },
-      { dni: '47789012', nombre: 'Raúl Espino Soto', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 35, cajas: 7.8, metaBase: 10, rendimiento: 78, estado: 'Regular', epps: 'Sí (Guantes, Lentes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'B+', alergias: 'Ninguna' },
-      { dni: '48890123', nombre: 'Sofia Vargas Luna', labor: 'Cosecha de Uva', lote: 'Lote 12 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 10, metaBase: 10, rendimiento: 100, estado: 'Óptimo', epps: 'Sí (Guantes, Tijera, Lentes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-    ]
-  },
-  {
-    id: 'SUP-002', nombre: 'Elias Navarro', rol: 'Jefe de Campo / Cuadrilla B',
-    zona: 'Lote 08 - Fundo Yaurilla', totalACargo: 10, avatar: 'EN',
-    trabajadores: [
-      { dni: '10234567', nombre: 'Mateo Quispe Huamán', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 12, metaBase: 10, rendimiento: 120, estado: 'Óptimo', epps: 'Sí (Tijera larga, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-      { dni: '11345678', nombre: 'Diana Peralta Solis', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 150, cajas: 5.5, metaBase: 10, rendimiento: 55, estado: 'Crítico', epps: 'Sí (Tijera larga, Guantes)', restricciones: 'Hipertensión', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'A+', alergias: 'Ninguna' },
-      { dni: '12456789', nombre: 'Andrés Gutiérrez Paz', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 50, cajas: 7.2, metaBase: 10, rendimiento: 72, estado: 'Regular', epps: 'Sí (Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'B+', alergias: 'Ninguna' },
-      { dni: '13567890', nombre: 'Carmen Tello Rivas', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 9.2, metaBase: 10, rendimiento: 92, estado: 'Óptimo', epps: 'Sí (Tijera larga, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'O-', alergias: 'Ninguna' },
-      { dni: '14678901', nombre: 'Manuel Benavides C.', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 160, cajas: 5.2, metaBase: 10, rendimiento: 52, estado: 'Crítico', epps: 'Sí (Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'A-', alergias: 'Ninguna' },
-      { dni: '15789012', nombre: 'Rosa Angulo Farfán', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 40, cajas: 7.6, metaBase: 10, rendimiento: 76, estado: 'Regular', epps: 'Sí (Tijera larga, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'B-', alergias: 'Ninguna' },
-      { dni: '16890123', nombre: 'Félix Marín Cordero', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 9.8, metaBase: 10, rendimiento: 98, estado: 'Óptimo', epps: 'Sí (Tijera larga, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-      { dni: '17901234', nombre: 'Elena Miranda Tueros', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 145, cajas: 5.8, metaBase: 10, rendimiento: 58, estado: 'Crítico', epps: 'Sí (Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'A+', alergias: 'Ninguna' },
-      { dni: '18012345', nombre: 'Hugo Salvatierra M.', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 30, cajas: 7.9, metaBase: 10, rendimiento: 82, estado: 'Regular', epps: 'Sí (Tijera larga, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'B+', alergias: 'Ninguna' },
-      { dni: '19123456', nombre: 'Camila Falconi Vega', labor: 'Poda de Vid', lote: 'Lote 08 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 10.5, metaBase: 10, rendimiento: 105, estado: 'Óptimo', epps: 'Sí (Tijera larga, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-    ]
-  },
-  {
-    id: 'SUP-003', nombre: 'Jorge Ramírez', rol: 'Jefe de Campo / Cuadrilla C',
-    zona: 'Lote 04 - Fundo Yaurilla', totalACargo: 10, avatar: 'JR',
-    trabajadores: [
-      { dni: '70123456', nombre: 'Ricardo Álvaro Solano', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 55, cajas: 7.0, metaBase: 10, rendimiento: 70, estado: 'Regular', epps: 'Sí (Tijeras Corvas, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-      { dni: '71234567', nombre: 'Patricia Fuentes Ortiz', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 9.6, metaBase: 10, rendimiento: 96, estado: 'Óptimo', epps: 'Sí (Tijeras Corvas, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'A+', alergias: 'Ninguna' },
-      { dni: '72345678', nombre: 'Gabriel Cáceres Leyva', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 175, cajas: 4.9, metaBase: 10, rendimiento: 49, estado: 'Crítico', epps: 'Sí (Guantes)', restricciones: 'Evaluación médica pendiente', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'B+', alergias: 'Ninguna' },
-      { dni: '73456789', nombre: 'Verónica Saavedra P.', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 10.2, metaBase: 10, rendimiento: 102, estado: 'Óptimo', epps: 'Sí (Tijeras Corvas, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'O-', alergias: 'Ninguna' },
-      { dni: '74567890', nombre: 'Walter Yáñez Ramos', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 45, cajas: 7.4, metaBase: 10, rendimiento: 74, estado: 'Regular', epps: 'Sí (Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'A-', alergias: 'Ninguna' },
-      { dni: '75678901', nombre: 'Nancy Palomino Chu', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 185, cajas: 4.5, metaBase: 10, rendimiento: 45, estado: 'Crítico', epps: 'Sí (Tijeras Corvas, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'B-', alergias: 'Ninguna' },
-      { dni: '76789012', nombre: 'Christian Neyra Torres', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 9.1, metaBase: 10, rendimiento: 91, estado: 'Óptimo', epps: 'Sí (Tijeras Corvas, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'O+', alergias: 'Ninguna' },
-      { dni: '77890123', nombre: 'Sonia Alva Meléndez', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 35, cajas: 7.9, metaBase: 10, rendimiento: 79, estado: 'Regular', epps: 'Sí (Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'A+', alergias: 'Ninguna' },
-      { dni: '78901234', nombre: 'Tomas Bendezú Prado', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 0, cajas: 11.2, metaBase: 10, rendimiento: 112, estado: 'Óptimo', epps: 'Sí (Tijeras Corvas, Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Masculino', grupoSanguineo: 'B+', alergias: 'Ninguna' },
-      { dni: '79012345', nombre: 'Isabel Cárdenas Gil', labor: 'Raleo de Racimos', lote: 'Lote 04 - Fundo Yaurilla', horasLaboradas: 8, costoTraducido: 200, cajas: 4.0, metaBase: 10, rendimiento: 40, estado: 'Crítico', epps: 'Sí (Guantes)', restricciones: 'Ninguna', fechaNacimiento: '', genero: 'Femenino', grupoSanguineo: 'O-', alergias: 'Ninguna' },
-    ]
-  }
-];
-
 @Injectable({
   providedIn: 'root'
 })
@@ -112,58 +61,133 @@ export class Trabajador {
 
   private jefesDeCampo: IJefeCampo[] = [];
   private partesDiarios: IParteDiario[] = [];
+  private sincronizado = false;
  
   constructor(private http: HttpClient) {
     this._cargarDesdeStorage();
-    // Iniciar sincronización en background
+    // Sincronizar con el backend al iniciar
     this.sincronizarConBackend();
   }
  
-  // ─── SYNC ────────────────────────────────────────────────────
+  // ─── SYNC CON BACKEND ──────────────────────────────────────
   
-  async sincronizarConBackend() {
+  async sincronizarConBackend(force: boolean = false): Promise<void> {
+    if (this.sincronizado && !force) {
+      return;
+    }
     try {
       const data: any = await firstValueFrom(this.http.get(`${environment.apiUrl}/sync/download`));
       this.procesarPayloadSync(data);
+      this.sincronizado = true;
     } catch (error) {
       console.error('No se pudo sincronizar con el backend, usando datos locales:', error);
+      this.sincronizado = false;
     }
   }
 
   private procesarPayloadSync(payload: any) {
-    // Reconstruir Jefes de Campo
-    const supervisores = (payload.usuarios || []).filter((u: any) => u.rol === 'JEFE_CAMPO' || u.rol === 'SUPERVISOR');
-    
+    // ─── Reconstruir Jefes de Campo desde usuarios con rol JEFE_CAMPO ───
+    const supervisores = (payload.usuarios || []).filter(
+      (u: any) => u.rol === 'JEFE_CAMPO' || u.rol === 'SUPERVISOR'
+    );
+    const todosLosTrabajadores = (payload.trabajadores || []);
+
     this.jefesDeCampo = supervisores.map((sup: any) => {
-      // Filtrar trabajadores que están asignados a la zona de este supervisor
-      const trabs = (payload.trabajadores || []).map((t: any) => ({
-        dni: t.dni,
-        nombre: `${t.nombre} ${t.apellido}`,
+      // Mapear todos los trabajadores del backend a la estructura ITrabajador
+      const trabs: ITrabajador[] = todosLosTrabajadores.map((t: any) => ({
+        dni: t.dni || '',
+        nombre: `${t.nombre || ''} ${t.apellido || ''}`.trim(),
         labor: t.cargo || 'Cosecha',
-        lote: t.areaTrabajo || 'General',
+        lote: t.areaTrabajo || 'Lote General',
         horasLaboradas: 8,
         costoTraducido: 0,
         cajas: 0,
         metaBase: 10,
         rendimiento: 0,
-        estado: t.activo ? 'Óptimo' : 'Crítico',
+        estado: t.activo ? 'Regular' : 'Crítico',
         epps: 'Sí',
-        restricciones: 'Ninguna'
+        restricciones: 'Ninguna',
+        fechaNacimiento: '',
+        genero: '',
+        grupoSanguineo: '',
+        alergias: ''
       }));
 
+      // Distribuir trabajadores equitativamente entre supervisores
+      const chunkSize = Math.ceil(todosLosTrabajadores.length / (supervisores.length || 1));
+      const supIndex = supervisores.indexOf(sup);
+      const trabsAsignados = trabs.slice(supIndex * chunkSize, (supIndex + 1) * chunkSize);
+
       return {
-        id: sup.syncId || `SUP-${sup.id}`,
-        nombre: sup.nombreCompleto,
-        rol: sup.rol,
+        id: sup.syncId || `SUP-${sup.username || Date.now()}`,
+        nombre: sup.nombreCompleto || sup.username || 'Sin nombre',
+        rol: sup.rol || 'JEFE_CAMPO',
         zona: 'Asignación General',
-        totalACargo: trabs.length,
-        avatar: sup.nombreCompleto ? sup.nombreCompleto.substring(0, 2).toUpperCase() : 'US',
-        trabajadores: trabs
+        totalACargo: trabsAsignados.length,
+        avatar: sup.nombreCompleto
+          ? sup.nombreCompleto.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
+          : 'US',
+        trabajadores: trabsAsignados
       };
     });
 
+    // ─── Reconstruir Partes Diarios desde el backend ───
+    if (payload.partesDiarios && payload.partesDiarios.length > 0) {
+      const partesBackend: IParteDiario[] = payload.partesDiarios.map((p: any) => {
+        // Mapear detalles a la estructura de personal
+        const personalDelParte = (p.detalles || []).map((d: any) => {
+          // Buscar nombre del trabajador en la lista
+          const trab = todosLosTrabajadores.find((t: any) => t.syncId === d.trabajadorSyncId);
+          const nombreTrab = trab ? `${trab.nombre} ${trab.apellido}`.trim() : (d.trabajadorSyncId || 'Desconocido');
+          return {
+            dni: trab?.dni || d.trabajadorSyncId || '',
+            nombre: nombreTrab,
+            asistencia: d.estadoAsistencia || 'PRESENTE',
+            horaInicio: d.horaEntrada || '07:00',
+            horaFin: d.horaSalida || '16:00',
+            cajas: d.cantidad || 0,
+            metaBase: 10,
+            horasLaboradas: 8,
+            rendimiento: d.cantidad ? Math.round((d.cantidad / 10) * 100) : 0,
+            cargo: d.tipoActividad || 'Cosecha'
+          };
+        });
+
+        // Buscar nombre del jefe
+        const jefe = (payload.usuarios || []).find((u: any) => u.syncId === p.usuarioSyncId);
+        const jefeNombre = jefe?.nombreCompleto || p.usuarioSyncId || '';
+
+        return {
+          id: p.syncId || `PARTE-${Date.now()}`,
+          fecha: p.fecha || new Date().toISOString().split('T')[0],
+          jefeId: p.usuarioSyncId || '',
+          jefeNombre: jefeNombre,
+          campana: 'Campaña Actual',
+          cultivo: p.clima || 'Uva de Mesa',
+          fundo: 'Fundo Yaurilla',
+          lote: 'Lote General',
+          labor: p.turno || 'Mañana',
+          produccionAvanzada: personalDelParte.reduce((s: number, per: any) => s + (per.cajas || 0), 0),
+          metaDiaria: personalDelParte.length * 10,
+          personal: personalDelParte,
+          registrosProduccion: [],
+          estado: (p.estado === 'finalizado' ? 'finalizado' : 'borrador') as 'borrador' | 'finalizado'
+        };
+      });
+
+      // Merge partes del backend con partes locales (evitar duplicados por syncId)
+      const syncIdsBackend = new Set(partesBackend.map(p => p.id));
+      const partesLocalesSinDuplicados = this.partesDiarios.filter(p => !syncIdsBackend.has(p.id));
+      this.partesDiarios = [...partesBackend, ...partesLocalesSinDuplicados];
+    }
+
     // Guardar cambios locales
     this._guardarJefes();
+    this._guardarPartes();
+  }
+
+  esSincronizado(): boolean {
+    return this.sincronizado;
   }
 
   // ─── STORAGE ─────────────────────────────────────────────────
@@ -171,14 +195,12 @@ export class Trabajador {
   private _cargarDesdeStorage(): void {
     try {
       const jefesRaw = localStorage.getItem(STORAGE_KEYS.JEFES);
-      this.jefesDeCampo = jefesRaw
-        ? JSON.parse(jefesRaw)
-        : JSON.parse(JSON.stringify(JEFES_INICIALES));
+      this.jefesDeCampo = jefesRaw ? JSON.parse(jefesRaw) : [];
  
       const partesRaw = localStorage.getItem(STORAGE_KEYS.PARTES);
       this.partesDiarios = partesRaw ? JSON.parse(partesRaw) : [];
     } catch {
-      this.jefesDeCampo = JSON.parse(JSON.stringify(JEFES_INICIALES));
+      this.jefesDeCampo = [];
       this.partesDiarios = [];
     }
   }
@@ -199,11 +221,13 @@ export class Trabajador {
     }
   }
  
-  /** Borra todo y restaura datos de muestra */
+  /** Borra todo y re-sincroniza con el backend */
   resetStorage(): void {
     localStorage.removeItem(STORAGE_KEYS.JEFES);
     localStorage.removeItem(STORAGE_KEYS.PARTES);
-    this._cargarDesdeStorage();
+    this.jefesDeCampo = [];
+    this.partesDiarios = [];
+    this.sincronizarConBackend();
   }
  
   // ─── JEFES DE CAMPO ──────────────────────────────────────────
@@ -217,6 +241,22 @@ export class Trabajador {
   agregarJefeCampo(jefe: IJefeCampo): void {
     this.jefesDeCampo.push(jefe);
     this._guardarJefes();
+
+    // Sincronizar al backend como un usuario
+    const payload = {
+      username: jefe.nombre.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 100),
+      passwordHash: '123456', // default password
+      nombreCompleto: jefe.nombre,
+      rol: jefe.rol.toUpperCase().replace(/\s+/g, '_'),
+      email: jefe.nombre.toLowerCase().replace(/\s+/g, '') + '@pedregal.com',
+      activo: true,
+      syncId: jefe.id
+    };
+
+    this.http.post(`${environment.apiUrl}/usuarios`, payload).subscribe({
+      next: (res) => console.log('Jefe creado en backend', res),
+      error: (err) => console.error('Error creando jefe en backend', err)
+    });
   }
  
   generarIdJefe(): string {
@@ -236,15 +276,43 @@ export class Trabajador {
   actualizarTrabajador(mod: ITrabajador): void {
     mod.rendimiento = this._calcRendimiento(mod.cajas, mod.metaBase);
     mod.estado = this._calcEstado(mod.rendimiento);
+
     for (const jefe of this.jefesDeCampo) {
       const idx = jefe.trabajadores.findIndex(t => t.dni === mod.dni);
       if (idx !== -1) {
         jefe.trabajadores[idx] = { ...mod };
         jefe.trabajadores = [...jefe.trabajadores];
         this._guardarJefes();
+
+        // Sincronizar cambio al backend
+        this._actualizarTrabajadorEnBackend(mod);
         return;
       }
     }
+  }
+
+  private _actualizarTrabajadorEnBackend(trab: ITrabajador): void {
+    // Buscar por DNI en el backend y actualizar
+    this.http.get<any[]>(`${environment.apiUrl}/trabajadores`).subscribe({
+      next: (trabajadores) => {
+        const encontrado = trabajadores.find(t => t.dni === trab.dni);
+        if (encontrado) {
+          const nombres = trab.nombre.split(' ');
+          const payload = {
+            ...encontrado,
+            nombre: nombres[0] || trab.nombre,
+            apellido: nombres.slice(1).join(' ') || '',
+            cargo: trab.labor,
+            areaTrabajo: trab.lote
+          };
+          this.http.put(`${environment.apiUrl}/trabajadores/${encontrado.id}`, payload).subscribe({
+            next: () => console.log('Trabajador actualizado en backend'),
+            error: (err: any) => console.error('Error actualizando trabajador en backend', err)
+          });
+        }
+      },
+      error: (err: any) => console.error('Error buscando trabajador en backend', err)
+    });
   }
  
   agregarTrabajadorAJefe(jefeId: string, trabajador: ITrabajador): void {
@@ -253,7 +321,34 @@ export class Trabajador {
       jefe.trabajadores = [...jefe.trabajadores, { ...trabajador }];
       jefe.totalACargo = jefe.trabajadores.length;
       this._guardarJefes();
+
+      // Crear trabajador en el backend
+      this._crearTrabajadorEnBackend(trabajador);
     }
+  }
+
+  private _crearTrabajadorEnBackend(trab: ITrabajador): void {
+    const nombres = trab.nombre.split(' ');
+    const payload = {
+      syncId: `web-trab-${trab.dni}-${Date.now()}`,
+      nombre: nombres[0] || trab.nombre,
+      apellido: nombres.slice(1).join(' ') || '',
+      dni: trab.dni,
+      cargo: trab.labor,
+      areaTrabajo: trab.lote,
+      telefono: '',
+      categoria: 'Operario',
+      salarioDiario: 40.0,
+      activo: true
+    };
+    this.http.post(`${environment.apiUrl}/sync/upload`, {
+      dispositivoId: 'web',
+      timestamp: new Date().toISOString(),
+      trabajadores: [payload]
+    }).subscribe({
+      next: (res) => console.log('Trabajador sincronizado con backend', res),
+      error: (err) => console.error('Error creando trabajador en backend', err)
+    });
   }
  
   /** Llamado al finalizar un parte: sincroniza cajas/hr de cada trabajador */
@@ -315,17 +410,21 @@ export class Trabajador {
       partesDiarios: [
         {
           syncId: parte.id,
-          fecha: parte.fecha,
-          turno: 'Mañana', // default for now
-          clima: 'Despejado', // default
+          fecha: this._formatearFechaISO(parte.fecha),
+          turno: parte.labor || 'Mañana',
+          clima: parte.cultivo || 'Despejado',
           estado: parte.estado,
           usuarioSyncId: parte.jefeId,
+          observacionesGenerales: `Campaña: ${parte.campana}, Fundo: ${parte.fundo}, Lote: ${parte.lote}`,
           detalles: parte.personal.map(p => ({
             syncId: `det-${parte.id}-${p.dni}`,
-            trabajadorSyncId: p.dni, // Assuming DNI is used as syncId for now
+            trabajadorSyncId: p.dni,
             estadoAsistencia: p.asistencia,
-            horaEntrada: '06:00',
-            horaSalida: '14:00'
+            horaEntrada: p.horaInicio || '06:00',
+            horaSalida: p.horaFin || '14:00',
+            cantidad: p.cajas || 0,
+            tipoActividad: p.cargo || 'Cosecha',
+            tareaRealizada: p.cargo || 'Cosecha'
           }))
         }
       ]
@@ -335,6 +434,18 @@ export class Trabajador {
       next: (res) => console.log('Parte sincronizado con backend', res),
       error: (err) => console.error('Error al subir parte al backend', err)
     });
+  }
+
+  private _formatearFechaISO(fecha: string): string {
+    // Intenta convertir formatos como "23/06/2026" o "23/6/2026" a "2026-06-23"
+    if (fecha.includes('-') && fecha.length === 10) return fecha; // ya está en ISO
+    const partes = fecha.split('/');
+    if (partes.length === 3) {
+      const [dia, mes, anio] = partes;
+      return `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+    }
+    // Fallback: usar fecha actual
+    return new Date().toISOString().split('T')[0];
   }
  
   getPartesDiarios(): IParteDiario[] { return this.partesDiarios; }

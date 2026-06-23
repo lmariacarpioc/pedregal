@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule,Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -20,16 +20,20 @@ textoBusqueda: string = '';
   
 jefesDeCampo: any[] = [];
 
-  constructor(private router: Router,private trabajador: Trabajador) { }
+  cargando = true;
 
-  ngOnInit(): void {
-  // Al regresar de la navegación, extraemos la lista fresca desde la simulación del servicio
-  this.jefesDeCampo = this.trabajador.getJefesDeCampo();
-  
-  // Opcional: Si quieres expandir automáticamente el supervisor seleccionado por defecto
-  // para auditar el cambio rápido:
-  this.supervisorSeleccionado = 'SUP-001'; 
-}
+  constructor(private router: Router, private trabajador: Trabajador, private cdr: ChangeDetectorRef) { }
+
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.trabajador.sincronizarConBackend();
+    } finally {
+      this.jefesDeCampo = this.trabajador.getJefesDeCampo();
+      this.supervisorSeleccionado = this.jefesDeCampo.length > 0 ? this.jefesDeCampo[0].id : null;
+      this.cargando = false;
+      this.cdr.detectChanges();
+    }
+  }
   get jefesFiltrados() {
     if (!this.textoBusqueda || this.textoBusqueda.trim() === '') {
       return this.jefesDeCampo;

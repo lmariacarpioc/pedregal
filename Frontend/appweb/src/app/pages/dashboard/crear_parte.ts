@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -74,7 +74,7 @@ export class Crear_Parte implements OnInit {
   };
   errorNuevoTrabajador = '';
  
-  constructor(private router: Router, private trabajador: Trabajador) {}
+  constructor(private router: Router, private trabajador: Trabajador, private cdr: ChangeDetectorRef) {}
  
   ngOnInit(): void {
     this.jefesDeCampo = this.trabajador.getJefesDeCampo();
@@ -298,8 +298,10 @@ export class Crear_Parte implements OnInit {
  
   mostrarNotificacion(mensaje: string): void {
     this.mensajeExito = mensaje;
+    this.cdr.detectChanges();
     setTimeout(() => {
       this.mensajeExito = '';
+      this.cdr.detectChanges();
     }, 3000);
   }
 

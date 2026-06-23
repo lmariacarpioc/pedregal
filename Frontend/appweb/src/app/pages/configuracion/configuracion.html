@@ -76,8 +76,7 @@
         <h3>Usuarios y Permisos</h3>
       </div>
       <div class="usuarios-badges">
-        <span class="badge-usuario admin">Admin: 2</span>
-        <span class="badge-usuario staff">Staff: 14</span>
+        <span class="badge-usuario admin">Total: {{ usuarios.length }}</span>
       </div>
     </div>
 
@@ -89,26 +88,38 @@
 
         <div class="campo">
           <label>NOMBRE COMPLETO</label>
-          <input type="text" placeholder="Ej. Juan Pérez" />
+          <input type="text" placeholder="Ej. Juan Pérez" [(ngModel)]="nuevoUsuario.nombre" />
         </div>
 
         <div class="campo">
           <label>CORREO ELECTRÓNICO</label>
-          <input type="email" placeholder="jperez@pedregal.com" />
+          <input type="email" placeholder="jperez@pedregal.com" [(ngModel)]="nuevoUsuario.email" />
+        </div>
+
+        <div class="campo">
+          <label>NOMBRE DE USUARIO</label>
+          <input type="text" placeholder="jperez" [(ngModel)]="nuevoUsuario.username" />
+        </div>
+
+        <div class="campo">
+          <label>CONTRASEÑA</label>
+          <input type="password" placeholder="••••••••" [(ngModel)]="nuevoUsuario.password" />
         </div>
 
         <div class="campo">
           <label>ROL DEL SISTEMA</label>
           <div class="select-wrapper">
-            <select>
-              <option>Supervisor de Campo</option>
-              <option>Administrador</option>
-              <option>Staff</option>
+            <select [(ngModel)]="nuevoUsuario.rol">
+              <option value="Administrador">Administrador</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Jefe de Campo">Jefe de Campo</option>
             </select>
           </div>
         </div>
 
-        <button class="btn-crear">Crear Cuenta</button>
+        <div *ngIf="mensajeError" class="mensaje-error">{{ mensajeError }}</div>
+
+        <button class="btn-crear" (click)="crearCuenta()" [disabled]="cargando">Crear Cuenta</button>
       </div>
 
       <!-- Tabla: Lista de usuarios -->
@@ -123,47 +134,35 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr *ngFor="let u of usuarios">
               <td>
                 <div class="usuario-info">
-                  <span class="avatar" style="background:#c0392b;">MA</span>
+                  <span class="avatar" [style.background]="u.activo ? '#c0392b' : '#95a5a6'">
+                    {{ u.nombreCompleto ? (u.nombreCompleto.substring(0,1) + (u.nombreCompleto.split(' ')[1] ? u.nombreCompleto.split(' ')[1].substring(0,1) : '')).toUpperCase() : '??' }}
+                  </span>
                   <div>
-                    <strong>Miguel Arrieta</strong>
-                    <span>m.arrieta@pedregal.com</span>
+                    <strong>{{ u.nombreCompleto }}</strong>
+                    <span>{{ u.email }}</span>
                   </div>
                 </div>
               </td>
-              <td>Administrador</td>
-              <td><span class="estado-icon activo">✔</span></td>
-              <td><button class="btn-opciones">⋮</button></td>
+              <td>{{ u.rol }}</td>
+              <td>
+                <span
+                  class="estado-icon"
+                  [ngClass]="u.activo ? 'activo' : 'inactivo'"
+                  (click)="toggleUsuarioActivo(u)"
+                  style="cursor:pointer;"
+                >
+                  {{ u.activo ? '✔' : '○' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-opciones" (click)="eliminarUsuario(u.id)">🗑</button>
+              </td>
             </tr>
-            <tr>
-              <td>
-                <div class="usuario-info">
-                  <span class="avatar" style="background:#7f8c8d;">SV</span>
-                  <div>
-                    <strong>Sofia Valdivia</strong>
-                    <span>s.valdivia@pedregal.com</span>
-                  </div>
-                </div>
-              </td>
-              <td>Supervisor</td>
-              <td><span class="estado-icon activo">✔</span></td>
-              <td><button class="btn-opciones">⋮</button></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="usuario-info">
-                  <span class="avatar" style="background:#95a5a6;">LC</span>
-                  <div>
-                    <strong>Luis Campos</strong>
-                    <span>l.campos@pedregal.com</span>
-                  </div>
-                </div>
-              </td>
-              <td>Supervisor</td>
-              <td><span class="estado-icon inactivo">○</span></td>
-              <td><button class="btn-opciones">⋮</button></td>
+            <tr *ngIf="usuarios.length === 0 && !cargando">
+              <td colspan="4" style="text-align:center; padding:1.5rem; color:#7f8c8d;">No hay usuarios registrados.</td>
             </tr>
           </tbody>
         </table>
@@ -224,5 +223,8 @@
       </div>
     </div>
   </div>
+
+  <!-- Toast de éxito -->
+  <div *ngIf="mensajeExito" class="toast-exito">{{ mensajeExito }}</div>
 
 </main>
