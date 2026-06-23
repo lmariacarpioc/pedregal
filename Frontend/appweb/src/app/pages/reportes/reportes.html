@@ -1,6 +1,11 @@
 
 <main class="contenido-principal">
-  
+
+  <!-- Loading State -->
+  <div *ngIf="cargando" class="loading">Cargando datos...</div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="loading" style="color: #e74c3c;">{{ error }}</div>
 
   <!-- Encabezado -->
   <div class="reportes-header">
@@ -9,193 +14,165 @@
       <p>Análisis exhaustivo del rendimiento y cumplimiento agrícola</p>
     </div>
     <div class="reportes-filtros">
-      <button class="btn-filtro">
-        <span>📅</span> Últimos 30 días ▾
-      </button>
-      <button class="btn-filtro">
-        <span>≡</span> Filtros
+      <input type="date" class="btn-filtro" [(ngModel)]="filtroFechas.inicio" />
+      <input type="date" class="btn-filtro" [(ngModel)]="filtroFechas.fin" />
+      <button class="btn-filtro" (click)="limpiarFiltros()">
+        <span>✕</span> Limpiar
       </button>
     </div>
   </div>
 
-  
-  <div class="fila-tarjetas">
+  <!-- Empty State -->
+  <div *ngIf="!cargando && datosHistoricos.length === 0" class="loading">
+    No hay datos disponibles. Cree partes diarios para ver reportes.
+  </div>
 
-    <!-- Tarjeta: Cumplimiento de Metas -->
-    <div class="tarjeta cumplimiento">
-      <span class="tarjeta-etiqueta">CUMPLIMIENTO DE METAS</span>
-      <h2 class="porcentaje">94.2%</h2>
-      <p class="variacion positiva">↑ +2.4% vs mes anterior</p>
-      <div class="mini-grafico">
-        <div class="barra-mini" style="height: 30px;"></div>
-        <div class="barra-mini" style="height: 40px;"></div>
-        <div class="barra-mini" style="height: 35px;"></div>
-        <div class="barra-mini" style="height: 50px;"></div>
-        <div class="barra-mini" style="height: 45px;"></div>
-        <div class="barra-mini destacada" style="height: 70px;"></div>
+  <!-- Content (only when data exists and not loading) -->
+  <ng-container *ngIf="!cargando && datosHistoricos.length > 0">
+
+    <div class="fila-tarjetas">
+
+      <!-- Tarjeta: Cumplimiento de Metas -->
+      <div class="tarjeta cumplimiento">
+        <span class="tarjeta-etiqueta">CUMPLIMIENTO DE METAS</span>
+        <h2 class="porcentaje">{{ cumplimientoMetas }}%</h2>
+        <p class="variacion positiva">↑ Rendimiento general</p>
+        <div class="mini-grafico">
+          <div
+            *ngFor="let sem of produccionPorSemana; let last = last"
+            class="barra-mini"
+            [class.destacada]="last"
+            [style.height.px]="sem.total > 0 ? (sem.total / maxProduccion) * 60 : 5"
+          ></div>
+        </div>
       </div>
+
+      <!-- Tarjeta: Producción por Semana -->
+      <div class="tarjeta produccion">
+        <div class="tarjeta-header">
+          <div>
+            <h3>Producción por Semana</h3>
+            <p class="subtitulo">Toneladas recolectadas</p>
+          </div>
+          <div class="leyenda">
+            <span class="leyenda-item real">● Real</span>
+          </div>
+        </div>
+        <div class="grafico-barras">
+          <div class="grupo-barra" *ngFor="let sem of produccionPorSemana">
+            <div class="barra-grupo">
+              <div
+                class="barra real"
+                [class.destacada]="sem.total >= (maxProduccion * 0.8)"
+                [style.height.px]="sem.total > 0 ? (sem.total / maxProduccion) * 120 : 5"
+              ></div>
+            </div>
+            <span class="etiqueta-barra">SEM {{ sem.semana }}</span>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Tarjeta: Producción por Semana -->
-    <div class="tarjeta produccion">
-      <div class="tarjeta-header">
+    <div class="fila-tarjetas">
+
+      <!-- Tarjeta: Eficiencia por Cuadrilla -->
+      <div class="tarjeta eficiencia">
+        <h3>Eficiencia por Cuadrilla</h3>
+        <div class="cuadrilla-item" *ngFor="let c of eficienciaCuadrillas">
+          <span class="cuadrilla-nombre">{{ c.nombre }}</span>
+          <span class="cuadrilla-porcentaje rojo">{{ c.rendimiento }}%</span>
+          <div class="barra-progreso">
+            <div class="barra-relleno" [style.width.%]="c.rendimiento"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta: Estado del Lote (static placeholder) -->
+      <div class="tarjeta estado-lote">
+        <div class="mapa-fondo">
+          <div class="popup-lote">
+            <span class="lote-badge">📍 Lote Activo: San José IV</span>
+            <h4>Estado del Lote</h4>
+            <p>Recolección activa: 14 personas en campo</p>
+            <div class="lote-tags">
+              <span class="tag verde">ÓPTIMO</span>
+              <span class="tag naranja">RIEGO: 100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tabla: Datos Históricos -->
+    <div class="tarjeta datos-historicos">
+      <div class="tabla-header">
         <div>
-          <h3>Producción por Semana</h3>
-          <p class="subtitulo">Toneladas recolectadas vs Proyección</p>
+          <h3>Datos Históricos</h3>
+          <p class="subtitulo">Registro detallado de actividades diarias</p>
         </div>
-        <div class="leyenda">
-          <span class="leyenda-item real">● Real</span>
-          <span class="leyenda-item meta">● Meta</span>
+        <div class="tabla-acciones">
+          <button class="btn-exportar" (click)="exportarCSV()">⬇ Exportar CSV</button>
         </div>
       </div>
-      <div class="grafico-barras">
-        <div class="grupo-barra">
-          <div class="barra-grupo">
-            <div class="barra real" style="height: 80px;"></div>
-            <div class="barra meta" style="height: 100px;"></div>
-          </div>
-          <span class="etiqueta-barra">SEM 1</span>
-        </div>
-        <div class="grupo-barra">
-          <div class="barra-grupo">
-            <div class="barra real" style="height: 90px;"></div>
-            <div class="barra meta" style="height: 110px;"></div>
-          </div>
-          <span class="etiqueta-barra">SEM 2</span>
-        </div>
-        <div class="grupo-barra">
-          <div class="barra-grupo">
-            <div class="barra real destacada" style="height: 120px;"></div>
-            <div class="barra meta" style="height: 110px;"></div>
-          </div>
-          <span class="etiqueta-barra">SEM 3</span>
-        </div>
-        <div class="grupo-barra">
-          <div class="barra-grupo">
-            <div class="barra real" style="height: 85px;"></div>
-            <div class="barra meta" style="height: 105px;"></div>
-          </div>
-          <span class="etiqueta-barra">SEM 4</span>
+
+      <table class="tabla-datos">
+        <thead>
+          <tr>
+            <th>FECHA</th>
+            <th>CUADRILLA</th>
+            <th>LOTE</th>
+            <th>PRODUCCIÓN (KG)</th>
+            <th>CALIDAD</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of datosHistoricosPaginados">
+            <td>{{ d.fecha }}</td>
+            <td>{{ d.cuadrilla }}</td>
+            <td>{{ d.lote }}</td>
+            <td><strong>{{ d.produccion }}</strong></td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'excelente': d.calidad === 'EXCELENTE',
+                  'estandar': d.calidad === 'ESTÁNDAR',
+                  'revision': d.calidad === 'REVISIÓN'
+                }"
+              >{{ d.calidad }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Paginación -->
+      <div class="paginacion">
+        <span class="pag-info">
+          Mostrando {{ datosHistoricosPaginados.length }} de {{ datosHistoricos.length }} registros
+        </span>
+        <div class="pag-botones">
+          <button
+            class="pag-btn"
+            [disabled]="paginaActual <= 1"
+            (click)="cambiarPagina(paginaActual - 1)"
+          >‹</button>
+          <button
+            *ngFor="let p of [].constructor(totalPaginas); let i = index"
+            class="pag-btn"
+            [class.activo]="paginaActual === i + 1"
+            (click)="cambiarPagina(i + 1)"
+          >{{ i + 1 }}</button>
+          <button
+            class="pag-btn"
+            [disabled]="paginaActual >= totalPaginas"
+            (click)="cambiarPagina(paginaActual + 1)"
+          >›</button>
         </div>
       </div>
     </div>
 
-  </div>
-
- 
-  <div class="fila-tarjetas">
-
-    <!-- Tarjeta: Eficiencia por Cuadrilla -->
-    <div class="tarjeta eficiencia">
-      <h3>Eficiencia por Cuadrilla</h3>
-      <div class="cuadrilla-item">
-        <span class="cuadrilla-nombre">Cuadrilla A (Norte)</span>
-        <span class="cuadrilla-porcentaje rojo">98%</span>
-        <div class="barra-progreso">
-          <div class="barra-relleno" style="width: 98%;"></div>
-        </div>
-      </div>
-      <div class="cuadrilla-item">
-        <span class="cuadrilla-nombre">Cuadrilla B (Sur)</span>
-        <span class="cuadrilla-porcentaje rojo">82%</span>
-        <div class="barra-progreso">
-          <div class="barra-relleno" style="width: 82%;"></div>
-        </div>
-      </div>
-      <div class="cuadrilla-item">
-        <span class="cuadrilla-nombre">Cuadrilla C (Oeste)</span>
-        <span class="cuadrilla-porcentaje rojo">75%</span>
-        <div class="barra-progreso">
-          <div class="barra-relleno" style="width: 75%;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tarjeta: Estado del Lote -->
-    <div class="tarjeta estado-lote">
-      <div class="mapa-fondo">
-        <div class="popup-lote">
-          <span class="lote-badge">📍 Lote Activo: San José IV</span>
-          <h4>Estado del Lote</h4>
-          <p>Recolección activa: 14 personas en campo</p>
-          <div class="lote-tags">
-            <span class="tag verde">ÓPTIMO</span>
-            <span class="tag naranja">RIEGO: 100%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Tabla: Datos Históricos -->
-  <div class="tarjeta datos-historicos">
-    <div class="tabla-header">
-      <div>
-        <h3>Datos Históricos</h3>
-        <p class="subtitulo">Registro detallado de actividades diarias</p>
-      </div>
-      <div class="tabla-acciones">
-        <button class="btn-exportar">⬇ Exportar CSV</button>
-        <button class="btn-compartir">↗ Compartir</button>
-      </div>
-    </div>
-
-    <table class="tabla-datos">
-      <thead>
-        <tr>
-          <th>FECHA</th>
-          <th>CUADRILLA</th>
-          <th>LOTE</th>
-          <th>PRODUCCIÓN (KG)</th>
-          <th>CALIDAD</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>22 Oct, 2023</td>
-          <td>Cuadrilla A</td>
-          <td>San José IV</td>
-          <td><strong>1,240.5</strong></td>
-          <td><span class="badge excelente">EXCELENTE</span></td>
-        </tr>
-        <tr>
-          <td>21 Oct, 2023</td>
-          <td>Cuadrilla B</td>
-          <td>Lote 72-B</td>
-          <td><strong>942.0</strong></td>
-          <td><span class="badge estandar">ESTÁNDAR</span></td>
-        </tr>
-        <tr>
-          <td>21 Oct, 2023</td>
-          <td>Cuadrilla A</td>
-          <td>San José IV</td>
-          <td><strong>1,105.2</strong></td>
-          <td><span class="badge revision">REVISIÓN</span></td>
-        </tr>
-        <tr>
-          <td>20 Oct, 2023</td>
-          <td>Cuadrilla C</td>
-          <td>San José II</td>
-          <td><strong>822.4</strong></td>
-          <td><span class="badge excelente">EXCELENTE</span></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Paginación -->
-    <div class="paginacion">
-      <span class="pag-info">Mostrando 4 de 1,240 registros</span>
-      <div class="pag-botones">
-        <button class="pag-btn">‹</button>
-        <button class="pag-btn activo">1</button>
-        <button class="pag-btn">2</button>
-        <button class="pag-btn">3</button>
-        <button class="pag-btn">›</button>
-      </div>
-    </div>
-  </div>
+  </ng-container>
 
 </main>
-
-

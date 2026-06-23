@@ -26,7 +26,7 @@ public class UsuarioService {
         Usuario usuario = repository.findByUsername(username)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos"));
 
-        if (!usuario.getPasswordHash().equals(password)) {
+        if (usuario.getPasswordHash() == null || !usuario.getPasswordHash().equals(password)) {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos");
         }
         return usuario;
