@@ -5,7 +5,7 @@
     <div class="modal-content">
       <h3 class="modal-title">Agregar Nuevo Trabajador</h3>
       <p class="modal-sub">Ingrese los datos para agregarlo al padrón offline.</p>
-      
+
       <div class="form-group mt-16">
         <label>Nombre Completo</label>
         <input type="text" [(ngModel)]="nuevoNombreModal" placeholder="Ej. Juan Perez" class="form-input">
@@ -14,7 +14,11 @@
         <label>DNI</label>
         <input type="number" [(ngModel)]="nuevoDniModal" placeholder="Ej. 12345678" class="form-input">
       </div>
-      
+      <div class="form-group mt-10">
+        <label>Motivo de Adición <span style="color:#b3000b;font-size:11px;">(caso extraordinario)</span></label>
+        <textarea [(ngModel)]="motivoModal" rows="2" placeholder="Ej. Reemplazo de trabajador ausente, refuerzo de cuadrilla..." class="form-input" style="resize:none;"></textarea>
+      </div>
+
       <div class="modal-actions mt-20">
         <button class="btn-cancel" (click)="cerrarModalTrabajador()">Cancelar</button>
         <button class="btn-solid-red" style="padding: 12px; border-radius: 8px; width: 100%;" (click)="guardarNuevoTrabajador()">Agregar</button>
@@ -176,18 +180,6 @@
               </div>
             </div>
 
-            <!-- Proceso -->
-            <div class="field-group">
-              <label class="field-label">Proceso</label>
-              <div class="select-wrapper">
-                <select class="native-select" [(ngModel)]="proceso">
-                  <option value="Selección y Empaque">Selección y Empaque</option>
-                  <option value="Lavado">Lavado</option>
-                  <option value="Clasificación">Clasificación</option>
-                </select>
-                <i class="fas fa-chevron-down select-arrow"></i>
-              </div>
-            </div>
           </div>
         }
 
@@ -388,12 +380,19 @@
           </div>
         }
 
-        <!-- Botón Continuar -->
-        @if (activeTab !== 'reportes') {
-          <ion-button expand="block" class="btn-continuar" (click)="continuar()" [disabled]="!lote || (activeTab === 'produccion' && (!cajas || cajas <= 0 || !tipoEmpaque))">
-            Continuar
-            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
-          </ion-button>
+        <!-- Botones Inversión -->
+        @if (activeTab === 'inversion') {
+          <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #d1d5db; background: white; color: #4b5563; font-weight: 600; font-size: 14px; cursor: pointer;" (click)="resetWizard()">Nuevo</button>
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: none; background: #b3000b; color: white; font-weight: 700; font-size: 14px; cursor: pointer;" (click)="continuar()" [disabled]="!lote">Continuar <i class='fas fa-arrow-right'></i></button>
+          </div>
+        }
+        <!-- Botones Producción -->
+        @if (activeTab === 'produccion') {
+          <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #d1d5db; background: white; color: #4b5563; font-weight: 600; font-size: 14px; cursor: pointer;" (click)="resetWizard()">Nuevo</button>
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: none; background: #b3000b; color: white; font-weight: 700; font-size: 14px; cursor: pointer;" (click)="continuar()" [disabled]="!cajas || cajas <= 0 || !tipoEmpaque">Continuar <i class='fas fa-arrow-right'></i></button>
+          </div>
         }
       }
 
@@ -421,10 +420,12 @@
               <label class="field-label fw-500">Número de Documento (DNI)</label>
               <div class="input-with-button">
                 <input type="text" class="custom-input" placeholder="8 dígitos" [(ngModel)]="nuevoDni">
-                <button class="btn-validate">
+                <button class="btn-validate" (click)="buscarTrabajador(false)">
                   <i class="fas fa-search"></i> Validar
                 </button>
               </div>
+
+              <!-- Removed auto-add list UI -->
             </div>
           </div>
 
@@ -499,10 +500,12 @@
                     <i class="far fa-id-card"></i>
                     <input type="text" class="custom-input pl-icon" placeholder="Ingrese DNI" [(ngModel)]="nuevoDniProd">
                   </div>
-                  <button class="btn-validate">
+                  <button class="btn-validate" (click)="buscarTrabajador(true)">
                     <i class="fas fa-search"></i> Buscar
                   </button>
                 </div>
+
+                <!-- Removed auto-add list UI -->
               </div>
             </div>
 
@@ -624,7 +627,7 @@
           </div>
 
           <div class="final-actions">
-            <button class="btn-solid-red" (click)="finalizarRegistro()">
+            <button class="btn-solid-red" (click)="finalizarRegistro()" [disabled]="isSubmitting">
               <i class="fas fa-check-circle"></i> Finalizar y Enviar Registro
             </button>
             <button class="btn-outline-red-full" (click)="regresarPaso2()">
@@ -695,7 +698,7 @@
             </div>
 
             <div class="final-actions">
-              <button class="btn-solid-red" (click)="finalizarRegistro()">
+              <button class="btn-solid-red" (click)="finalizarRegistro()" [disabled]="isSubmitting">
                 Finalizar y Enviar Reporte <i class="far fa-paper-plane"></i>
               </button>
               <button class="btn-outline-red-full" (click)="regresarPaso2()">

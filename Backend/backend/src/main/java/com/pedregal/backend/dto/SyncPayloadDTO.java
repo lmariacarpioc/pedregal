@@ -17,11 +17,8 @@ public class SyncPayloadDTO {
     private List<TrabajadorDTO> trabajadores;
     private List<UsuarioDTO> usuarios;
     private List<ParteDiarioDTO> partesDiarios;
-    private List<PuntoMovilDTO> puntosMoviles;
-    private List<StaffAsignacionDTO> staffAsignaciones;
+
     private List<ReporteDTO> reportes;
     private List<InversionDTO> inversiones;
     private List<ProduccionDTO> produccion;
-    private List<EquipoMaquinariaDTO> equipos;
-    private List<ControlEquipoDTO> controlEquipos;
 }

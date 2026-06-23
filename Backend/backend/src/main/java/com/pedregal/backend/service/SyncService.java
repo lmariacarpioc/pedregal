@@ -23,13 +23,10 @@ public class SyncService {
     private final TrabajadorRepository trabajadorRepository;
     private final ParteDiarioRepository parteDiarioRepository;
     private final ParteDiarioDetalleRepository parteDiarioDetalleRepository;
-    private final PuntoMovilRepository puntoMovilRepository;
-    private final StaffAsignacionRepository staffAsignacionRepository;
+
     private final ReporteRepository reporteRepository;
     private final InversionRepository inversionRepository;
     private final ProduccionRepository produccionRepository;
-    private final EquipoMaquinariaRepository equipoMaquinariaRepository;
-    private final ControlEquipoRepository controlEquipoRepository;
     private final SyncLogRepository syncLogRepository;
 
     @Transactional
@@ -41,6 +38,7 @@ public class SyncService {
 
             if (payload.getTrabajadores() != null) {
                 for (TrabajadorDTO dto : payload.getTrabajadores()) {
+                    if (dto == null) continue;
                     try {
                         if (dto.getSyncId() != null && trabajadorRepository.existsBySyncId(dto.getSyncId())) {
                             Trabajador existing = trabajadorRepository.findBySyncId(dto.getSyncId()).get();
@@ -78,45 +76,10 @@ public class SyncService {
                 }
             }
 
-            if (payload.getPuntosMoviles() != null) {
-                for (PuntoMovilDTO dto : payload.getPuntosMoviles()) {
-                    try {
-                        if (dto.getSyncId() != null && puntoMovilRepository.existsBySyncId(dto.getSyncId())) {
-                            PuntoMovil existing = puntoMovilRepository.findBySyncId(dto.getSyncId()).get();
-                            existing.setCodigo(dto.getCodigo());
-                            existing.setNombre(dto.getNombre());
-                            existing.setDescripcion(dto.getDescripcion());
-                            existing.setTipo(dto.getTipo());
-                            existing.setLatitud(dto.getLatitud());
-                            existing.setLongitud(dto.getLongitud());
-                            existing.setAltitud(dto.getAltitud());
-                            existing.setActivo(dto.isActivo());
-                            puntoMovilRepository.save(existing);
-                            updated++;
-                        } else {
-                            PuntoMovil nuevo = new PuntoMovil();
-                            nuevo.setSyncId(dto.getSyncId());
-                            nuevo.setCodigo(dto.getCodigo());
-                            nuevo.setNombre(dto.getNombre());
-                            nuevo.setDescripcion(dto.getDescripcion());
-                            nuevo.setTipo(dto.getTipo());
-                            nuevo.setLatitud(dto.getLatitud());
-                            nuevo.setLongitud(dto.getLongitud());
-                            nuevo.setAltitud(dto.getAltitud());
-                            nuevo.setActivo(dto.isActivo());
-                            puntoMovilRepository.save(nuevo);
-                            created++;
-                        }
-                    } catch (Exception e) {
-                        failed++;
-                        errors.add("PuntoMovil [" + dto.getSyncId() + "]: " + e.getMessage());
-                        log.error("Error sincronizando punto movil {}", dto.getSyncId(), e);
-                    }
-                }
-            }
 
             if (payload.getPartesDiarios() != null) {
                 for (ParteDiarioDTO dto : payload.getPartesDiarios()) {
+                    if (dto == null) continue;
                     try {
                         ParteDiario parte;
                         if (dto.getSyncId() != null && parteDiarioRepository.existsBySyncId(dto.getSyncId())) {
@@ -141,6 +104,7 @@ public class SyncService {
 
                         if (dto.getDetalles() != null) {
                             for (ParteDiarioDetalleDTO detDto : dto.getDetalles()) {
+                                if (detDto == null) continue;
                                 try {
                                     ParteDiarioDetalle detalle;
                                     if (detDto.getSyncId() != null && parteDiarioDetalleRepository.existsBySyncId(detDto.getSyncId())) {
@@ -157,6 +121,8 @@ public class SyncService {
                                     detalle.setTareaRealizada(detDto.getTareaRealizada());
                                     detalle.setEstadoAsistencia(detDto.getEstadoAsistencia());
                                     detalle.setObservaciones(detDto.getObservaciones());
+                                    detalle.setCantidad(detDto.getCantidad());
+                                    detalle.setTipoActividad(detDto.getTipoActividad());
 
                                     if (detDto.getTrabajadorSyncId() != null) {
                                         trabajadorRepository.findBySyncId(detDto.getTrabajadorSyncId())
@@ -177,44 +143,10 @@ public class SyncService {
                 }
             }
 
-            if (payload.getStaffAsignaciones() != null) {
-                for (StaffAsignacionDTO dto : payload.getStaffAsignaciones()) {
-                    try {
-                        StaffAsignacion asignacion;
-                        if (dto.getSyncId() != null && staffAsignacionRepository.existsBySyncId(dto.getSyncId())) {
-                            asignacion = staffAsignacionRepository.findBySyncId(dto.getSyncId()).get();
-                            updated++;
-                        } else {
-                            asignacion = new StaffAsignacion();
-                            asignacion.setSyncId(dto.getSyncId());
-                            created++;
-                        }
-                        asignacion.setFechaAsignacion(LocalDate.parse(dto.getFechaAsignacion()));
-                        asignacion.setTurno(dto.getTurno());
-                        asignacion.setFuncionAsignada(dto.getFuncionAsignada());
-
-                        if (dto.getTrabajadorSyncId() != null) {
-                            trabajadorRepository.findBySyncId(dto.getTrabajadorSyncId())
-                                    .ifPresent(asignacion::setTrabajador);
-                        }
-                        if (dto.getPuntoMovilSyncId() != null) {
-                            puntoMovilRepository.findBySyncId(dto.getPuntoMovilSyncId())
-                                    .ifPresent(asignacion::setPuntoMovil);
-                        }
-                        if (dto.getParteDiarioSyncId() != null) {
-                            parteDiarioRepository.findBySyncId(dto.getParteDiarioSyncId())
-                                    .ifPresent(asignacion::setParteDiario);
-                        }
-                        staffAsignacionRepository.save(asignacion);
-                    } catch (Exception e) {
-                        failed++;
-                        errors.add("StaffAsignacion [" + dto.getSyncId() + "]: " + e.getMessage());
-                    }
-                }
-            }
 
             if (payload.getReportes() != null) {
                 for (ReporteDTO dto : payload.getReportes()) {
+                    if (dto == null) continue;
                     try {
                         Reporte reporte;
                         if (dto.getSyncId() != null && reporteRepository.existsBySyncId(dto.getSyncId())) {
@@ -247,6 +179,7 @@ public class SyncService {
 
             if (payload.getInversiones() != null) {
                 for (InversionDTO dto : payload.getInversiones()) {
+                    if (dto == null) continue;
                     try {
                         Inversion inversion;
                         if (dto.getSyncId() != null && inversionRepository.existsBySyncId(dto.getSyncId())) {
@@ -280,6 +213,7 @@ public class SyncService {
 
             if (payload.getProduccion() != null) {
                 for (ProduccionDTO dto : payload.getProduccion()) {
+                    if (dto == null) continue;
                     try {
                         Produccion produccion;
                         if (dto.getSyncId() != null && produccionRepository.existsBySyncId(dto.getSyncId())) {
@@ -301,10 +235,7 @@ public class SyncService {
                             parteDiarioRepository.findBySyncId(dto.getParteDiarioSyncId())
                                     .ifPresent(produccion::setParteDiario);
                         }
-                        if (dto.getPuntoMovilSyncId() != null) {
-                            puntoMovilRepository.findBySyncId(dto.getPuntoMovilSyncId())
-                                    .ifPresent(produccion::setPuntoMovil);
-                        }
+
                         produccionRepository.save(produccion);
                     } catch (Exception e) {
                         failed++;
@@ -313,66 +244,6 @@ public class SyncService {
                 }
             }
 
-            if (payload.getEquipos() != null) {
-                for (EquipoMaquinariaDTO dto : payload.getEquipos()) {
-                    try {
-                        EquipoMaquinaria equipo;
-                        if (dto.getSyncId() != null && equipoMaquinariaRepository.existsBySyncId(dto.getSyncId())) {
-                            equipo = equipoMaquinariaRepository.findBySyncId(dto.getSyncId()).get();
-                            updated++;
-                        } else {
-                            equipo = new EquipoMaquinaria();
-                            equipo.setSyncId(dto.getSyncId());
-                            created++;
-                        }
-                        equipo.setCodigo(dto.getCodigo());
-                        equipo.setNombre(dto.getNombre());
-                        equipo.setTipo(dto.getTipo());
-                        equipo.setPlaca(dto.getPlaca());
-                        equipo.setEstado(dto.getEstado());
-                        equipo.setOperadorAsignado(dto.getOperadorAsignado());
-                        equipo.setHorometroActual(dto.getHorometroActual());
-                        equipoMaquinariaRepository.save(equipo);
-                    } catch (Exception e) {
-                        failed++;
-                        errors.add("Equipo [" + dto.getSyncId() + "]: " + e.getMessage());
-                    }
-                }
-            }
-
-            if (payload.getControlEquipos() != null) {
-                for (ControlEquipoDTO dto : payload.getControlEquipos()) {
-                    try {
-                        ControlEquipo control;
-                        if (dto.getSyncId() != null && controlEquipoRepository.existsBySyncId(dto.getSyncId())) {
-                            control = controlEquipoRepository.findBySyncId(dto.getSyncId()).get();
-                            updated++;
-                        } else {
-                            control = new ControlEquipo();
-                            control.setSyncId(dto.getSyncId());
-                            created++;
-                        }
-                        control.setHorometroInicio(dto.getHorometroInicio());
-                        control.setHorometroFin(dto.getHorometroFin());
-                        control.setHorasTrabajadas(dto.getHorasTrabajadas());
-                        control.setCombustibleConsumido(dto.getCombustibleConsumido());
-                        control.setObservaciones(dto.getObservaciones());
-
-                        if (dto.getEquipoSyncId() != null) {
-                            equipoMaquinariaRepository.findBySyncId(dto.getEquipoSyncId())
-                                    .ifPresent(control::setEquipo);
-                        }
-                        if (dto.getParteDiarioSyncId() != null) {
-                            parteDiarioRepository.findBySyncId(dto.getParteDiarioSyncId())
-                                    .ifPresent(control::setParteDiario);
-                        }
-                        controlEquipoRepository.save(control);
-                    } catch (Exception e) {
-                        failed++;
-                        errors.add("ControlEquipo [" + dto.getSyncId() + "]: " + e.getMessage());
-                    }
-                }
-            }
 
         } catch (Exception e) {
             log.error("Error general en sincronización", e);
@@ -463,12 +334,61 @@ public class SyncService {
                 detDto.setHoraEntrada(d.getHoraEntrada());
                 detDto.setHoraSalida(d.getHoraSalida());
                 detDto.setEstadoAsistencia(d.getEstadoAsistencia());
+                detDto.setCantidad(d.getCantidad());
+                detDto.setTipoActividad(d.getTipoActividad());
                 return detDto;
             }).toList();
             dto.setDetalles(detalles);
             return dto;
         }).toList();
         payload.setPartesDiarios(partesDiarios);
+
+
+        List<ReporteDTO> reportes = reporteRepository.findAll().stream().map(r -> {
+            ReporteDTO dto = new ReporteDTO();
+            dto.setSyncId(r.getSyncId());
+            dto.setTitulo(r.getTitulo());
+            dto.setTipoReporte(r.getTipoReporte());
+            dto.setFechaInicio(r.getFechaInicio() != null ? r.getFechaInicio().toString() : null);
+            dto.setFechaFin(r.getFechaFin() != null ? r.getFechaFin().toString() : null);
+            dto.setContenido(r.getContenido());
+            dto.setConclusiones(r.getConclusiones());
+            dto.setEstado(r.getEstado());
+            if (r.getUsuario() != null) dto.setUsuarioSyncId(r.getUsuario().getSyncId());
+            return dto;
+        }).toList();
+        payload.setReportes(reportes);
+
+        List<InversionDTO> inversiones = inversionRepository.findAll().stream().map(inv -> {
+            InversionDTO dto = new InversionDTO();
+            dto.setSyncId(inv.getSyncId());
+            dto.setConcepto(inv.getConcepto());
+            dto.setCategoria(inv.getCategoria());
+            dto.setMonto(inv.getMonto());
+            dto.setFechaGasto(inv.getFechaGasto() != null ? inv.getFechaGasto().toString() : null);
+            dto.setProveedor(inv.getProveedor());
+            dto.setNumeroFactura(inv.getNumeroFactura());
+            dto.setDescripcion(inv.getDescripcion());
+            dto.setEstado(inv.getEstado());
+            if (inv.getUsuario() != null) dto.setUsuarioSyncId(inv.getUsuario().getSyncId());
+            return dto;
+        }).toList();
+        payload.setInversiones(inversiones);
+
+        List<ProduccionDTO> produccion = produccionRepository.findAll().stream().map(prod -> {
+            ProduccionDTO dto = new ProduccionDTO();
+            dto.setSyncId(prod.getSyncId());
+            dto.setActividad(prod.getActividad());
+            dto.setUnidadMedida(prod.getUnidadMedida());
+            dto.setCantidadProgramada(prod.getCantidadProgramada());
+            dto.setCantidadEjecutada(prod.getCantidadEjecutada());
+            dto.setRendimiento(prod.getRendimiento());
+            dto.setObservaciones(prod.getObservaciones());
+            if (prod.getParteDiario() != null) dto.setParteDiarioSyncId(prod.getParteDiario().getSyncId());
+
+            return dto;
+        }).toList();
+        payload.setProduccion(produccion);
 
         return payload;
     }

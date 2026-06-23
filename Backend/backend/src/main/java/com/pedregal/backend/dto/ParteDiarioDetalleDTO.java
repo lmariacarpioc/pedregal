@@ -18,4 +18,6 @@ public class ParteDiarioDetalleDTO {
     private String tareaRealizada;
     private String estadoAsistencia;
     private String observaciones;
+    private Double cantidad;
+    private String tipoActividad;
 }

@@ -41,6 +41,12 @@ public class ParteDiarioDetalle {
     @Column(columnDefinition = "TEXT")
     private String observaciones;
 
+    @Column(name = "cantidad")
+    private Double cantidad;
+
+    @Column(name = "tipo_actividad")
+    private String tipoActividad;
+
     @Column(name = "sync_id", unique = true)
     private String syncId;
 

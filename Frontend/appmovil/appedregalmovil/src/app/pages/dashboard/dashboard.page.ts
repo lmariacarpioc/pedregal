@@ -29,7 +29,7 @@ export interface ParteItem {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IonContent, IonIcon, IonRippleEffect, DecimalPipe, IonButton],
+  imports: [IonContent, IonIcon, IonRippleEffect, IonButton],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
 })
@@ -47,6 +47,7 @@ export class DashboardPage {
     personalTotal: 0,
     personalNuevos: 0,
     registrados: 0,
+    totalAsignados: 0
   };
 
   partesHoy: ParteItem[] = [];
@@ -65,7 +66,16 @@ export class DashboardPage {
   ionViewWillEnter() {
     // 1. Cargar Personal Presente
     const presentesStr = localStorage.getItem('trabajadores_presentes');
-    if (presentesStr) {
+    const plantillaStr = localStorage.getItem('staff_plantilla');
+    
+    if (presentesStr && plantillaStr) {
+      const presentes = JSON.parse(presentesStr);
+      const todas = JSON.parse(plantillaStr);
+      // Solo contar los que realmente existen en la plantilla actual
+      const presentesValidos = todas.filter((c: any) => presentes.includes(c.dni));
+      this.stats.personalTotal = presentesValidos.length;
+      this.stats.totalAsignados = todas.length;
+    } else if (presentesStr) {
       const presentes = JSON.parse(presentesStr);
       this.stats.personalTotal = presentes.length;
     } else {

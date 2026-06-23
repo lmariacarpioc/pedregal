@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton,
@@ -14,6 +14,8 @@ export interface SyncItem {
   iconColor?: string;
   iconBg?: string;
 }
+
+import { SyncService } from '../../services/sync.service';
 
 @Component({
   selector: 'app-sincronizacion',
@@ -31,7 +33,11 @@ export class SincronizacionPage {
   lastSyncDate: Date | null = null;
   isSyncing = false;
 
-  constructor(private toastCtrl: ToastController) {}
+  constructor(
+    private toastCtrl: ToastController, 
+    private syncService: SyncService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ionViewWillEnter() {
     this.loadQueue();
@@ -90,24 +96,60 @@ export class SincronizacionPage {
     }
     
     this.isSyncing = true;
+    this.cdr.detectChanges();
     
-    setTimeout(async () => {
-      localStorage.removeItem('sync_queue');
-      localStorage.removeItem('reportes_resumen');
-      this.lastSyncDate = new Date();
-      localStorage.setItem('last_sync_date', this.lastSyncDate.toISOString());
-      this.pendingRecords = [];
-      this.isSyncing = false;
+    try {
+      const success = await this.syncService.uploadSyncQueue();
       
+      this.isSyncing = false;
+      this.cdr.detectChanges();
+      
+      if (success) {
+        // Now download any incoming data from backend
+        const dlSuccess = await this.syncService.downloadSyncData();
+
+        localStorage.removeItem('reportes_resumen'); // If needed
+        this.lastSyncDate = new Date();
+        localStorage.setItem('last_sync_date', this.lastSyncDate.toISOString());
+        this.pendingRecords = [];
+        this.loadQueue(); // Reload from localStorage to sync UI
+        this.cdr.detectChanges(); // Force UI update
+
+        let msg = 'Sincronización completada exitosamente.';
+        if (dlSuccess) {
+           msg += ' Datos actualizados.';
+        }
+
+        const toast = await this.toastCtrl.create({
+          message: msg,
+          duration: 3000,
+          position: 'bottom',
+          color: 'success',
+          icon: 'checkmark-circle'
+        });
+        await toast.present();
+      } else {
+        const toast = await this.toastCtrl.create({
+          message: 'Error al sincronizar. Verifica tu conexión e intenta de nuevo.',
+          duration: 3000,
+          position: 'bottom',
+          color: 'danger',
+          icon: 'close-circle'
+        });
+        await toast.present();
+      }
+    } catch (error) {
+      this.isSyncing = false;
+      this.cdr.detectChanges();
       const toast = await this.toastCtrl.create({
-        message: 'Sincronización completada exitosamente.',
+        message: 'Ocurrió un error inesperado al sincronizar.',
         duration: 3000,
         position: 'bottom',
-        color: 'success',
-        icon: 'checkmark-circle'
+        color: 'danger',
+        icon: 'warning'
       });
       await toast.present();
-    }, 2000);
+    }
   }
 
   borrarRegistro(record: SyncItem, event: Event) {

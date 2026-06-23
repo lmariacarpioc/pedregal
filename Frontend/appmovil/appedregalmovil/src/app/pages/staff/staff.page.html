@@ -42,13 +42,13 @@
       <p class="page-subtitle">Supervisión de rendimiento en campo</p>
     </div>
 
-    <!-- Pestañas -->
+    <!-- Pestañas (Asistencia LEFT, Rendimiento RIGHT) -->
     <div class="material-tabs">
-      <button class="mat-tab" [class.active]="activeTab === 'rendimiento'" (click)="setTab('rendimiento')">
-        Rendimiento
-      </button>
       <button class="mat-tab" [class.active]="activeTab === 'asistencia'" (click)="setTab('asistencia')">
         Asistencia
+      </button>
+      <button class="mat-tab" [class.active]="activeTab === 'rendimiento'" (click)="setTab('rendimiento')">
+        Rendimiento
       </button>
     </div>
 
@@ -81,7 +81,7 @@
           <div class="section-bar bajo"></div>
           <h2 class="section-title">Bajo Rendimiento</h2>
         </div>
-        <span class="badge-accion">Acción Requerida</span>
+        <span class="badge-accion">Accion Requerida</span>
       </div>
 
       @if (colaboradoresBajo.length === 0) {
@@ -97,26 +97,65 @@
               <i class="fas fa-hard-hat avatar-icon" [style.color]="col.avatarColor"></i>
             </div>
             <div class="col-info">
-              <p class="col-nombre">{{ col.nombre }}</p>
-              <p class="col-id">ID: {{ col.id }}</p>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <p class="col-nombre" style="margin: 0;">{{ col.nombre }}</p>
+                <button (click)="verDetalle(col, 'bajo')" style="background: none; border: none; cursor: pointer; padding: 4px;">
+                  <i class="fas fa-bell" style="color: #b3000b; font-size: 18px;"></i>
+                </button>
+              </div>
+              <p class="col-id">ID: {{ col.id }} &bull; DNI: {{ col.dni }}</p>
             </div>
             <div class="col-rendimiento">
               <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
               <p class="col-meta negativo">{{ col.meta }}% vs meta</p>
             </div>
           </div>
-          @if (col.enObservacion) {
-            <div class="observacion-box mt-10" style="background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 10px; text-align: center; color: #b3000b; font-size: 13px; font-weight: 600; margin-top: 10px;">
-              <i class="fas fa-eye"></i> En Observación
-            </div>
-          } @else {
-            <button class="btn-intervenir ion-activatable" (click)="verDetalle(col, 'bajo')">
-              <i class="fas fa-crosshairs"></i>
-              Intervenir
-              <ion-ripple-effect></ion-ripple-effect>
+          <button class="btn-intervenir ion-activatable" (click)="ponerEnObservacion(); colaboradorSeleccionado = col; motivoObservacionActual = ''" style="display: none;">
+            <ion-ripple-effect></ion-ripple-effect>
+          </button>
+          <!-- Poner en Observación button at the bottom of bajo cards -->
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button style="flex: 1; background: #b3000b; color: #fff; border: none; border-radius: 6px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" (click)="colaboradorSeleccionado = col; estadoVista = 'detalle'; rendimientoSeleccionado = 'bajo'; verDetalle(col, 'bajo')">
+              <i class="fas fa-eye"></i> Poner en Observación
             </button>
-          }
+          </div>
         </div>
+      }
+
+      <!-- ══ EN OBSERVACION ══ -->
+      @if (colaboradoresObservacion.length > 0) {
+        <div class="section-header mt-20">
+          <div class="section-title-row">
+            <div class="section-bar" style="background: #f59e0b;"></div>
+            <h2 class="section-title">En Observacion</h2>
+          </div>
+          <span class="badge-lectura" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">Seguimiento</span>
+        </div>
+
+        @for (col of colaboradoresObservacion; track col.id) {
+          <div class="colaborador-card ion-activatable" style="border-left: 3px solid #f59e0b; margin-bottom: 12px; cursor: pointer;" (click)="verDetalle(col, 'observacion')">
+            <div class="card-top-row">
+              <div class="avatar-wrap" style="background: #fef3c7;">
+                <i class="fas fa-eye" style="color: #d97706; font-size: 16px;"></i>
+              </div>
+              <div class="col-info">
+                <p class="col-nombre">{{ col.nombre }}</p>
+                <p class="col-id">ID: {{ col.id }} &bull; DNI: {{ col.dni }}</p>
+              </div>
+              <div class="col-rendimiento">
+                <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
+                <p class="col-meta" style="color: #d97706;">Observado</p>
+              </div>
+            </div>
+            @if (col.motivoObservacion) {
+              <div style="background: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 10px; margin-top: 10px;">
+                <p style="font-size: 11px; font-weight: 700; color: #92400e; margin: 0 0 4px;">MOTIVO:</p>
+                <p style="font-size: 13px; color: #78350f; margin: 0;">{{ col.motivoObservacion }}</p>
+              </div>
+            }
+            <ion-ripple-effect></ion-ripple-effect>
+          </div>
+        }
       }
 
       <!-- ══ ALTO RENDIMIENTO ══ -->
@@ -125,18 +164,23 @@
           <div class="section-bar alto"></div>
           <h2 class="section-title">Alto Rendimiento</h2>
         </div>
-        <span class="badge-lectura">Lectura únicamente</span>
+        <span class="badge-lectura">Lectura unicamente</span>
       </div>
 
       @for (col of colaboradoresAlto; track col.id) {
-        <div class="colaborador-card alto-card" (click)="verDetalle(col, 'alto')" style="cursor: pointer;">
+        <div class="colaborador-card alto-card" style="cursor: pointer; margin-bottom: 12px;">
           <div class="card-top-row">
             <div class="avatar-wrap gray">
               <i class="fas fa-hard-hat avatar-icon gray"></i>
             </div>
             <div class="col-info">
-              <p class="col-nombre">{{ col.nombre }}</p>
-              <p class="col-id">ID: {{ col.id }}</p>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <p class="col-nombre" style="margin: 0;">{{ col.nombre }}</p>
+                <button (click)="verDetalle(col, 'alto')" style="background: none; border: none; cursor: pointer; padding: 4px;">
+                  <i class="fas fa-bell" style="color: #b3000b; font-size: 18px;"></i>
+                </button>
+              </div>
+              <p class="col-id">ID: {{ col.id }} &bull; DNI: {{ col.dni }}</p>
             </div>
             <div class="col-rendimiento">
               <p class="col-valor">{{ col.rendimiento }} kg/hr</p>
@@ -147,7 +191,36 @@
       }
     } @else {
       <!-- TAB ASISTENCIA -->
-      <!-- ══ ASISTIDOS ══ -->
+
+      <!-- Attendance Header Card -->
+      <div class="info-card-empresa" style="background: linear-gradient(135deg, #fef2f2, #fff1f2); border: 1px solid #fecdd3; border-radius: 12px; padding: 16px; margin-bottom: 16px; margin-top: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <i class="fas fa-building" style="color: #b3000b; font-size: 18px;"></i>
+          <span style="font-weight: 700; font-size: 14px; color: #1a1a1a;">Fundo Pedregal</span>
+        </div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 120px;">
+            <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">LOTE ASIGNADO</p>
+            <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 600;">Lote 01-A</p>
+          </div>
+          <div style="flex: 1; min-width: 120px;">
+            <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">ENCARGADO</p>
+            <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 600;">{{ supervisorNombre }}</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 120px;">
+            <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">TURNO</p>
+            <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 600;">Mañana (06:00 - 14:00)</p>
+          </div>
+          <div style="flex: 1; min-width: 120px;">
+            <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">FECHA</p>
+            <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 600;">{{ fechaHoy }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ASISTIERON HOY ══ -->
       <div class="section-header mt-16">
         <div class="section-title-row">
           <div class="section-bar" style="background: #10b981;"></div>
@@ -156,7 +229,7 @@
       </div>
       
       @for (col of todas; track col.id) {
-        @if (col.presente) {
+        @if (col.presente && !tardanzas.includes(col.dni)) {
           <div class="colaborador-card alto-card" style="margin-bottom: 10px;">
             <div class="card-top-row">
               <div class="avatar-wrap" style="background: #dcfce7;">
@@ -164,13 +237,51 @@
               </div>
               <div class="col-info">
                 <p class="col-nombre">{{ col.nombre }}</p>
-                <p class="col-id">ID: {{ col.id }}</p>
+                <p class="col-id">ID: {{ col.id }} &bull; DNI: {{ col.dni }}</p>
               </div>
-              <div class="col-rendimiento">
-                <span class="badge-lectura" style="background: #dcfce7; color: #166534;">Presente</span>
+              <div class="col-rendimiento" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px;">
+                <button class="btn-outline-red-sm" style="border: 1px solid #d1d5db; color: #4b5563; border-radius: 6px; padding: 6px 12px; font-size: 11px; background: #fff; cursor: pointer;" (click)="toggleAsistencia(col)">
+                  <i class="fas fa-times"></i> Marcar Falta
+                </button>
+                <button style="border: 1px solid #fbbf24; color: #92400e; border-radius: 6px; padding: 6px 12px; font-size: 11px; background: #fef3c7; cursor: pointer;" (click)="marcarTardanza(col)">
+                  <i class="fas fa-clock"></i> Tardanza
+                </button>
               </div>
             </div>
           </div>
+        }
+      }
+
+      <!-- ══ LLEGARON TARDE ══ -->
+      @if (tardanzas.length > 0) {
+        <div class="section-header mt-20">
+          <div class="section-title-row">
+            <div class="section-bar" style="background: #f59e0b;"></div>
+            <h2 class="section-title">Llegaron Tarde</h2>
+          </div>
+          <span class="badge-lectura" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">Tardanza</span>
+        </div>
+
+        @for (col of todas; track col.id) {
+          @if (col.presente && tardanzas.includes(col.dni)) {
+            <div class="colaborador-card" style="margin-bottom: 10px; border-left: 3px solid #f59e0b;">
+              <div class="card-top-row">
+                <div class="avatar-wrap" style="background: #fef3c7;">
+                  <i class="fas fa-clock avatar-icon" style="color: #d97706;"></i>
+                </div>
+                <div class="col-info">
+                  <p class="col-nombre">{{ col.nombre }}</p>
+                  <p class="col-id">ID: {{ col.id }} &bull; DNI: {{ col.dni }}</p>
+                </div>
+                <div class="col-rendimiento" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px;">
+                  <span style="font-size: 11px; font-weight: 700; color: #d97706;">Llegó Tarde</span>
+                  <button class="btn-outline-red-sm" style="border: 1px solid #d1d5db; color: #4b5563; border-radius: 6px; padding: 6px 10px; font-size: 11px; background: #fff; cursor: pointer;" (click)="toggleAsistencia(col)">
+                    <i class="fas fa-times"></i> Marcar Falta
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
         }
       }
 
@@ -185,18 +296,19 @@
         </div>
 
         @for (col of colaboradoresAusentes; track col.id) {
-          <div class="colaborador-card alto-card" style="opacity: 0.7; background: #f9fafb; cursor: pointer;" (click)="verDetalle(col, 'ausente')">
+          <div class="colaborador-card alto-card" style="opacity: 0.8; background: #f9fafb; margin-bottom: 10px;">
             <div class="card-top-row">
               <div class="avatar-wrap gray">
                 <i class="fas fa-user-times avatar-icon" style="color: #9ca3af;"></i>
               </div>
               <div class="col-info">
-                <p class="col-nombre" style="color: #6b7280; text-decoration: line-through;">{{ col.nombre }}</p>
-                <p class="col-id">ID: {{ col.id }}</p>
+                <p class="col-nombre" style="color: #4b5563;">{{ col.nombre }}</p>
+                <p class="col-id">ID: {{ col.id }} &bull; DNI: {{ col.dni }}</p>
               </div>
-              <div class="col-rendimiento">
-                <p class="col-valor" style="color: #9ca3af;">-- kg/hr</p>
-                <p class="col-meta" style="color: #9ca3af;">Sin registro</p>
+              <div class="col-rendimiento" style="display: flex; align-items: center; justify-content: center;">
+                <button class="btn-solid-red" style="background: #10b981; border-radius: 6px; padding: 6px 12px; font-size: 11px;" (click)="toggleAsistencia(col)">
+                  <i class="fas fa-check"></i> Presente
+                </button>
               </div>
             </div>
           </div>
@@ -216,6 +328,12 @@
           </div>
           <h1 class="page-title mt-2">Reporte de Alerta</h1>
           <p class="page-subtitle">Supervisión de rendimiento crítico para personal de campo.</p>
+        } @else if (rendimientoSeleccionado === 'observacion') {
+          <div class="alert-badge fw-700 font-12 mb-2" style="color: #d97706; background: #fef3c7; border: 1px solid #fcd34d; font-weight: 700; font-size: 12px; margin-bottom: 8px;">
+            <i class="fas fa-eye"></i> PERSONAL EN OBSERVACIÓN
+          </div>
+          <h1 class="page-title mt-2">Seguimiento</h1>
+          <p class="page-subtitle">El trabajador requiere seguimiento debido a observaciones recientes.</p>
         } @else {
           <div class="alert-badge fw-700 font-12 mb-2" style="color: #10b981; font-weight: 700; font-size: 12px; margin-bottom: 8px;">
             <i class="fas fa-star"></i> BUEN DESEMPEÑO
@@ -237,11 +355,41 @@
               <p class="text-red fw-700 font-10" style="color: #b3000b; font-weight: 700; font-size: 10px;">
                 <i class="fas fa-arrow-trend-down"></i> BAJO RENDIMIENTO DETECTADO
               </p>
+            } @else if (rendimientoSeleccionado === 'observacion') {
+              <p class="fw-700 font-10" style="color: #d97706; font-weight: 700; font-size: 10px;">
+                <i class="fas fa-eye"></i> SEGUIMIENTO ACTIVO
+              </p>
             } @else {
               <p class="fw-700 font-10" style="color: #10b981; font-weight: 700; font-size: 10px;">
                 <i class="fas fa-arrow-trend-up"></i> ALTO RENDIMIENTO DETECTADO
               </p>
             }
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f3f4f6;">
+          <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+            <div style="flex: 1; min-width: 45%;">
+              <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">DNI</p>
+              <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 500;">{{ colaboradorSeleccionado?.dni || 'No registrado' }}</p>
+            </div>
+            <div style="flex: 1; min-width: 45%;">
+              <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">TELÉFONO</p>
+              <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 500;">{{ colaboradorSeleccionado?.telefono || 'No registrado' }}</p>
+            </div>
+            <div style="flex: 1; min-width: 45%;">
+              <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">TIPO DE SANGRE</p>
+              <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 500;">
+                <i class="fas fa-droplet" style="color: #ef4444; margin-right: 4px;"></i>
+                {{ colaboradorSeleccionado?.tipoSangre || 'N/A' }}
+              </p>
+            </div>
+            <div style="flex: 1; min-width: 45%;">
+              <p style="font-size: 10px; color: #6b7280; margin: 0 0 2px; font-weight: 600;">ÁREA/ESTADO</p>
+              <p style="font-size: 13px; color: #1a1a1a; margin: 0; font-weight: 500;">
+                {{ colaboradorSeleccionado?.area || colaboradorSeleccionado?.estado || 'Campo' }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -268,11 +416,11 @@
           @for (dia of asistenciaDias; track dia.name) {
             <div class="att-day" style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
               @if (dia.status === 'presente') {
-                <i class="fas fa-check-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i>
+                <i class="fas fa-check-circle" style="color: #b3000b; font-size: 20px;"></i>
               } @else if (dia.status === 'ausente') {
-                <i class="fas fa-times-circle text-red font-20" style="color: #b3000b; font-size: 20px;"></i>
+                <i class="fas fa-times-circle" style="color: #b3000b; font-size: 20px;"></i>
               } @else {
-                <i class="fas fa-ellipsis-h" style="color: #9ca3af; font-size: 20px;"></i>
+                <i class="fas fa-circle" style="color: #e5e7eb; font-size: 20px;"></i>
               }
               <span style="font-size: 9px; font-weight: 700; color: #6b7280;">{{ dia.name }}</span>
             </div>
@@ -306,15 +454,23 @@
 
       @if (rendimientoSeleccionado === 'bajo') {
         <div class="comment-box fade-in" style="margin-top: 20px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #4b5563; margin-bottom: 8px;">Motivo de Observación</label>
-          <textarea rows="3" placeholder="Escriba un breve comentario..." style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 14px; font-family: inherit; resize: none; background: #fff;"></textarea>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #4b5563; margin-bottom: 8px;">Motivo de Observacion</label>
+          <textarea [(ngModel)]="motivoObservacionActual" rows="3" placeholder="Escriba el motivo de la observacion..." style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; font-size: 14px; font-family: inherit; resize: none; background: #fff; box-sizing: border-box;"></textarea>
         </div>
 
         <button class="btn-solid-red full-w fade-in" style="width: 100%; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 600; background: #b3000b; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 16px;" (click)="ponerEnObservacion()">
-          <i class="fas fa-eye"></i> Poner en Observación
+          <i class="fas fa-eye"></i> Poner en Observacion
         </button>
         <p class="text-center text-gray font-11 mt-10 mb-20 fade-in" style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 10px; margin-bottom: 24px; padding-bottom: 24px;">
-          Al confirmar, el trabajador pasará a estado de observación y se sincronizará el reporte.
+          Al confirmar, el trabajador pasara a estado de observacion y se sincronizara el reporte.
+        </p>
+      } @else if (rendimientoSeleccionado === 'observacion') {
+        <ion-button expand="block" color="warning" class="fade-in" style="margin-top: 16px; font-weight: 600; font-size: 15px;" (click)="quitarObservacion()">
+          <ion-icon slot="start" name="sync-outline"></ion-icon>
+          Quitar Observación
+        </ion-button>
+        <p class="text-center text-gray font-11 mt-10 mb-20 fade-in" style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 10px; margin-bottom: 24px; padding-bottom: 24px;">
+          El trabajador volverá a su estado de rendimiento normal y se cancelará el reporte de seguimiento.
         </p>
       } @else {
         <div style="height: 40px;"></div>

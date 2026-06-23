@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, IonRippleEffect, ToastController } from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms';
+import { IonContent, IonRippleEffect, IonButton, IonIcon, ToastController } from '@ionic/angular/standalone';
+import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { syncOutline, menuOutline } from 'ionicons/icons';
 
@@ -13,81 +15,264 @@ export interface Colaborador {
   avatarColor: string;
   avatarIcon: string;
   enObservacion?: boolean;
+  motivoObservacion?: string;
   presente?: boolean;
+  horas?: number;
+  cajas?: number;
+  tipoSangre?: string;
+  telefono?: string;
+  area?: string;
+  estado?: string;
 }
 
 @Component({
   selector: 'app-staff',
   standalone: true,
-  imports: [IonContent, IonRippleEffect],
+  imports: [IonContent, IonRippleEffect, IonButton, IonIcon, FormsModule, CommonModule],
   templateUrl: './staff.page.html',
   styleUrls: ['./staff.page.css'],
 })
 export class StaffPage {
 
   estadoVista: 'lista' | 'detalle' = 'lista';
-  activeTab: 'rendimiento' | 'asistencia' = 'rendimiento';
+  activeTab: 'rendimiento' | 'asistencia' = 'asistencia';
   colaboradorSeleccionado: Colaborador | null = null;
-  rendimientoSeleccionado: 'bajo' | 'alto' | 'ausente' = 'bajo';
+  rendimientoSeleccionado: 'bajo' | 'alto' | 'ausente' | 'observacion' = 'bajo';
 
-  rendimientoPromedio = 14.2;
-  atencionRequerida   = 8;
+  rendimientoPromedio = 0;
+  atencionRequerida   = 0;
 
-  todas: Colaborador[] = [
-    { id: '#88294', dni: '45829301', nombre: 'Mendoza Torres, Juan', rendimiento: 14.2, meta: 10, avatarColor: '#6b7280', avatarIcon: 'fa-hard-hat' },
-    { id: '#88312', dni: '70192834', nombre: 'Quispe Huamán, Elena',  rendimiento: 9.5,  meta: -12, avatarColor: '#f97316', avatarIcon: 'fa-hard-hat' },
-    { id: '#88102', dni: '41029384', nombre: 'Salazar Rojas, Roberto',   rendimiento: 8.2,  meta: -24, avatarColor: '#ef4444', avatarIcon: 'fa-hard-hat' },
-    { id: '#88095', dni: '45678901', nombre: 'Perez Castillo, Juan',   rendimiento: 16.8, meta: 32, avatarColor: '#10b981', avatarIcon: 'fa-hard-hat' },
-    { id: '#88111', dni: '72345678', nombre: 'Gonzales Ruiz, Maria',   rendimiento: 18.4, meta: 45, avatarColor: '#10b981', avatarIcon: 'fa-hard-hat' },
-    { id: '#88123', dni: '12987654', nombre: 'Luna Diaz, Carlos',   rendimiento: 0.0, meta: -100, avatarColor: '#ef4444', avatarIcon: 'fa-hard-hat' }
-  ];
+  todas: Colaborador[]                   = [];
+  colaboradoresBajo: Colaborador[]       = [];
+  colaboradoresAlto: Colaborador[]       = [];
+  colaboradoresAusentes: Colaborador[]   = [];
+  colaboradoresObservacion: Colaborador[] = [];
 
-  colaboradoresBajo: Colaborador[] = [];
-  colaboradoresAlto: Colaborador[] = [];
-  colaboradoresAusentes: Colaborador[] = [];
+  motivoObservacionActual = '';
 
-  constructor(private router: Router, private toastCtrl: ToastController) {
+  // Attendance date reset
+  asistenciaCompletada = false;
+
+  // Attendance header card
+  supervisorNombre = 'Supervisor';
+  fechaHoy = '';
+
+  // Tardanza state
+  tardanzas: string[] = [];
+
+  constructor(private router: Router, private toastCtrl: ToastController, private cdr: ChangeDetectorRef) {
     addIcons({ syncOutline, menuOutline });
   }
 
   ionViewWillEnter() {
-    const presentStr = localStorage.getItem('trabajadores_presentes');
-    let presentes: string[] = [];
-    if (presentStr) {
-      presentes = JSON.parse(presentStr);
+    // Attendance date reset logic
+    const todayStr = new Date().toISOString().split('T')[0];
+    const storedFecha = localStorage.getItem('asistencia_fecha');
+
+    if (storedFecha !== todayStr) {
+      localStorage.removeItem('trabajadores_presentes');
+      localStorage.setItem('asistencia_fecha', todayStr);
+      this.asistenciaCompletada = false;
+    } else {
+      this.asistenciaCompletada = true;
     }
+
+    // Load supervisor name
+    const userStr = localStorage.getItem('agro_mobile_user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        this.supervisorNombre = user.nombre || 'Supervisor';
+      } catch {
+        this.supervisorNombre = 'Supervisor';
+      }
+    }
+
+    // Format fechaHoy like 'Domingo, 22 Jun 2025'
+    const now = new Date();
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    this.fechaHoy = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+    this._cargarDatosDesdeReportes();
+  }
+
+  private _cargarDatosDesdeReportes() {
+    const plantillaDefault: Colaborador[] = [
+      { id: '#88294', dni: '45829301', nombre: 'Mendoza Torres, Juan',  rendimiento: 0, meta: 0, avatarColor: '#6b7280', avatarIcon: 'fa-hard-hat' },
+      { id: '#88312', dni: '70192834', nombre: 'Quispe Huation, Elena',  rendimiento: 0, meta: 0, avatarColor: '#f97316', avatarIcon: 'fa-hard-hat' },
+      { id: '#88102', dni: '41029384', nombre: 'Salazar Rojas, Roberto', rendimiento: 0, meta: 0, avatarColor: '#ef4444', avatarIcon: 'fa-hard-hat' },
+      { id: '#88095', dni: '45678901', nombre: 'Perez Castillo, Juan',   rendimiento: 0, meta: 0, avatarColor: '#10b981', avatarIcon: 'fa-hard-hat' },
+      { id: '#88111', dni: '72345678', nombre: 'Gonzales Ruiz, Maria',   rendimiento: 0, meta: 0, avatarColor: '#10b981', avatarIcon: 'fa-hard-hat' },
+      { id: '#88123', dni: '12987654', nombre: 'Luna Diaz, Carlos',      rendimiento: 0, meta: 0, avatarColor: '#ef4444', avatarIcon: 'fa-hard-hat' },
+    ];
+
+    const backendPlantillaStr = localStorage.getItem('agro_sync_trabajadores');
+    const plantillaStr = localStorage.getItem('staff_plantilla');
     
-    this.todas.forEach(c => c.presente = presentes.includes(c.dni));
+    if (backendPlantillaStr) {
+      this.todas = JSON.parse(backendPlantillaStr);
+      // Keep local staff_plantilla in sync
+      localStorage.setItem('staff_plantilla', backendPlantillaStr);
+    } else if (plantillaStr) {
+      this.todas = JSON.parse(plantillaStr);
+    } else {
+      this.todas = plantillaDefault;
+    }
+
+    const presentesStr = localStorage.getItem('trabajadores_presentes');
+    const presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
+
+    // Load tardanzas
+    const tardanzaStr = localStorage.getItem('trabajadores_tardanza');
+    this.tardanzas = tardanzaStr ? JSON.parse(tardanzaStr) : [];
+
+    const reportesStr = localStorage.getItem('trabajadores_reporte_completo');
+    const reportes: any[] = reportesStr ? JSON.parse(reportesStr) : [];
     
-    this.colaboradoresAusentes = this.todas.filter(c => !c.presente);
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    const META_CAJAS_HORA = 12;
+
+    this.todas = this.todas.map(col => {
+      col.presente = presentes.includes(col.dni);
+      
+      // Obtener todos los reportes del trabajador en los últimos 7 días
+      const today = new Date();
+      const reportesCol = reportes.filter(r => {
+        if (r.dni !== col.dni) return false;
+        const rDate = new Date(r.fecha);
+        const diffTime = Math.abs(today.getTime() - rDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 7;
+      });
+
+      if (reportesCol.length > 0) {
+        let sumRendimiento = 0;
+        let sumMeta = 0;
+        let validDays = 0;
+
+        reportesCol.forEach(rep => {
+          if (rep.cajas > 0) {
+            const rend = rep.horas > 0 ? (rep.cajas / rep.horas) : 0;
+            const esperado = META_CAJAS_HORA * rep.horas;
+            const meta = esperado > 0 ? ((rep.cajas - esperado) / esperado) * 100 : 0;
+            sumRendimiento += rend;
+            sumMeta += meta;
+            validDays++;
+          } else if (rep.horas > 0) {
+            const rend = rep.horas * 1.4;
+            const meta = rep.horas >= 8 ? 5 : ((rep.horas - 8) / 8) * 100;
+            sumRendimiento += rend;
+            sumMeta += meta;
+            validDays++;
+          }
+        });
+
+        if (validDays > 0) {
+          col.rendimiento = parseFloat((sumRendimiento / validDays).toFixed(1));
+          col.meta = Math.round(sumMeta / validDays);
+        } else {
+          col.rendimiento = 0;
+          col.meta = -100;
+        }
+      } else {
+        col.rendimiento = 0;
+        col.meta = -100;
+      }
+      return col;
+    });
+
     const presentesList = this.todas.filter(c => c.presente);
-    
-    this.colaboradoresBajo = presentesList.filter(c => c.rendimiento < 10);
-    this.colaboradoresAlto = presentesList.filter(c => c.rendimiento >= 10);
-    
-    this.atencionRequerida = this.colaboradoresBajo.length;
-    
-    const sum = presentesList.reduce((acc, curr) => acc + curr.rendimiento, 0);
-    this.rendimientoPromedio = presentesList.length > 0 ? parseFloat((sum / presentesList.length).toFixed(1)) : 0;
+    this.colaboradoresAusentes    = this.todas.filter(c => !c.presente);
+    this.colaboradoresObservacion = this.todas.filter(c => c.enObservacion);
+    // Mostrar a TODOS (presentes o no) en las listas de rendimiento
+    this.colaboradoresBajo        = this.todas.filter(c => !c.enObservacion && c.rendimiento < 10);
+    this.colaboradoresAlto        = this.todas.filter(c => !c.enObservacion && c.rendimiento >= 10);
+
+    this.atencionRequerida = this.colaboradoresBajo.length + this.colaboradoresObservacion.length;
+    const sum = presentesList.reduce((acc, c) => acc + c.rendimiento, 0);
+    this.rendimientoPromedio = presentesList.length > 0
+      ? parseFloat((sum / presentesList.length).toFixed(1)) : 0;
   }
 
   detalleRendimientoActual = 0;
-  detalleMeta = 100;
   detalleHistorial: any[] = [];
   asistenciaDias: any[] = [];
   detalleConsistencia = 100;
 
   formatDate(date: Date) {
-    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`;
   }
 
-  verDetalle(colaborador: Colaborador, tipo: 'bajo' | 'alto' | 'ausente') {
+  async toggleAsistencia(colaborador: Colaborador) {
+    const presentesStr = localStorage.getItem('trabajadores_presentes');
+    let presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
+    
+    let toastMessage = '';
+    let toastColor = '';
+
+    if (colaborador.presente) {
+      // Marcar como ausente
+      presentes = presentes.filter(dni => dni !== colaborador.dni);
+
+      // Also remove from tardanzas if present
+      let tardanzaList = [...this.tardanzas];
+      tardanzaList = tardanzaList.filter(dni => dni !== colaborador.dni);
+      localStorage.setItem('trabajadores_tardanza', JSON.stringify(tardanzaList));
+
+      toastMessage = `${colaborador.nombre} marcado como Ausente.`;
+      toastColor = 'medium';
+    } else {
+      // Marcar como presente
+      if (!presentes.includes(colaborador.dni)) {
+        presentes.push(colaborador.dni);
+      }
+      toastMessage = `${colaborador.nombre} marcado como Presente.`;
+      toastColor = 'success';
+    }
+    
+    // Actualizar UI inmediatamente sin esperar la animación del Toast
+    localStorage.setItem('trabajadores_presentes', JSON.stringify(presentes));
+    this._cargarDatosDesdeReportes();
+    this.cdr.detectChanges(); 
+
+    const toast = await this.toastCtrl.create({
+      message: toastMessage,
+      duration: 2000,
+      position: 'bottom',
+      color: toastColor
+    });
+    toast.present(); // No usamos await aquí para no bloquear
+  }
+
+  async marcarTardanza(colaborador: Colaborador) {
+    const tardanzaStr = localStorage.getItem('trabajadores_tardanza');
+    let tardanzaList: string[] = tardanzaStr ? JSON.parse(tardanzaStr) : [];
+
+    if (!tardanzaList.includes(colaborador.dni)) {
+      tardanzaList.push(colaborador.dni);
+    }
+
+    localStorage.setItem('trabajadores_tardanza', JSON.stringify(tardanzaList));
+    this._cargarDatosDesdeReportes();
+    this.cdr.detectChanges();
+
+    const toast = await this.toastCtrl.create({
+      message: `${colaborador.nombre} marcado como Llegó Tarde.`,
+      duration: 2000,
+      position: 'bottom',
+      color: 'warning'
+    });
+    toast.present();
+  }
+
+  verDetalle(colaborador: Colaborador, tipo: 'bajo' | 'alto' | 'ausente' | 'observacion') {
     this.colaboradorSeleccionado = colaborador;
     this.rendimientoSeleccionado = tipo;
-    
-    // Set Rendimiento Actual based on the worker's meta performance
+    this.motivoObservacionActual = '';
     this.detalleRendimientoActual = Math.max(0, 100 + colaborador.meta);
 
     const today = new Date();
@@ -95,61 +280,100 @@ export class StaffPage {
     const dayBefore = new Date(today); dayBefore.setDate(dayBefore.getDate() - 2);
 
     const reportStr = localStorage.getItem('trabajadores_reporte_completo');
-    let reportData = null;
+    let allReports: any[] = [];
     if (reportStr) {
       const reports = JSON.parse(reportStr);
-      reportData = reports.find((r: any) => r.dni === colaborador.dni);
+      allReports = reports.filter((r: any) => r.dni === colaborador.dni);
     }
 
-    this.detalleHistorial = [
-      {
-        fecha: this.formatDate(today),
-        produccion: reportData ? (reportData.cajas > 0 ? `Producción: ${reportData.cajas} cajas` : `Horas: ${reportData.horas} h`) : 'Sin actividad registrada',
-        estado: tipo === 'bajo' ? 'CRÍTICO' : tipo === 'alto' ? 'ALTO' : 'FALTA',
-        metaText: tipo === 'ausente' ? 'Ausencia' : (colaborador.meta > 0 ? `+${colaborador.meta}% vs Meta` : `${colaborador.meta}% vs Meta`)
-      },
-      {
-        fecha: this.formatDate(yesterday),
-        produccion: tipo === 'bajo' ? 'Producción: 85% meta' : (tipo === 'ausente' ? 'Sin actividad' : 'Producción: 105% meta'),
-        estado: tipo === 'bajo' ? 'PROMEDIO' : (tipo === 'ausente' ? 'FALTA' : 'ALTO'),
-        metaText: tipo === 'bajo' ? '-5% vs Meta' : (tipo === 'ausente' ? 'Ausencia' : '+5% vs Meta')
-      },
-      {
-        fecha: this.formatDate(dayBefore),
-        produccion: tipo === 'bajo' ? 'Producción: 80% meta' : 'Producción: 110% meta',
-        estado: tipo === 'bajo' ? 'BAJO' : 'ALTO',
-        metaText: tipo === 'bajo' ? '-10% vs Meta' : '+10% vs Meta'
-      }
-    ];
+    // Sort descending by date
+    allReports.sort((a, b) => {
+      const d1 = a.fecha ? new Date(a.fecha).getTime() : 0;
+      const d2 = b.fecha ? new Date(b.fecha).getTime() : 0;
+      return d2 - d1;
+    });
 
-    // Generate last 7 days for Asistencia
+    this.detalleHistorial = [];
+    const maxItems = Math.min(3, allReports.length);
+    for (let i = 0; i < maxItems; i++) {
+        const rep = allReports[i];
+        if (!rep.fecha) continue; // Skip legacy data without date
+        
+        let prodStr = '';
+        let estado = 'FALTA';
+        let metaText = '';
+        if (rep.cajas > 0) {
+            prodStr = `Produccion: ${rep.cajas} cajas (${rep.horas}h)`;
+            const esperado = 12 * rep.horas;
+            const metaPct = Math.round(((rep.cajas - esperado) / esperado) * 100);
+            estado = rep.yield === 'High' ? 'ALTO' : (rep.yield === 'Low' ? 'BAJO' : 'PROMEDIO');
+            metaText = metaPct >= 0 ? `+${metaPct}% vs Meta` : `${metaPct}% vs Meta`;
+        } else {
+            prodStr = `Horas trabajadas: ${rep.horas}h`;
+            estado = rep.yield === 'High' ? 'ALTO' : (rep.yield === 'Low' ? 'BAJO' : 'PROMEDIO');
+            const metaPct = rep.horas >= 8 ? 5 : Math.round(((rep.horas - 8) / 8) * 100);
+            metaText = metaPct >= 0 ? `+${metaPct}% vs Meta` : `${metaPct}% vs Meta`;
+        }
+        
+        this.detalleHistorial.push({
+            fecha: this.formatDate(new Date(rep.fecha + 'T12:00:00')),
+            produccion: prodStr,
+            estado: estado,
+            metaText: metaText
+        });
+    }
+
+    if (this.detalleHistorial.length === 0) {
+       this.detalleHistorial = [{
+         fecha: this.formatDate(today),
+         produccion: 'Sin actividad registrada',
+         estado: tipo === 'ausente' ? 'FALTA' : 'PROMEDIO',
+         metaText: tipo === 'ausente' ? 'Ausencia' : 'Sin datos'
+       }];
+    }
+
     this.asistenciaDias = [];
-    let presentesCount = 0;
     const daysShort = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
     
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const isToday = i === 0;
-      
-      let status = 'presente';
-      
-      if (tipo === 'ausente') {
-        if (i === 1 || i === 3) status = 'ausente'; 
-        if (isToday) status = 'ausente';
-      } else if (tipo === 'bajo') {
-        if (i === 2) status = 'ausente'; // Falta un día en el historial para justificar inconsistencia
-      }
-      
-      if (status === 'presente') presentesCount++;
-      
-      this.asistenciaDias.push({
-        name: daysShort[d.getDay()],
-        status: status
-      });
+    // Generar la semana actual (Lunes a Domingo)
+    const todayAtNoon = new Date(today.toISOString().split('T')[0] + 'T12:00:00');
+    const dayOfWeek = todayAtNoon.getDay(); // 0 is Sunday
+    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; 
+    const monday = new Date(todayAtNoon);
+    monday.setDate(monday.getDate() - diffToMonday);
+
+    let presentesCount = 0;
+    let pastDaysCount = 0;
+
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(d.getDate() + i);
+        const dStr = d.toISOString().split('T')[0];
+        const dayName = daysShort[d.getDay()];
+
+        let status = 'futuro';
+        
+        if (d.getTime() <= todayAtNoon.getTime()) {
+            pastDaysCount++;
+            status = 'ausente';
+            
+            // Validar si tiene reporte ese día
+            const tieneReporte = allReports.some(r => r.fecha === dStr);
+            const esHoyPresente = dStr === today.toISOString().split('T')[0] && colaborador.presente;
+
+            if (tieneReporte || esHoyPresente) {
+                status = 'presente';
+                presentesCount++;
+            }
+        }
+
+        this.asistenciaDias.push({
+            name: dayName,
+            status: status
+        });
     }
-    
-    this.detalleConsistencia = Math.round((presentesCount / 7) * 100);
+
+    this.detalleConsistencia = pastDaysCount > 0 ? Math.round((presentesCount / pastDaysCount) * 100) : 100;
 
     this.estadoVista = 'detalle';
   }
@@ -157,6 +381,7 @@ export class StaffPage {
   volver() {
     this.estadoVista = 'lista';
     this.colaboradorSeleccionado = null;
+    this.motivoObservacionActual = '';
   }
 
   setTab(tab: 'rendimiento' | 'asistencia') {
@@ -164,30 +389,82 @@ export class StaffPage {
   }
 
   async ponerEnObservacion() {
-    if (this.colaboradorSeleccionado) {
-      this.colaboradorSeleccionado.enObservacion = true;
-
-      // Agregar a la cola de sincronización
-      const currentQueueStr = localStorage.getItem('sync_queue');
-      let currentQueue = currentQueueStr ? JSON.parse(currentQueueStr) : [];
-      currentQueue.push({
-        type: 'observacion',
-        title: 'Observación de Rendimiento',
-        details: this.colaboradorSeleccionado.nombre + ' (' + this.colaboradorSeleccionado.id + ')',
-        date: new Date().toISOString()
+    if (!this.colaboradorSeleccionado) return;
+    if (!this.motivoObservacionActual.trim()) {
+      const toast = await this.toastCtrl.create({
+        message: 'Por favor ingrese el motivo de observacion.',
+        duration: 2500,
+        position: 'bottom',
+        color: 'danger',
       });
-      localStorage.setItem('sync_queue', JSON.stringify(currentQueue));
+      await toast.present();
+      return;
+    }
+
+    const motivo = this.motivoObservacionActual.trim();
+    this.colaboradorSeleccionado.enObservacion = true;
+    this.colaboradorSeleccionado.motivoObservacion = motivo;
+
+    const idx = this.todas.findIndex(c => c.dni === this.colaboradorSeleccionado!.dni);
+    if (idx !== -1) {
+      this.todas[idx].enObservacion = true;
+      this.todas[idx].motivoObservacion = motivo;
+    }
+    localStorage.setItem('staff_plantilla', JSON.stringify(this.todas));
+    this._cargarDatosDesdeReportes();
+
+    const queueStr = localStorage.getItem('sync_queue');
+    const queue = queueStr ? JSON.parse(queueStr) : [];
+    queue.push({
+      type:    'observacion',
+      title:   'Observacion de Rendimiento',
+      details: `${this.colaboradorSeleccionado.nombre} (${this.colaboradorSeleccionado.id}) - Motivo: ${motivo}`,
+      date:    new Date().toISOString(),
+    });
+    localStorage.setItem('sync_queue', JSON.stringify(queue));
+
+    const toast = await this.toastCtrl.create({
+      message: 'Trabajador puesto en observacion. Sincronizacion pendiente.',
+      duration: 2500,
+      position: 'bottom',
+      color: 'warning',
+      icon: 'sync-outline',
+    });
+    await toast.present();
+    this.cdr.detectChanges();
+    this.volver();
+  }
+
+  async quitarObservacion() {
+    if (!this.colaboradorSeleccionado) return;
+
+    this.colaboradorSeleccionado.enObservacion = false;
+    this.colaboradorSeleccionado.motivoObservacion = '';
+
+    const idx = this.todas.findIndex(c => c.dni === this.colaboradorSeleccionado!.dni);
+    if (idx !== -1) {
+      this.todas[idx].enObservacion = false;
+      this.todas[idx].motivoObservacion = '';
+    }
+    localStorage.setItem('staff_plantilla', JSON.stringify(this.todas));
+    this._cargarDatosDesdeReportes();
+
+    const queueStr = localStorage.getItem('sync_queue');
+    if (queueStr) {
+      let queue = JSON.parse(queueStr);
+      const searchStr = `${this.colaboradorSeleccionado.nombre} (${this.colaboradorSeleccionado.id})`;
+      queue = queue.filter((item: any) => !(item.type === 'observacion' && item.details.startsWith(searchStr)));
+      localStorage.setItem('sync_queue', JSON.stringify(queue));
     }
 
     const toast = await this.toastCtrl.create({
-      message: 'Registro guardado. Sincronización pendiente...',
-      duration: 3000,
+      message: 'Observación retirada correctamente.',
+      duration: 2500,
       position: 'bottom',
-      color: 'warning',
-      icon: 'sync-outline'
+      color: 'success'
     });
     await toast.present();
-
+    this.cdr.detectChanges();
     this.volver();
   }
 
