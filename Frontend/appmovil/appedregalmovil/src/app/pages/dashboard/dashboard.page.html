@@ -60,24 +60,23 @@
     <!-- ===== KPI Cards ===== -->
     <div class="kpi-row">
 
-      <div class="kpi-card">
+      <div class="kpi-card" style="flex: 1;">
         <div class="kpi-header">
           <i class="fas fa-users kpi-icon"></i>
           @if (stats.personalNuevos > 0) {
             <span class="kpi-badge red">+{{ stats.personalNuevos }} hoy</span>
           }
         </div>
-        <p class="kpi-label">Personal Total</p>
+        <p class="kpi-label">Personal Presente</p>
         <p class="kpi-value">{{ stats.personalTotal }}</p>
       </div>
 
-      <div class="kpi-card">
+      <div class="kpi-card" style="flex: 1;">
         <div class="kpi-header">
-          <i class="fas fa-clipboard-check kpi-icon"></i>
-          <span class="kpi-badge outline">PARTE HOY</span>
+          <i class="fas fa-id-badge kpi-icon"></i>
         </div>
-        <p class="kpi-label">Registrados</p>
-        <p class="kpi-value">{{ stats.registrados | number:'2.0' }}</p>
+        <p class="kpi-label">Total Asignados</p>
+        <p class="kpi-value">{{ stats.totalAsignados }}</p>
       </div>
 
     </div>

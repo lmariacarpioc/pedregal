@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,11 @@ export class SyncService {
   constructor(private http: HttpClient) {}
 
   async downloadSyncData(): Promise<boolean> {
+    if (!navigator.onLine) return false;
     try {
-      const data: any = await firstValueFrom(this.http.get(`${environment.apiUrl}/sync/download?dispositivoId=mobile`));
+      const data: any = await firstValueFrom(
+        this.http.get(`${environment.apiUrl}/sync/download?dispositivoId=mobile`).pipe(timeout(5000))
+      );
       
       if (data) {
         if (data.usuarios) localStorage.setItem('agro_sync_usuarios', JSON.stringify(data.usuarios));
@@ -32,6 +35,7 @@ export class SyncService {
   }
 
   async uploadSyncQueue(): Promise<boolean> {
+    if (!navigator.onLine) return false;
     try {
       const localesRaw = localStorage.getItem('agro_mobile_partes_locales');
       const partesLocales = localesRaw ? JSON.parse(localesRaw) : [];
@@ -60,7 +64,9 @@ export class SyncService {
         }
       });
 
-      await firstValueFrom(this.http.post(`${environment.apiUrl}/sync/upload`, payload));
+      await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/sync/upload`, payload).pipe(timeout(5000))
+      );
       
       // Limpiar datos locales después de subirlos con éxito
       localStorage.removeItem('agro_mobile_partes_locales');

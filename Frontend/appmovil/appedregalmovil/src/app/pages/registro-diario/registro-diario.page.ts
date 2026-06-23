@@ -80,16 +80,26 @@ export class RegistroDiarioPage implements OnInit {
    */
   continuar() {
     const now = new Date();
-    const registro: RegistroAsistencia = {
-      usuarioId:    this.usuarioActivo.id,
-      nombreUsuario: this.usuarioActivo.nombre,
-      fecha: now.toISOString().split('T')[0],
-      hora:  this.horaIngreso(),
-      timestamp: now.getTime(),
-    };
+    const fechaActual = now.toISOString().split('T')[0];
 
-    this._guardarEnHistorial(registro);
-    this._encolarEnSync(registro);
+    const clave = 'asistencia_historial';
+    const raw = localStorage.getItem(clave);
+    const lista: RegistroAsistencia[] = raw ? JSON.parse(raw) : [];
+
+    const yaRegistrado = lista.some(r => r.usuarioId === this.usuarioActivo.id && r.fecha === fechaActual);
+
+    if (!yaRegistrado) {
+      const registro: RegistroAsistencia = {
+        usuarioId:    this.usuarioActivo.id,
+        nombreUsuario: this.usuarioActivo.nombre,
+        fecha: fechaActual,
+        hora:  this.horaIngreso(),
+        timestamp: now.getTime(),
+      };
+      this._guardarEnHistorial(registro);
+      this._encolarEnSync(registro);
+    }
+
     this.router.navigateByUrl('/tabs/dashboard');
   }
 
@@ -137,7 +147,8 @@ export class RegistroDiarioPage implements OnInit {
 
     this.historialFiltrado = lista
       .filter(r => r.usuarioId === this.usuarioActivo.id && (ahora - r.timestamp) <= tresDiasMs)
-      .sort((a, b) => b.timestamp - a.timestamp);
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 3);
   }
 
   private _encolarEnSync(registro: RegistroAsistencia) {

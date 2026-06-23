@@ -38,6 +38,7 @@ public class SyncService {
 
             if (payload.getTrabajadores() != null) {
                 for (TrabajadorDTO dto : payload.getTrabajadores()) {
+                    if (dto == null) continue;
                     try {
                         if (dto.getSyncId() != null && trabajadorRepository.existsBySyncId(dto.getSyncId())) {
                             Trabajador existing = trabajadorRepository.findBySyncId(dto.getSyncId()).get();
@@ -78,6 +79,7 @@ public class SyncService {
 
             if (payload.getPartesDiarios() != null) {
                 for (ParteDiarioDTO dto : payload.getPartesDiarios()) {
+                    if (dto == null) continue;
                     try {
                         ParteDiario parte;
                         if (dto.getSyncId() != null && parteDiarioRepository.existsBySyncId(dto.getSyncId())) {
@@ -102,6 +104,7 @@ public class SyncService {
 
                         if (dto.getDetalles() != null) {
                             for (ParteDiarioDetalleDTO detDto : dto.getDetalles()) {
+                                if (detDto == null) continue;
                                 try {
                                     ParteDiarioDetalle detalle;
                                     if (detDto.getSyncId() != null && parteDiarioDetalleRepository.existsBySyncId(detDto.getSyncId())) {
@@ -118,6 +121,8 @@ public class SyncService {
                                     detalle.setTareaRealizada(detDto.getTareaRealizada());
                                     detalle.setEstadoAsistencia(detDto.getEstadoAsistencia());
                                     detalle.setObservaciones(detDto.getObservaciones());
+                                    detalle.setCantidad(detDto.getCantidad());
+                                    detalle.setTipoActividad(detDto.getTipoActividad());
 
                                     if (detDto.getTrabajadorSyncId() != null) {
                                         trabajadorRepository.findBySyncId(detDto.getTrabajadorSyncId())
@@ -141,6 +146,7 @@ public class SyncService {
 
             if (payload.getReportes() != null) {
                 for (ReporteDTO dto : payload.getReportes()) {
+                    if (dto == null) continue;
                     try {
                         Reporte reporte;
                         if (dto.getSyncId() != null && reporteRepository.existsBySyncId(dto.getSyncId())) {
@@ -173,6 +179,7 @@ public class SyncService {
 
             if (payload.getInversiones() != null) {
                 for (InversionDTO dto : payload.getInversiones()) {
+                    if (dto == null) continue;
                     try {
                         Inversion inversion;
                         if (dto.getSyncId() != null && inversionRepository.existsBySyncId(dto.getSyncId())) {
@@ -206,6 +213,7 @@ public class SyncService {
 
             if (payload.getProduccion() != null) {
                 for (ProduccionDTO dto : payload.getProduccion()) {
+                    if (dto == null) continue;
                     try {
                         Produccion produccion;
                         if (dto.getSyncId() != null && produccionRepository.existsBySyncId(dto.getSyncId())) {
@@ -326,6 +334,8 @@ public class SyncService {
                 detDto.setHoraEntrada(d.getHoraEntrada());
                 detDto.setHoraSalida(d.getHoraSalida());
                 detDto.setEstadoAsistencia(d.getEstadoAsistencia());
+                detDto.setCantidad(d.getCantidad());
+                detDto.setTipoActividad(d.getTipoActividad());
                 return detDto;
             }).toList();
             dto.setDetalles(detalles);

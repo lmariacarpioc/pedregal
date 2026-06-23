@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">appedregalmovil</string>
+    <string name="title_activity_main">appedregalmovil</string>
+    <string name="package_name">com.pedregal.appmovil</string>
+    <string name="custom_url_scheme">com.pedregal.appmovil</string>
+</resources>

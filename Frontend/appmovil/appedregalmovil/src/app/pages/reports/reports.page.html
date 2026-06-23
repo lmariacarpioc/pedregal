@@ -180,18 +180,6 @@
               </div>
             </div>
 
-            <!-- Proceso -->
-            <div class="field-group">
-              <label class="field-label">Proceso</label>
-              <div class="select-wrapper">
-                <select class="native-select" [(ngModel)]="proceso">
-                  <option value="Selección y Empaque">Selección y Empaque</option>
-                  <option value="Lavado">Lavado</option>
-                  <option value="Clasificación">Clasificación</option>
-                </select>
-                <i class="fas fa-chevron-down select-arrow"></i>
-              </div>
-            </div>
           </div>
         }
 
@@ -392,12 +380,19 @@
           </div>
         }
 
-        <!-- Botón Continuar -->
-        @if (activeTab !== 'reportes') {
-          <ion-button expand="block" class="btn-continuar" (click)="continuar()" [disabled]="!lote || (activeTab === 'produccion' && (!cajas || cajas <= 0 || !tipoEmpaque))">
-            Continuar
-            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
-          </ion-button>
+        <!-- Botones Inversión -->
+        @if (activeTab === 'inversion') {
+          <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #d1d5db; background: white; color: #4b5563; font-weight: 600; font-size: 14px; cursor: pointer;" (click)="resetWizard()">Nuevo</button>
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: none; background: #b3000b; color: white; font-weight: 700; font-size: 14px; cursor: pointer;" (click)="continuar()" [disabled]="!lote">Continuar <i class='fas fa-arrow-right'></i></button>
+          </div>
+        }
+        <!-- Botones Producción -->
+        @if (activeTab === 'produccion') {
+          <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #d1d5db; background: white; color: #4b5563; font-weight: 600; font-size: 14px; cursor: pointer;" (click)="resetWizard()">Nuevo</button>
+            <button style="flex: 1; padding: 14px; border-radius: 10px; border: none; background: #b3000b; color: white; font-weight: 700; font-size: 14px; cursor: pointer;" (click)="continuar()" [disabled]="!cajas || cajas <= 0 || !tipoEmpaque">Continuar <i class='fas fa-arrow-right'></i></button>
+          </div>
         }
       }
 
@@ -425,10 +420,12 @@
               <label class="field-label fw-500">Número de Documento (DNI)</label>
               <div class="input-with-button">
                 <input type="text" class="custom-input" placeholder="8 dígitos" [(ngModel)]="nuevoDni">
-                <button class="btn-validate">
+                <button class="btn-validate" (click)="buscarTrabajador(false)">
                   <i class="fas fa-search"></i> Validar
                 </button>
               </div>
+
+              <!-- Removed auto-add list UI -->
             </div>
           </div>
 
@@ -503,10 +500,12 @@
                     <i class="far fa-id-card"></i>
                     <input type="text" class="custom-input pl-icon" placeholder="Ingrese DNI" [(ngModel)]="nuevoDniProd">
                   </div>
-                  <button class="btn-validate">
+                  <button class="btn-validate" (click)="buscarTrabajador(true)">
                     <i class="fas fa-search"></i> Buscar
                   </button>
                 </div>
+
+                <!-- Removed auto-add list UI -->
               </div>
             </div>
 
