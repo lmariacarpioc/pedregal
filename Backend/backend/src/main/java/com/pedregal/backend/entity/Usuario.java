@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,7 @@ public class Usuario {
     private String username;
 
     @Column(name = "password_hash", nullable = false)
+    @ToString.Exclude
     private String passwordHash;
 
     @Column(name = "nombre_completo", nullable = false)
