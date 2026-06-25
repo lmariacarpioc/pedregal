@@ -7,11 +7,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 @RequiredArgsConstructor
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Usuario> findAll() {
         return repository.findAll();
@@ -26,7 +29,7 @@ public class UsuarioService {
         Usuario usuario = repository.findByUsername(username)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos"));
 
-        if (usuario.getPasswordHash() == null || !usuario.getPasswordHash().equals(password)) {
+        if (usuario.getPasswordHash() == null || !passwordEncoder.matches(password, usuario.getPasswordHash())) {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos");
         }
         return usuario;

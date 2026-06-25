@@ -8,19 +8,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Component
 @RequiredArgsConstructor
 public class DbSeeder implements CommandLineRunner {
 
     private final UsuarioRepository usuarioRepository;
     private final TrabajadorRepository trabajadorRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
         if (usuarioRepository.count() == 0) {
             Usuario admin = new Usuario();
             admin.setUsername("admin");
-            admin.setPasswordHash("admin");
+            admin.setPasswordHash(passwordEncoder.encode("admin"));
             admin.setNombreCompleto("Administrador General");
             admin.setRol("ADMIN");
             admin.setEmail("admin@elpedregal.com");
@@ -29,7 +32,7 @@ public class DbSeeder implements CommandLineRunner {
 
             Usuario jefe1 = new Usuario();
             jefe1.setUsername("brigida");
-            jefe1.setPasswordHash("brigida123");
+            jefe1.setPasswordHash(passwordEncoder.encode("brigida123"));
             jefe1.setNombreCompleto("Brígida Torres");
             jefe1.setRol("JEFE_CAMPO");
             jefe1.setSyncId("SUP-001");
@@ -37,7 +40,7 @@ public class DbSeeder implements CommandLineRunner {
 
             Usuario jefe2 = new Usuario();
             jefe2.setUsername("elias");
-            jefe2.setPasswordHash("elias123");
+            jefe2.setPasswordHash(passwordEncoder.encode("elias123"));
             jefe2.setNombreCompleto("Elias Navarro");
             jefe2.setRol("JEFE_CAMPO");
             jefe2.setSyncId("SUP-002");
