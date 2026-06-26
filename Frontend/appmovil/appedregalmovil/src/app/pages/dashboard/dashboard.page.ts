@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import {
@@ -17,8 +17,12 @@ import {
   sunnyOutline,
 } from 'ionicons/icons';
 
+import { AuthService } from '../../services/auth.service';
+
+import { SyncService } from '../../services/sync.service';
+
 export interface ParteItem {
-  id: number;
+  id: number | string;
   icono: string;
   iconColor: string;
   titulo: string;
@@ -33,10 +37,10 @@ export interface ParteItem {
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
 })
-export class DashboardPage {
+export class DashboardPage implements OnInit {
 
   supervisor = {
-    nombre: 'Natali Rosibelt Alejo Rodriguez',
+    nombre: 'Supervisor de Campo',
     cargo: 'Supervisor de Campo',
     turno: 'Mañana',
     ubicacion: 'Sector Central',
@@ -51,64 +55,73 @@ export class DashboardPage {
   };
 
   partesHoy: ParteItem[] = [];
+  partesAyer: ParteItem[] = [];
 
-  partesAyer: ParteItem[] = [
-    {
-      id: 999,
-      icono: 'fa-clipboard-list',
-      iconColor: '#6b7280',
-      titulo: 'Inventario - Almacén 4',
-      subtitulo: '18:00 PM • 24 items registrados',
-      estado: 'CERRADO',
-    },
-  ];
+  constructor(private router: Router, private authService: AuthService, private syncService: SyncService) {
+    addIcons({ addOutline, syncOutline, chevronForwardOutline, peopleOutline, clipboardOutline, sunnyOutline });
+  }
 
-  ionViewWillEnter() {
-    // 1. Cargar Personal Presente
-    const presentesStr = localStorage.getItem('trabajadores_presentes');
-    const plantillaStr = localStorage.getItem('staff_plantilla');
-    
-    if (presentesStr && plantillaStr) {
-      const presentes = JSON.parse(presentesStr);
-      const todas = JSON.parse(plantillaStr);
-      // Solo contar los que realmente existen en la plantilla actual
-      const presentesValidos = todas.filter((c: any) => presentes.includes(c.dni));
-      this.stats.personalTotal = presentesValidos.length;
-      this.stats.totalAsignados = todas.length;
-    } else if (presentesStr) {
-      const presentes = JSON.parse(presentesStr);
-      this.stats.personalTotal = presentes.length;
-    } else {
-      this.stats.personalTotal = 0;
-    }
-
-    // 2. Cargar Reportes Resumen
-    const reportesStr = localStorage.getItem('reportes_resumen');
-    if (reportesStr) {
-      const reportes = JSON.parse(reportesStr);
-      this.stats.registrados = reportes.length;
-      
-      this.partesHoy = reportes.map((r: any, index: number) => {
-        const esInversion = r.avatar === 'IN';
-        const loteTxt = r.id.replace(' (INV)', '').replace(' (PROD)', '').replace('LOTE: ', 'Lote ');
-        const valorTxt = (r.manualInput || r.cajas || Math.round(r.rdtoCurrent));
-        return {
-          id: index,
-          icono: esInversion ? 'fa-tractor' : 'fa-box',
-          iconColor: esInversion ? '#b3000b' : '#3b82f6',
-          titulo: (esInversion ? 'Inversión - ' : 'Producción - ') + loteTxt,
-          subtitulo: 'Finalizado • ' + valorTxt + (esInversion ? ' Horas' : ' Cajas'),
-          estado: 'CERRADO'
-        };
-      });
-    } else {
-      this.stats.registrados = 0;
-      this.partesHoy = [];
+  ngOnInit() {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.supervisor.nombre = user.nombre || user.username || 'Supervisor';
     }
   }
 
-  constructor(private router: Router) {
-    addIcons({ addOutline, syncOutline, chevronForwardOutline, peopleOutline, clipboardOutline, sunnyOutline });
+  ionViewWillEnter() {
+    // 1. Cargar Personal Presente
+    const presentesStr = localStorage.getItem('trabajadores_presentes_' + this.authService.getUserPrefix());
+    const presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
+    
+    // 2. Cargar Total Asignados de la plantilla
+    const todas = this.syncService.getLocalTrabajadores();
+    let totalAsignados = todas ? todas.length : 0;
+
+    // 3. Cargar Reportes Resumen
+    const reportesStr = localStorage.getItem('reportes_resumen_' + this.authService.getUserPrefix());
+    this.partesHoy = [];
+    this.partesAyer = [];
+    let registrados = 0;
+
+    if (reportesStr) {
+      const reportes = JSON.parse(reportesStr);
+      registrados = reportes.length;
+      
+      reportes.forEach((r: any, index: number) => {
+        const esInversion = r.avatar === 'IN';
+        const loteTxt = (r.id && typeof r.id === 'string') ? r.id.replace(' (INV)', '').replace(' (PROD)', '').replace('LOTE: ', 'Lote ') : 'Reporte';
+        const valorTxt = (r.manualInput || r.cajas || Math.round(r.rdtoCurrent));
+        
+        const item: ParteItem = {
+          id: index,
+          icono: esInversion ? 'fa-tractor' : 'fa-box',
+          iconColor: esInversion ? '#b3000b' : '#3b82f6',
+          titulo: (esInversion ? 'Inversión - ' : 'Producción - ') + r.lote,
+          subtitulo: 'Finalizado • ' + valorTxt + (esInversion ? ' Horas' : ' Cajas'),
+          estado: 'CERRADO'
+        };
+
+        // Asumimos que los reportes con timestamp antiguo (ej. de ayer) van a ayer.
+        // Si no podemos determinar, los primeros en la lista invertida podrían ser "hoy".
+        // Para simplificar, mostramos el último como 'Hoy' y el penúltimo como 'Ayer' si hay varios,
+        // o si guardamos la fecha, usamos la fecha. 
+        // Ya que reportes_resumen no guarda fecha directamente, mostraremos todos como "Hoy" a menos que sean muy antiguos.
+        this.partesHoy.push(item);
+      });
+      // Para simular "Ayer", si hay más de 1, movemos el primero al "Ayer"
+      if (this.partesHoy.length > 1) {
+        const oldItem = this.partesHoy.shift();
+        if (oldItem) this.partesAyer.push(oldItem);
+      }
+      this.partesHoy.reverse(); // Mostrar más recientes arriba
+    }
+
+    this.stats = {
+      personalTotal: presentes.length,
+      personalNuevos: 0,
+      registrados: registrados,
+      totalAsignados: totalAsignados
+    };
   }
 
   crearParte() {

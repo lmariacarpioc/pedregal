@@ -7,7 +7,8 @@ import {
   IonToolbar,
   IonButton,
   IonIcon,
-  ToastController
+  ToastController,
+  AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -21,6 +22,7 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { SyncService } from '../../services/sync.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-reports',
@@ -37,9 +39,9 @@ export class ReportsPage {
   activeTab: 'inversion' | 'produccion' | 'reportes' = 'inversion';
 
   // ── Inversión fields ────────────────────────────────
-  campania    = '2023-2024';
+  campania    = '2026';
   cultivo     = 'Uva de Mesa';
-  fundo       = 'Fundo Los Olivos';
+  fundo       = 'Fundo Yaurilla';
   lote        = 'Lote 01-A';
   etapa       = 'Cosecha';
   proceso     = 'Selección y Empaque';
@@ -61,22 +63,9 @@ export class ReportsPage {
     const dni = esProd ? this.nuevoDniProd : this.nuevoDni;
     if (!dni) return;
 
-    const plantillaStr = localStorage.getItem('staff_plantilla');
-    let todas: any[] = [];
-    if (plantillaStr) {
-      todas = JSON.parse(plantillaStr);
-    } else {
-      todas = [
-        { id: '#88294', dni: '45829301', nombre: 'Mendoza Torres, Juan' },
-        { id: '#88312', dni: '70192834', nombre: 'Quispe Huation, Elena' },
-        { id: '#88102', dni: '41029384', nombre: 'Salazar Rojas, Roberto' },
-        { id: '#88095', dni: '45678901', nombre: 'Perez Castillo, Juan' },
-        { id: '#88111', line: '72345678', nombre: 'Gonzales Ruiz, Maria', dni: '72345678' },
-        { id: '#88123', dni: '12987654', nombre: 'Luna Diaz, Carlos' }
-      ];
-    }
+    const todas = this.syncService.getLocalTrabajadores();
     
-    const worker = todas.find(c => c.dni === dni);
+    const worker = todas.find((c: any) => c.dni === dni);
     if (!worker) {
       const toast = await this.toastCtrl.create({
         message: 'Trabajador no encontrado en la plantilla.',
@@ -96,13 +85,25 @@ export class ReportsPage {
       return;
     }
 
+    // Retrieve the hours they worked today if they already have a report, otherwise default to 8.0
+    const fullReportStr = localStorage.getItem(('trabajadores_reporte_completo_' + this.authService.getUserPrefix()));
+    let existingHoras = 8.0;
+    if (fullReportStr) {
+      const fullReport = JSON.parse(fullReportStr);
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayReport = fullReport.find((r: any) => r.dni === dni && r.fecha === todayStr);
+      if (todayReport && todayReport.horas !== undefined) {
+        existingHoras = todayReport.horas;
+      }
+    }
+
     if (esProd) {
       if (!this.trabajadoresProd.find(t => t.dni === dni)) {
         this.trabajadoresProd.push({
           dni: worker.dni,
           nombre: worker.nombre,
           cajas: 0,
-          horas: 8.0
+          horas: existingHoras
         });
       }
       this.nuevoDniProd = '';
@@ -111,7 +112,7 @@ export class ReportsPage {
         this.trabajadores.push({
           dni: worker.dni,
           nombre: worker.nombre,
-          horas: 8,
+          horas: existingHoras,
           rend: 'MED',
           tipo: 'Normal',
           motivo: 'Normal'
@@ -139,8 +140,17 @@ export class ReportsPage {
   nuevoNombreModal = '';
   motivoModal = ''; // Motivo de adición extraordinaria de personal
 
-  constructor(private router: Router, private toastCtrl: ToastController, private syncService: SyncService) {
-    addIcons({ arrowForwardOutline, syncOutline, peopleOutline, statsChartOutline, starOutline, star });
+  constructor(
+    private router: Router,
+    private toastCtrl: ToastController,
+    private syncService: SyncService,
+    private authService: AuthService,
+    private alertCtrl: AlertController
+  ) {
+    addIcons({
+      arrowForwardOutline, syncOutline, peopleOutline,
+      statsChartOutline, starOutline, star
+    });
   }
 
   setTab(tab: 'inversion' | 'produccion' | 'reportes') {
@@ -189,8 +199,43 @@ export class ReportsPage {
     this.trabajadoresProd = [];
   }
 
-  continuarResumen() {
+  async continuarResumen() {
+    if (this.wizardType === 'produccion') {
+      const isValid = await this.validarHorasProduccion();
+      if (!isValid) return; // Se bloquea el avance
+    }
     this.currentStep = 3;
+  }
+
+  async validarHorasProduccion(): Promise<boolean> {
+    const fullReportStr = localStorage.getItem(('trabajadores_reporte_completo_' + this.authService.getUserPrefix()));
+    if (!fullReportStr) return true; // Si no hay historial, no hay con qué comparar
+
+    const fullReport = JSON.parse(fullReportStr);
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    for (const tProd of this.trabajadoresProd) {
+      // Buscar si el trabajador tuvo horas de Inversión hoy
+      const invReport = fullReport.find((r: any) => 
+        r.dni === tProd.dni && 
+        r.fecha === todayStr && 
+        r.tipoActividad !== 'PRODUCCION' // O asumimos todo lo del fullReport que no sea prod es inversion (actividad)
+      );
+
+      // Si existe un reporte anterior de Inversión y las horas no coinciden exactamente
+      if (invReport && invReport.horas !== undefined) {
+        if (tProd.horas !== invReport.horas) {
+          const alert = await this.alertCtrl.create({
+            header: 'Discrepancia de Horas',
+            message: `El trabajador ${tProd.nombre} tiene registradas ${invReport.horas} horas en Inversión hoy, pero le estás asignando ${tProd.horas} horas en Producción. Deben coincidir exactamente.`,
+            buttons: ['Aceptar']
+          });
+          await alert.present();
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   regresarPaso2() {
@@ -244,8 +289,19 @@ export class ReportsPage {
       });
     }
 
+    // Persistir localmente en agro_sync_trabajadores para que esté disponible en la vista Staff
+    this.syncService.agregarTrabajadorLocal({
+      syncId: `loc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      dni: dniStr,
+      nombre: this.nuevoNombreModal.toUpperCase(),
+      apellido: '',
+      cargo: 'Extra',
+      activo: true,
+      isLocal: true
+    });
+
     // Encolar en sync_queue para que quede trazabilidad del agregado extraordinario
-    const syncRaw = localStorage.getItem('sync_queue');
+    const syncRaw = localStorage.getItem(('sync_queue_' + this.authService.getUserPrefix()));
     const syncQueue = syncRaw ? JSON.parse(syncRaw) : [];
     syncQueue.push({
       type:    'personal_extra',
@@ -253,7 +309,7 @@ export class ReportsPage {
       details: `${this.nuevoNombreModal.toUpperCase()} (DNI: ${dniStr}) — Motivo: ${motivo}`,
       date:    new Date().toISOString(),
     });
-    localStorage.setItem('sync_queue', JSON.stringify(syncQueue));
+    localStorage.setItem(('sync_queue_' + this.authService.getUserPrefix()), JSON.stringify(syncQueue));
 
     this.cerrarModalTrabajador();
   }
@@ -265,13 +321,13 @@ export class ReportsPage {
   deleteReporte(rep: any, event: Event) {
     event.stopPropagation();
     this.reportesList = this.reportesList.filter((r: any) => r.id !== rep.id);
-    localStorage.setItem('reportes_resumen', JSON.stringify(this.reportesList));
+    localStorage.setItem(('reportes_resumen_' + this.authService.getUserPrefix()), JSON.stringify(this.reportesList));
   }
 
   trabajadoresDisponibles: any[] = [];
 
   ionViewWillEnter() {
-    const list = localStorage.getItem('reportes_resumen');
+    const list = localStorage.getItem(('reportes_resumen_' + this.authService.getUserPrefix()));
     if (list) {
       this.reportesList = JSON.parse(list);
     }
@@ -279,12 +335,11 @@ export class ReportsPage {
   }
 
   cargarDisponibles() {
-    const presentesStr = localStorage.getItem('trabajadores_presentes');
+    const presentesStr = localStorage.getItem(('trabajadores_presentes_' + this.authService.getUserPrefix()));
     const presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
     
-    const plantillaStr = localStorage.getItem('staff_plantilla');
-    if (plantillaStr) {
-      const todas = JSON.parse(plantillaStr);
+    const todas = this.syncService.getLocalTrabajadores();
+    if (todas && todas.length > 0) {
       this.trabajadoresDisponibles = todas.filter((c: any) => presentes.includes(c.dni));
     }
   }
@@ -301,7 +356,7 @@ export class ReportsPage {
       : this.trabajadoresProd.map(t => t.dni);
 
     // ── 2. Actualizar reporte completo para Staff ──────────────────────────
-    const fullReportStr = localStorage.getItem('trabajadores_reporte_completo');
+    const fullReportStr = localStorage.getItem(('trabajadores_reporte_completo_' + this.authService.getUserPrefix()));
     let fullReportForStaff: any[] = fullReportStr ? JSON.parse(fullReportStr) : [];
     
     const todayStr = new Date().toISOString().split('T')[0];
@@ -348,7 +403,7 @@ export class ReportsPage {
         });
       });
     }
-    localStorage.setItem('trabajadores_reporte_completo', JSON.stringify(fullReportForStaff));
+    localStorage.setItem(('trabajadores_reporte_completo_' + this.authService.getUserPrefix()), JSON.stringify(fullReportForStaff));
 
     // ── 3. Agregar resumen único al listado de Reportes ────────────────────
     if (!this.reportesList) this.reportesList = [];
@@ -390,13 +445,13 @@ export class ReportsPage {
         expanded: false,
       });
     }
-    localStorage.setItem('reportes_resumen', JSON.stringify(this.reportesList));
+    localStorage.setItem(('reportes_resumen_' + this.authService.getUserPrefix()), JSON.stringify(this.reportesList));
 
     // ── 4. Guardar DNIs presentes para Staff ──────────────────────────────
-    const presentesStr = localStorage.getItem('trabajadores_presentes');
+    const presentesStr = localStorage.getItem(('trabajadores_presentes_' + this.authService.getUserPrefix()));
     let presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
     dnis.forEach(d => { if (!presentes.includes(d)) presentes.push(d); });
-    localStorage.setItem('trabajadores_presentes', JSON.stringify(presentes));
+    localStorage.setItem(('trabajadores_presentes_' + this.authService.getUserPrefix()), JSON.stringify(presentes));
 
     // ── 5. Guardar en SyncService para el Backend ───────────────────────────
     const parteBackendId = `parte_${Date.now()}`;
@@ -407,11 +462,10 @@ export class ReportsPage {
     const detallesParaBackend = this.wizardType === 'inversion'
       ? this.trabajadores.map(t => {
           // Obtener syncId del trabajador original si existe
-          const todas = localStorage.getItem('staff_plantilla');
+          const todas = this.syncService.getLocalTrabajadores();
           let tSyncId = null;
           if (todas) {
-            const arr = JSON.parse(todas);
-            const ori = arr.find((x: any) => x.dni === t.dni);
+            const ori = todas.find((x: any) => x.dni === t.dni);
             tSyncId = ori ? ori.syncId : null;
           }
           return {
@@ -428,11 +482,10 @@ export class ReportsPage {
           };
         })
       : this.trabajadoresProd.map(t => {
-          const todas = localStorage.getItem('staff_plantilla');
+          const todas = this.syncService.getLocalTrabajadores();
           let tSyncId = null;
           if (todas) {
-            const arr = JSON.parse(todas);
-            const ori = arr.find((x: any) => x.dni === t.dni);
+            const ori = todas.find((x: any) => x.dni === t.dni);
             tSyncId = ori ? ori.syncId : null;
           }
           return {
@@ -457,13 +510,14 @@ export class ReportsPage {
       clima: 'Despejado',
       observacionesGenerales: `${this.wizardType === 'inversion' ? 'INVERSION' : 'PRODUCCION'} - Lote: ${this.lote || 'General'}`,
       estado: 'CERRADO',
-      detalles: detallesParaBackend
+      detalles: detallesParaBackend,
+      is_synced: false
     };
 
     this.syncService.guardarParteLocal(parteBackend);
 
     // ── 6. Encolar en sync_queue solo el UI (la data va en partes_locales) ──
-    const currentQueueStr = localStorage.getItem('sync_queue');
+    const currentQueueStr = localStorage.getItem(('sync_queue_' + this.authService.getUserPrefix()));
     let currentQueue = currentQueueStr ? JSON.parse(currentQueueStr) : [];
     currentQueue.push({
       type:    this.wizardType, // Usamos inversion o produccion para el ícono en UI
@@ -471,10 +525,10 @@ export class ReportsPage {
       details: `Lote: ${this.lote || 'General'} • ${dnis.length} trabajadores`,
       date:    new Date().toISOString(),
     });
-    localStorage.setItem('sync_queue', JSON.stringify(currentQueue));
+    localStorage.setItem(('sync_queue_' + this.authService.getUserPrefix()), JSON.stringify(currentQueue));
 
     // ── 6. Cambiar vista INMEDIATAMENTE (evita doble clic) ─────────────────
-    this.currentStep = 1;
+    this.resetWizard();
     this.activeTab = 'reportes';
 
     // ── 7. Toast informativo (ya no bloquea la navegación) ─────────────────

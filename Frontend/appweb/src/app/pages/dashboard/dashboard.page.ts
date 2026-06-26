@@ -69,6 +69,7 @@ export class DashboardPage implements OnInit {
 
   // Rendimiento global para la campana de Gauss
   rendimientoGlobal: number = 0;
+  varianzaGlobal: number = 5000;
   
   // Variables para la interacción con la Campana de Gauss
   gaussHover: boolean = false;
@@ -91,7 +92,11 @@ export class DashboardPage implements OnInit {
     const peakX = 10 + (600 * pct);
     const peakY = Math.max(6, 150 - (144 * pct));
     
-    return `M 10,150 C ${peakX - 150},150 ${peakX - 100},${peakY} ${peakX},${peakY} C ${peakX + 100},${peakY} ${peakX + 150},150 610,150`;
+    // Ancho de la campana (Desviación estándar escalada al SVG)
+    const desvSVG = 6 * Math.sqrt(this.varianzaGlobal);
+    const spreadWidth = Math.max(desvSVG * 2.5, 40);
+    
+    return `M 10,150 C ${peakX - spreadWidth},150 ${peakX - (spreadWidth / 1.5)},${peakY} ${peakX},${peakY} C ${peakX + (spreadWidth / 1.5)},${peakY} ${peakX + spreadWidth},150 610,150`;
   }
   
   get gaussLabelX(): number {
@@ -115,13 +120,15 @@ export class DashboardPage implements OnInit {
     let pct = ((this.hoverX - 10) / 600) * 120;
     this.hoverPct = Math.max(0, Math.min(120, Math.round(pct)));
     
-    // Calcular Y aproximado en la campana (simulando distribución normal)
+    // Calcular Y aproximado en la campana (distribución normal real mapeada al SVG)
     const mediaX = this.gaussLabelX;
-    const varianza = 5000;
+    // Factor de conversión (el eje X del SVG es ~6x el valor de rendimiento porcentual)
+    const varianzaSVG = 36 * this.varianzaGlobal;
+
     const alturaMaxima = Math.max(6, 150 - (144 * (this.rendimientoGlobal / 100)));
     const altura = 150 - alturaMaxima;
     
-    const exp = -Math.pow(this.hoverX - mediaX, 2) / (2 * varianza);
+    const exp = -Math.pow(this.hoverX - mediaX, 2) / (2 * varianzaSVG);
     this.hoverY = 150 - (altura * Math.exp(exp));
   }
 
@@ -129,13 +136,39 @@ export class DashboardPage implements OnInit {
     this.personalActivo        = this.trabajador.getTotalPersonalActivo();
     this.porcentajeAvance      = this.trabajador.getPorcentajeAvanceCosecha();
     this.costoImproductividad  = this.trabajador.getCostoImproductividad();
-    this.grupos                = this.trabajador.getRankingGrupos();
     this.partesFinalizados     = this.trabajador.getPartesFinalizados();
     
-    if (this.grupos.length > 0) {
-      this.rendimientoGlobal = Math.round(this.grupos.reduce((s, g) => s + g.rendimiento, 0) / this.grupos.length);
+    // Filtramos los grupos para que solo se muestren aquellos que tengan un rendimiento > 0 o que tengan partes asignados
+    this.grupos                = this.trabajador.getRankingGrupos().filter(g => g.rendimiento > 0 || this.partesFinalizados.length > 0);
+    
+    // Extraer rendimientos individuales reales de los Partes Finalizados más recientes
+    const rendimientosIndividuales: number[] = [];
+    const trabajadorUltimoRend: { [dni: string]: number } = {};
+
+    this.partesFinalizados.forEach(parte => {
+      parte.personal.forEach((p: any) => {
+        if (p.asistencia === 'PRESENTE' && p.rendimiento != null) {
+          trabajadorUltimoRend[p.dni] = p.rendimiento;
+        }
+      });
+    });
+
+    const rendimientosValidos = Object.values(trabajadorUltimoRend);
+    
+    if (rendimientosValidos.length > 0) {
+      // Media Global real
+      this.rendimientoGlobal = Math.round(rendimientosValidos.reduce((a, b) => a + b, 0) / rendimientosValidos.length);
+      
+      // Varianza real
+      const sumSq = rendimientosValidos.reduce((a, b) => a + Math.pow(b - this.rendimientoGlobal, 2), 0);
+      this.varianzaGlobal = sumSq / rendimientosValidos.length;
+      
+      // Evitar varianza 0 para que la campana no sea una línea infinita
+      if (this.varianzaGlobal < 100) this.varianzaGlobal = 100;
+      
     } else {
       this.rendimientoGlobal = 0;
+      this.varianzaGlobal = 5000;
     }
     
     this._generarAlertas();
@@ -256,7 +289,7 @@ export class DashboardPage implements OnInit {
 
   get totalAsistencias(): number {
     const partes = this.partesFinalizados;
-    if (!partes.length) return this.personalActivo;
+    if (!partes.length) return 0;
     const set = new Set<string>();
     partes.forEach(p =>
       p.personal

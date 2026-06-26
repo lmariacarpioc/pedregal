@@ -8,6 +8,7 @@ import { Reportes } from './pages/reportes/reportes';
 import{EditarTrabajador} from './pages/staff/editar_trabajador';
 import { Crear_Parte } from './pages/dashboard/crear_parte';
 import { NotFound } from './pages/not-found/not-found';
+import { webAuthGuard } from './guards/web-auth.guard';
 
 export const routes: Routes = [
     {
@@ -22,10 +23,12 @@ export const routes: Routes = [
 
   {
     path: '',
-   component: Menu,
-   children: [
+    component: Menu,
+    canActivate: [webAuthGuard],
+    children: [
 {path: 'dashboard', component: DashboardPage},
 {path: 'staff', component: StaffPage},
+{path: 'staff/crear_trabajador', component: EditarTrabajador},
 {path: 'staff/editar_trabajador/:dni', component: EditarTrabajador},
 {path: 'configuracion', component: Configuracion},
 {path: 'reportes', component: Reportes},

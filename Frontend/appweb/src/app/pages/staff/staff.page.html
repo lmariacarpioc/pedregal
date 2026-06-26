@@ -18,9 +18,16 @@
     </header>
 
     <div class="content-body">
-      <div class="page-title-section">
-        <h1>Gestión de Staff</h1>
-        <p>Control de rendimiento y estado de trabajadores en campo.</p>
+      <div class="page-title-section" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h1>Gestión de Staff</h1>
+          <p>Control de rendimiento y estado de trabajadores en campo.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-create-worker" (click)="irACrearTrabajador()" style="background: #2e7d32; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            + Registrar Trabajador
+          </button>
+        </div>
       </div>
 
       <div class="supervisors-list">
@@ -188,3 +195,4 @@
   </aside>
 
 </div>
+

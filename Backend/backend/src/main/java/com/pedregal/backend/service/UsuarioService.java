@@ -48,6 +48,12 @@ public class UsuarioService {
                 throw new IllegalArgumentException("El jefe de un Asistente debe ser un Supervisor");
             }
         }
+        
+        // Hash the password if it's not null and not already hashed (bcrypt starts with $2a$)
+        if (entity.getPasswordHash() != null && !entity.getPasswordHash().startsWith("$2a$")) {
+            entity.setPasswordHash(passwordEncoder.encode(entity.getPasswordHash()));
+        }
+        
         return repository.save(entity);
     }
 

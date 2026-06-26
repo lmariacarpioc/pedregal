@@ -1,19 +1,26 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar style="--background: #fff;">
-    <ion-title style="color: #b91c1c; font-weight: bold; font-family: Inter, sans-serif; display: flex; align-items: center; font-size: 16px;">
-      <i class="fas fa-tractor" style="margin-right: 8px;"></i>
-      AGRISUPERVISE
-    </ion-title>
-    <ion-buttons slot="end">
-      <ion-button style="color: #6b7280;">
+  <!-- ===== TOP HEADER ===== -->
+  <div class="top-header">
+    <div class="header-brand">
+      <svg viewBox="0 0 56 42" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="22">
+        <rect x="4" y="10" width="26" height="16" rx="2.5" fill="#b3000b"/>
+        <rect x="18" y="5"  width="16" height="9"  rx="2"   fill="#b3000b" opacity="0.8"/>
+        <circle cx="11" cy="31" r="7" fill="#b3000b"/>
+        <circle cx="11" cy="31" r="3.5" fill="#f4f4f6"/>
+        <circle cx="40" cy="33" r="5.5" fill="#b3000b"/>
+        <circle cx="40" cy="33" r="2.5" fill="#f4f4f6"/>
+        <rect x="28" y="16" width="13" height="9" rx="2" fill="#b3000b" opacity="0.75"/>
+      </svg>
+      <span class="brand-name">PEDREGAL</span>
+    </div>
+    <div class="header-actions">
+      <button class="header-sync-btn" style="margin-right: 8px;">
         <i class="fas fa-sync-alt" style="font-size: 18px;"></i>
-      </ion-button>
-      <ion-button style="color: #6b7280;">
+      </button>
+      <button class="header-sync-btn">
         <i class="far fa-user-circle" style="font-size: 20px;"></i>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+      </button>
+    </div>
+  </div>
 
 <ion-content style="--background: #f9fafb; font-family: Inter, sans-serif;">
   <div style="padding: 16px;">
@@ -30,22 +37,23 @@
 
         <p style="color: #4b5563; font-size: 14px; margin: 0 0 8px;">Última sincronización: {{ getTimeAgo() }}</p>
         
-        <div style="display: flex; justify-content: center; align-items: center; color: #b91c1c; font-size: 14px; font-weight: 500; margin-bottom: 24px;">
+        <div *ngIf="!isOnline" style="display: flex; justify-content: center; align-items: center; color: #b91c1c; font-size: 14px; font-weight: 500; margin-bottom: 24px;">
           <i class="fas fa-cloud" style="margin-right: 8px;"></i> Modo Offline Activo
         </div>
+        <div *ngIf="isOnline" style="display: flex; justify-content: center; align-items: center; color: #10b981; font-size: 14px; font-weight: 500; margin-bottom: 24px;">
+          <i class="fas fa-wifi" style="margin-right: 8px;"></i> Modo Online Activo
+        </div>
 
-        <ion-button expand="block" style="--background: #b91c1c; --border-radius: 8px; font-weight: 600; height: 48px;" (click)="sincronizar()" [disabled]="isSyncing">
+        <ion-button expand="block" style="--background: #b91c1c; --border-radius: 8px; font-weight: 600; height: 48px;" (click)="sincronizar()" [disabled]="isSyncing || !isOnline">
           <i class="fas fa-sync-alt" [class.fa-spin]="isSyncing" style="margin-right: 8px;"></i>
-          {{ isSyncing ? 'Sincronizando...' : 'Sincronizar Ahora' }}
+          {{ isSyncing ? 'SINCRONIZANDO...' : 'SINCRONIZAR AHORA' }}
         </ion-button>
-        
       </ion-card-content>
     </ion-card>
 
     <!-- Header List -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h3 style="margin: 0; font-size: 15px; color: #374151; font-weight: 600;">Registros Pendientes</h3>
-      <ion-badge style="--background: #fee2e2; color: #b91c1c; font-weight: 600; padding: 6px 10px; border-radius: 16px;">Alta Prioridad</ion-badge>
     </div>
 
     <!-- List Items -->
@@ -66,13 +74,7 @@
       </ion-card>
     </div>
 
-    <!-- Info Box -->
-    <div style="background-color: #f3f4f6; border-radius: 8px; padding: 16px; display: flex; align-items: flex-start; margin-bottom: 24px; border-left: 4px solid #9ca3af;">
-      <i class="fas fa-info-circle" style="color: #6b7280; font-size: 18px; margin-right: 12px; margin-top: 2px;"></i>
-      <p style="margin: 0; font-size: 13px; color: #6b7280; line-height: 1.5;">
-        Los datos se guardan localmente cuando no hay conexión. Se sincronizarán automáticamente al detectar una red estable o al presionar el botón superior.
-      </p>
-    </div>
+
 
   </div>
 </ion-content>

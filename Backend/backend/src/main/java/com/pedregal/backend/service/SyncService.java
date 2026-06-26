@@ -29,10 +29,24 @@ public class SyncService {
     private final ProduccionRepository produccionRepository;
     private final SyncLogRepository syncLogRepository;
 
-    @Transactional
+    // @Transactional (Removido para evitar rollback global que impida procesar otras entidades tras un fallo)
     public SyncResultDTO processSync(SyncPayloadDTO payload) {
         List<String> errors = new ArrayList<>();
         int created = 0, updated = 0, failed = 0;
+        
+        // 1. Guardar SyncLog al inicio
+        SyncLog syncLog = new SyncLog();
+        syncLog.setDispositivoId(payload.getDispositivoId());
+        syncLog.setFechaSync(LocalDateTime.now());
+        syncLog.setTipoSync("UPLOAD");
+        syncLog.setEstado("PROCESANDO");
+        syncLog.setPayloadResumen("Trabajadores: " +
+                (payload.getTrabajadores() != null ? payload.getTrabajadores().size() : 0) +
+                ", Partes: " +
+                (payload.getPartesDiarios() != null ? payload.getPartesDiarios().size() : 0) +
+                ", Inversiones: " +
+                (payload.getInversiones() != null ? payload.getInversiones().size() : 0));
+        syncLog = syncLogRepository.save(syncLog);
 
         try {
 
@@ -51,6 +65,11 @@ public class SyncService {
                             existing.setCategoria(dto.getCategoria());
                             existing.setSalarioDiario(dto.getSalarioDiario());
                             existing.setActivo(dto.isActivo());
+                            if (dto.getJefeSyncId() != null) {
+                                usuarioRepository.findBySyncId(dto.getJefeSyncId()).ifPresent(existing::setJefe);
+                            } else {
+                                existing.setJefe(null);
+                            }
                             trabajadorRepository.save(existing);
                             updated++;
                         } else {
@@ -65,6 +84,9 @@ public class SyncService {
                             nuevo.setCategoria(dto.getCategoria());
                             nuevo.setSalarioDiario(dto.getSalarioDiario());
                             nuevo.setActivo(dto.isActivo());
+                            if (dto.getJefeSyncId() != null) {
+                                usuarioRepository.findBySyncId(dto.getJefeSyncId()).ifPresent(nuevo::setJefe);
+                            }
                             trabajadorRepository.save(nuevo);
                             created++;
                         }
@@ -250,24 +272,14 @@ public class SyncService {
             errors.add("Error general: " + e.getMessage());
         }
 
-        SyncLog syncLog = new SyncLog();
-        syncLog.setDispositivoId(payload.getDispositivoId());
-        syncLog.setFechaSync(LocalDateTime.now());
-        syncLog.setTipoSync("UPLOAD");
+        // 3. Actualizar SyncLog al final
         syncLog.setTotalRegistros(created + updated + failed);
         syncLog.setRegistrosCreados(created);
         syncLog.setRegistrosActualizados(updated);
         syncLog.setRegistrosFallidos(failed);
         syncLog.setEstado(failed == 0 ? "EXITOSO" : (created + updated > 0 ? "PARCIAL" : "FALLIDO"));
         syncLog.setErrores(errors.isEmpty() ? null : String.join("; ", errors));
-        syncLog.setPayloadResumen("Trabajadores: " +
-                (payload.getTrabajadores() != null ? payload.getTrabajadores().size() : 0) +
-                ", Partes: " +
-                (payload.getPartesDiarios() != null ? payload.getPartesDiarios().size() : 0) +
-                ", Inversiones: " +
-                (payload.getInversiones() != null ? payload.getInversiones().size() : 0));
         syncLogRepository.save(syncLog);
-
         return SyncResultDTO.builder()
                 .success(failed == 0)
                 .message(failed == 0 ? "Sincronización exitosa" : "Sincronización con errores")
@@ -302,7 +314,15 @@ public class SyncService {
         }).toList();
         payload.setUsuarios(usuarios);
 
-        List<TrabajadorDTO> trabajadores = trabajadorRepository.findAll().stream().map(t -> {
+        List<Trabajador> trabajadoresFiltrados;
+        Usuario dispositivoJefe = usuarioRepository.findBySyncId(dispositivoId).orElse(null);
+        if (dispositivoJefe != null && "JEFE_CAMPO".equals(dispositivoJefe.getRol())) {
+            trabajadoresFiltrados = trabajadorRepository.findByJefe_Id(dispositivoJefe.getId());
+        } else {
+            trabajadoresFiltrados = trabajadorRepository.findAll();
+        }
+
+        List<TrabajadorDTO> trabajadores = trabajadoresFiltrados.stream().map(t -> {
             TrabajadorDTO dto = new TrabajadorDTO();
             dto.setSyncId(t.getSyncId());
             dto.setNombre(t.getNombre());
@@ -314,6 +334,9 @@ public class SyncService {
             dto.setCategoria(t.getCategoria());
             dto.setSalarioDiario(t.getSalarioDiario());
             dto.setActivo(t.isActivo());
+            if (t.getJefe() != null) {
+                dto.setJefeSyncId(t.getJefe().getSyncId());
+            }
             return dto;
         }).toList();
         payload.setTrabajadores(trabajadores);

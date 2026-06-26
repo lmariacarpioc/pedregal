@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrabajadorDTO {
+    private Long id;
     private String syncId;
     private String nombre;
     private String apellido;
@@ -20,4 +21,6 @@ public class TrabajadorDTO {
     private String categoria;
     private Double salarioDiario;
     private boolean activo;
+    private String jefeSyncId;
+    private Long jefeId;
 }

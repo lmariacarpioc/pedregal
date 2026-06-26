@@ -48,8 +48,16 @@ export class AuthService {
     return this.currentUser;
   }
 
+  getUserPrefix(): string {
+    return this.currentUser?.username || 'default';
+  }
+
   logout() {
     this.currentUser = null;
     localStorage.removeItem('agro_mobile_user');
+    // Limpiar caché local para aislamiento de datos entre sesiones
+    localStorage.removeItem('agro_sync_trabajadores');
+    localStorage.removeItem('agro_sync_partes');
+    localStorage.removeItem('agro_sync_reportes');
   }
 }

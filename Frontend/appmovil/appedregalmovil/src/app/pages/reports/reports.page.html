@@ -30,9 +30,17 @@
     @if (currentStep === 1) {
       <ion-toolbar class="rp-toolbar">
         <div class="rp-header-content">
-          <div class="header-brand-new">
-            <i class="fas fa-tractor" style="color: #b3000b; font-size: 16px;"></i>
-            <span class="header-title-text">Crear Parte Diario</span>
+          <div class="header-brand-new" style="display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 56 42" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="22">
+              <rect x="4" y="10" width="26" height="16" rx="2.5" fill="#b3000b"/>
+              <rect x="18" y="5"  width="16" height="9"  rx="2"   fill="#b3000b" opacity="0.8"/>
+              <circle cx="11" cy="31" r="7" fill="#b3000b"/>
+              <circle cx="11" cy="31" r="3.5" fill="#f4f4f6"/>
+              <circle cx="40" cy="33" r="5.5" fill="#b3000b"/>
+              <circle cx="40" cy="33" r="2.5" fill="#f4f4f6"/>
+              <rect x="28" y="16" width="13" height="9" rx="2" fill="#b3000b" opacity="0.75"/>
+            </svg>
+            <span style="font-size: 15px; font-weight: 800; color: #b3000b; letter-spacing: 2px;">PEDREGAL</span>
           </div>
           <button class="header-profile-btn">
             <i class="far fa-user-circle"></i>
@@ -105,8 +113,7 @@
               <label class="field-label">Campaña</label>
               <div class="select-wrapper">
                 <select class="native-select" [(ngModel)]="campania">
-                  <option value="2023-2024">2023-2024</option>
-                  <option value="2024-2025">2024-2025</option>
+                  <option value="2026">2026</option>
                 </select>
                 <i class="fas fa-chevron-down select-arrow"></i>
               </div>
@@ -139,8 +146,8 @@
               <label class="field-label">Fundo</label>
               <div class="select-wrapper">
                 <select class="native-select" [(ngModel)]="fundo">
-                  <option value="Fundo Los Olivos">Fundo Los Olivos</option>
-                  <option value="Fundo El Pedregal">Fundo El Pedregal</option>
+                  <option value="Fundo Yaurilla">Fundo Yaurilla</option>
+                  
                 </select>
                 <i class="fas fa-chevron-down select-arrow"></i>
               </div>
@@ -439,7 +446,7 @@
             </div>
             <div class="card-body p-0">
               <div style="overflow-x: auto; width: 100%;">
-              <table class="workers-table" style="width: 100%; min-width: 450px;">
+              <table class="workers-table" style="width: 100%; min-width: 100%;">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -476,10 +483,10 @@
               </div>
           <div class="actions-row center-align" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
             <div style="display: flex; gap: 10px; width: 100%;">
-              <button class="btn-outline-red-sm" style="flex: 1;" (click)="continuarResumen()" [disabled]="trabajadores.length === 0">Continuar al Resumen</button>
-              <button class="btn-solid-red" style="flex: 1; padding: 12px; border-radius: 8px;" (click)="abrirModalTrabajador()"><i class="fas fa-plus"></i> Nuevo</button>
+              <button class="btn-outline-red-sm" style="flex: 1; padding: 12px; border-radius: 8px; background-color: #ffffff;" (click)="abrirModalTrabajador()"><i class="fas fa-plus"></i> Nuevo</button>
+              <button class="btn-solid-red" style="flex: 1; padding: 12px; border-radius: 8px;" (click)="continuarResumen()" [disabled]="trabajadores.length === 0">Continuar al Resumen</button>
             </div>
-            <button class="btn-regresar-ghost" (click)="regresarPaso1()">
+            <button class="btn-outline-gray" style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; background: transparent; color: #4b5563; font-weight: 600;" (click)="regresarPaso1()">
               <i class="fas fa-arrow-left"></i> Regresar a Datos
             </button>
           </div>
@@ -552,12 +559,14 @@
               </div>
             </div>
             
-            <div class="actions-row space-between-btns" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+            <div class="actions-row center-align" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
               <div style="display: flex; gap: 10px; width: 100%;">
-                <button class="btn-solid-red flex-1" style="padding: 12px; border-radius: 8px; font-size: 14px;" (click)="continuarResumen()" [disabled]="trabajadoresProd.length === 0">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
-                <button class="btn-outline-red-sm flex-1" (click)="abrirModalTrabajador()"><i class="fas fa-plus"></i> Nuevo</button>
+                <button class="btn-outline-red-sm" style="flex: 1; padding: 12px; border-radius: 8px; background-color: #ffffff;" (click)="abrirModalTrabajador()"><i class="fas fa-plus"></i> Nuevo</button>
+                <button class="btn-solid-red" style="flex: 1; padding: 12px; border-radius: 8px;" (click)="continuarResumen()" [disabled]="trabajadoresProd.length === 0">Continuar al Resumen</button>
               </div>
-              <button class="btn-outline-red-sm flex-1" style="border:none; color: #6b7280; background: none;" (click)="regresarPaso1()">Anterior</button>
+              <button class="btn-outline-gray" style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; background: transparent; color: #4b5563; font-weight: 600;" (click)="regresarPaso1()">
+                <i class="fas fa-arrow-left"></i> Regresar a Datos
+              </button>
             </div>
           </div>
         }

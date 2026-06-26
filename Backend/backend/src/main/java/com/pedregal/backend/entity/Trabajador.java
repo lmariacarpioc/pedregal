@@ -7,11 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "trabajadores")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Trabajador {
 
     @Id
@@ -41,6 +44,10 @@ public class Trabajador {
     private Double salarioDiario;
 
     private boolean activo = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jefe_id")
+    private Usuario jefe;
 
     @Column(name = "sync_id", unique = true)
     private String syncId;

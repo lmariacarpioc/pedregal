@@ -432,6 +432,13 @@
 .card-eval .badge-value { 
   color: #d35400; 
 }
+.card-eval .bg-circle-orange { background: #ffe0b2; color: #f57c00; }
+
+.input-error {
+  border: 1px solid #d32f2f !important;
+  background-color: #fff8f8;
+}
+
 /* ==========================================
    MEDIA QUERIES (SISTEMA RESPONSIVO)
    ========================================== */

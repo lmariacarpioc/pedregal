@@ -129,4 +129,14 @@ export class Configuracion implements OnInit {
       this.mensajeExito = '';
     }, 3000);
   }
+
+  getRoleDisplay(rol: string): string {
+    if (!rol) return '';
+    switch (rol.toUpperCase()) {
+      case 'ADMIN': return 'Administrador';
+      case 'JEFE_CAMPO': return 'Jefe de Campo';
+      case 'SUPERVISOR': return 'Supervisor';
+      default: return rol;
+    }
+  }
 }

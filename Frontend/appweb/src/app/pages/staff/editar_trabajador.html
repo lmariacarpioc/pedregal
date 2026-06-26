@@ -4,7 +4,7 @@
   <header class="edit-page-header">
     <div class="header-left-block">
       <div class="header-text-block">
-        <h1>Editar Perfil del Trabajador</h1>
+        <h1>{{ esModoCreacion ? 'Registrar Nuevo Trabajador' : 'Editar Perfil del Trabajador' }}</h1>
       </div>
     </div>
     <!-- BOTONES EN LA ESQUINA SUPERIOR DERECHA -->
@@ -42,20 +42,20 @@
           <!-- Inputs -->
           <div class="form-grid-2 info-fields-wrapper">
             <div class="form-field">
-              <label>Nombre Completo</label>
-              <input type="text" [(ngModel)]="trabajadorEdicion.nombre" placeholder="Ricardo Alberto Mendoza Ruiz">
+              <label>Nombre Completo <span style="color:red">*</span></label>
+              <input type="text" [(ngModel)]="trabajadorEdicion.nombre" placeholder="Ricardo Alberto Mendoza Ruiz" [class.input-error]="formularioInvalido && !trabajadorEdicion.nombre">
             </div>
             <div class="form-field">
-              <label>DNI / Identificación</label>
-              <input type="text" [(ngModel)]="trabajadorEdicion.dni" placeholder="45982311">
+              <label>DNI / Identificación <span style="color:red">*</span></label>
+              <input type="text" [(ngModel)]="trabajadorEdicion.dni" placeholder="45982311" [class.input-error]="formularioInvalido && !trabajadorEdicion.dni" [disabled]="!esModoCreacion">
             </div>
             <div class="form-field">
-              <label>Fecha de Nacimiento</label>
-              <input type="text" [(ngModel)]="trabajadorEdicion.fechaNacimiento" placeholder="05/14/1888">
+              <label>Fecha de Nacimiento <span style="color:red">*</span></label>
+              <input type="date" [(ngModel)]="trabajadorEdicion.fechaNacimiento" [class.input-error]="formularioInvalido && !trabajadorEdicion.fechaNacimiento">
             </div>
             <div class="form-field">
-              <label>Género</label>
-              <select [(ngModel)]="trabajadorEdicion.genero">
+              <label>Género <span style="color:red">*</span></label>
+              <select [(ngModel)]="trabajadorEdicion.genero" [class.input-error]="formularioInvalido && !trabajadorEdicion.genero">
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
               </select>
@@ -105,21 +105,26 @@
       <div class="info-card-body">
         <div class="form-grid-4">
           <div class="form-field">
-            <label>Fundo Asignado</label>
-            <select [(ngModel)]="trabajadorEdicion.lote">
+            <label>Fundo Asignado <span style="color:red">*</span></label>
+            <select [(ngModel)]="trabajadorEdicion.lote" [class.input-error]="formularioInvalido && !trabajadorEdicion.lote">
           <option value="Lote 12 - Fundo Yaurilla">Lote 12 - Fundo Yaurilla</option>
           <option value="Lote 08 - Fundo Yaurilla">Lote 08 - Fundo Yaurilla</option>
           <option value="Lote 04 - Fundo Yaurilla">Lote 04 - Fundo Yaurilla</option>
         </select>
           </div>
           <div class="form-field">
-            <label>Lote / Cuadrilla</label>
-            <input type="text" [(ngModel)]="trabajadorEdicion.lote" placeholder="Lote 42-B">
+            <label>Jefe de Campo / Asignación <span style="color:red">*</span></label>
+            <div class="input-with-badge-icon">
+              <select [(ngModel)]="trabajadorEdicion.jefeSyncId" [class.input-error]="formularioInvalido && !trabajadorEdicion.jefeSyncId">
+                <option value="">[Sin Asignar]</option>
+                <option *ngFor="let jefe of jefes" [value]="jefe.id">{{ jefe.nombre }}</option>
+              </select>
+            </div>
           </div>
           <div class="form-field highlight-field">
-            <label>Cargo / Rango</label>
+            <label>Cargo / Rango <span style="color:red">*</span></label>
             <div class="input-with-badge-icon">
-              <select [(ngModel)]="trabajadorEdicion.labor" class="text-red-bold">
+              <select [(ngModel)]="trabajadorEdicion.labor" class="text-red-bold" [class.input-error]="formularioInvalido && !trabajadorEdicion.labor">
             <option value="Cosecha de Uva">Cosecha de Uva</option>
             <option value="Poda de Vid">Poda </option>
             <option value="Raleo de Racimos">Raleo de Racimos</option>
@@ -128,8 +133,8 @@
             </div>
           </div>
           <div class="form-field">
-            <label>Horas Laboradas</label>
-        <input type="number" [(ngModel)]="trabajadorEdicion.horasLaboradas">
+            <label>Fecha de Ingreso <span style="color:red">*</span></label>
+            <input type="date" [(ngModel)]="trabajadorEdicion.fechaIngreso" [class.input-error]="formularioInvalido && !trabajadorEdicion.fechaIngreso">
           </div>
 
 
@@ -161,7 +166,7 @@
       <span class="badge-icon-circle bg-circle-orange"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M 568.4 196.5 C 563.9 207 550 206.3 543.5 196.9 C 515.7 156.9 477.4 124.7 432.5 104.3 C 422.1 99.6 418.8 86 428.4 79.7 C 443.4 69.8 461.4 64 480.7 64 C 533.3 64 575.9 106.6 575.9 159.2 C 575.9 172.4 573.2 185 568.3 196.5 z M 96.5 196.9 C 90 206.3 76 207 71.6 196.5 C 66.7 185 64 172.4 64 159.2 C 64 106.6 106.6 64 159.2 64 C 178.5 64 196.5 69.8 211.5 79.7 C 221.1 86 217.8 99.6 207.4 104.3 C 162.6 124.7 124.3 156.9 96.4 196.9 z M 454.2 531.4 C 416.8 559.4 370.3 576 320 576 C 269.7 576 223.2 559.4 185.9 531.4 L 150.6 566.6 C 138.1 579.1 117.8 579.1 105.3 566.6 C 92.8 554.1 92.8 533.8 105.3 521.3 L 140.5 486.1 C 112.6 448.8 96 402.3 96 352 C 96 228.3 196.3 128 320 128 C 443.7 128 544 228.3 544 352 C 544 402.3 527.4 448.8 499.4 486.2 L 534.6 521.4 C 547.1 533.9 547.1 554.2 534.6 566.7 C 522.1 579.2 501.8 579.2 489.3 566.7 L 454.1 531.5 z M 344 248 C 344 234.7 333.3 224 320 224 C 306.7 224 296 234.7 296 248 L 296 352 C 296 358.4 298.5 364.5 303 369 L 359 425 C 368.4 434.4 383.6 434.4 392.9 425 C 402.2 415.6 402.3 400.4 392.9 391.1 L 343.9 342.1 L 343.9 248 z"/></svg></span>
       <div class="badge-text-wrapper">
         <span class="badge-label">Última Evaluación</span>
-        <span class="badge-value">12/Feb/2024</span>
+        <span class="badge-value">{{ ultimaEvaluacion }}</span>
       </div>
     </div>
   </footer>

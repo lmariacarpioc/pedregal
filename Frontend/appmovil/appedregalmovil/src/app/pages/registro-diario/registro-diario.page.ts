@@ -7,6 +7,7 @@ import {
   IonButton,
   IonIcon,
   IonRippleEffect,
+  NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -26,6 +27,8 @@ export interface RegistroAsistencia {
   hora: string;        // "HH:MM AM/PM"
   timestamp: number;   // epoch ms para filtrar
 }
+
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-registro-diario',
@@ -48,7 +51,7 @@ export class RegistroDiarioPage implements OnInit {
   /** Usuario activo (guardado por el login en localStorage) */
   private usuarioActivo: { id: string; nombre: string } = { id: 'guest', nombre: 'Usuario' };
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService, private navCtrl: NavController) {
     addIcons({
       arrowForwardOutline, timeOutline, syncOutline,
       calendarOutline, refreshOutline, arrowBackOutline, listOutline,
@@ -56,10 +59,10 @@ export class RegistroDiarioPage implements OnInit {
   }
 
   ngOnInit() {
-    // Cargar usuario activo desde localStorage
-    const userStr = localStorage.getItem('usuario_activo');
-    if (userStr) {
-      try { this.usuarioActivo = JSON.parse(userStr); } catch {}
+    // Cargar usuario activo desde authService
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.usuarioActivo = { id: user.syncId || 'user', nombre: user.nombre || user.username };
     }
     this._actualizarFechaHora();
   }
@@ -82,7 +85,7 @@ export class RegistroDiarioPage implements OnInit {
     const now = new Date();
     const fechaActual = now.toISOString().split('T')[0];
 
-    const clave = 'asistencia_historial';
+    const clave = ('asistencia_historial_' + this.authService.getUserPrefix());
     const raw = localStorage.getItem(clave);
     const lista: RegistroAsistencia[] = raw ? JSON.parse(raw) : [];
 
@@ -100,7 +103,7 @@ export class RegistroDiarioPage implements OnInit {
       this._encolarEnSync(registro);
     }
 
-    this.router.navigateByUrl('/tabs/dashboard');
+    this.navCtrl.navigateRoot('/tabs/dashboard');
   }
 
   /** Muestra la vista del historial de los últimos 3 días */
@@ -117,7 +120,7 @@ export class RegistroDiarioPage implements OnInit {
   // ─── Helpers ─────────────────────────────────────────────────────────────
 
   private _guardarEnHistorial(registro: RegistroAsistencia) {
-    const clave = 'asistencia_historial';
+    const clave = ('asistencia_historial_' + this.authService.getUserPrefix());
     const raw = localStorage.getItem(clave);
     let lista: RegistroAsistencia[] = raw ? JSON.parse(raw) : [];
 
@@ -137,13 +140,44 @@ export class RegistroDiarioPage implements OnInit {
   }
 
   private _cargarHistorial() {
-    const clave = 'asistencia_historial';
+    const clave = 'asistencia_historial_' + this.authService.getUserPrefix();
     const raw = localStorage.getItem(clave);
-    if (!raw) { this.historialFiltrado = []; return; }
+    let lista: RegistroAsistencia[] = raw ? JSON.parse(raw) : [];
 
-    const lista: RegistroAsistencia[] = JSON.parse(raw);
     const tresDiasMs = 3 * 24 * 60 * 60 * 1000;
     const ahora = Date.now();
+
+    // Si la lista local está vacía, intentamos reconstruirla a partir de los datos sincronizados del servidor
+    if (lista.length === 0) {
+      const syncReportesStr = localStorage.getItem('agro_sync_reportes');
+      if (syncReportesStr) {
+        const syncReportes: any[] = JSON.parse(syncReportesStr);
+        // Filtrar los reportes que pertenecen a la sesión actual (o construir basados en ellos)
+        const userPrefix = this.authService.getUserPrefix();
+        syncReportes.forEach(r => {
+          // Buscamos fechas únicas en los reportes
+          if (r.fecha) {
+            const ms = new Date(r.fecha + 'T12:00:00').getTime();
+            if (ahora - ms <= tresDiasMs) {
+              const alreadyHas = lista.some(x => x.fecha === r.fecha);
+              if (!alreadyHas) {
+                lista.push({
+                  usuarioId: this.usuarioActivo.id,
+                  nombreUsuario: this.usuarioActivo.nombre,
+                  fecha: r.fecha,
+                  hora: '06:00 AM', // Dato estimado de cuando hizo el reporte
+                  timestamp: ms
+                });
+              }
+            }
+          }
+        });
+        // Save the reconstructed list locally to avoid parsing again unnecessarily
+        if (lista.length > 0) {
+           localStorage.setItem(clave, JSON.stringify(lista));
+        }
+      }
+    }
 
     this.historialFiltrado = lista
       .filter(r => r.usuarioId === this.usuarioActivo.id && (ahora - r.timestamp) <= tresDiasMs)
@@ -152,7 +186,7 @@ export class RegistroDiarioPage implements OnInit {
   }
 
   private _encolarEnSync(registro: RegistroAsistencia) {
-    const clave = 'sync_queue';
+    const clave = ('sync_queue_' + this.authService.getUserPrefix());
     const raw = localStorage.getItem(clave);
     let cola = raw ? JSON.parse(raw) : [];
 

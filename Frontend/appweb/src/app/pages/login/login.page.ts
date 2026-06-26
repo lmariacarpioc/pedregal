@@ -30,10 +30,15 @@ export class LoginPage {
     this.authService.login(this.username, this.password).subscribe({
       next: (user) => {
         this.isLoading = false;
-        this.cdr.detectChanges();
-        // Simple hack since we just did GET by username
-        // In real app, the API should check the password
-        this.router.navigate(['/dashboard']);
+        
+        // RBAC validation
+        if (user.rol === 'JEFE_CAMPO' || user.rol === 'SUPERVISOR') {
+          this.errorMessage = 'Acceso denegado (403): Plataforma exclusiva para Administradores.';
+          this.authService.logout();
+        } else {
+          this.cdr.detectChanges();
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (err) => {
         this.isLoading = false;
