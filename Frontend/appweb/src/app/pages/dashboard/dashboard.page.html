@@ -56,7 +56,7 @@
       <div class="dash-hero">
         <div class="dash-hero-title">
           <h1>Monitor de Operaciones</h1>
-          <p>Estado de campo en tiempo real &bull; Finca Yaurilla</p>
+          <p>Estado de campo en tiempo real </p>
         </div>
         <div class="dash-sync-badge">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -83,38 +83,9 @@
 
         </div>
 
-        <div class="dash-kpi-card">
-          <div class="kpi-label">% AVANCE DE COSECHA</div>
-          <div class="kpi-value-row">
-            <span class="kpi-value">{{ porcentajeAvance }}%</span>
-            <span class="kpi-icon kpi-icon--gray">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                <path d="M 128 128 C 128 110.3 113.7 96 96 96 C 78.3 96 64 110.3 64 128 L 64 464 C 64 508.2 99.8 544 144 544 L 544 544 C 561.7 544 576 529.7 576 512 C 576 494.3 561.7 480 544 480 L 144 480 C 135.2 480 128 472.8 128 464 L 128 128 z M 534.6 214.6 C 547.1 202.1 547.1 181.8 534.6 169.3 C 522.1 156.8 501.8 156.8 489.3 169.3 L 384 274.7 L 326.6 217.4 C 314.1 204.9 293.8 204.9 281.3 217.4 L 185.3 313.4 C 172.8 325.9 172.8 346.2 185.3 358.7 C 197.8 371.2 218.1 371.2 230.6 358.7 L 304 285.3 L 361.4 342.7 C 373.9 355.2 394.2 355.2 406.7 342.7 L 534.7 214.7 z"/>
-              </svg>
-            </span>
-          </div>
-          <div class="kpi-progress-bar">
-            <div class="kpi-progress-fill" [style.width]="porcentajeAvance + '%'"></div>
-          </div>
-          <div class="kpi-meta">
-            {{ totalProduccion | number:'1.0-0' }} kg &nbsp;/&nbsp; Meta: {{ metaTotal | number:'1.0-0' }} kg
-          </div>
-        </div>
+        
 
-        <div class="dash-kpi-card dash-kpi-card--alert">
-          <div class="kpi-label">COSTO ECONÓMICO DE IMPRODUCTIVIDAD</div>
-          <div class="kpi-value-row">
-            <span class="kpi-value kpi-value--red">S/. {{ costoImproductividad | number:'1.2-2' }}</span>
-            <span class="kpi-icon kpi-icon--red">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                <path d="M 320 64 C 334.7 64 348.2 72.1 355.2 85 L 571.2 485 C 577.9 497.4 577.6 512.4 570.4 524.5 C 563.2 536.6 550.1 544 536 544 L 104 544 C 89.9 544 76.8 536.6 69.6 524.5 C 62.4 512.4 62.1 497.4 68.8 485 L 284.8 85 C 291.8 72.1 305.3 64 320 64 z M 320 416 C 302.3 416 288 430.3 288 448 C 288 465.7 302.3 480 320 480 C 337.7 480 352 465.7 352 448 C 352 430.3 337.7 416 320 416 z M 320 224 C 301.8 224 287.3 239.5 287.3 257.7 L 296 361.7 C 296.9 374.2 307.4 384 319.9 384 C 332.5 384 342.9 374.3 343.8 361.7 L 351.2 257.7 C 352.5 239.5 338.1 224 319.8 224 z"/>
-              </svg>
-            </span>
-          </div>
-          <div class="kpi-trend kpi-trend--warn">
-            ▲ Proyección semanal: S/. {{ (costoImproductividad * 7) | number:'1.0-0' }}
-          </div>
-        </div>
+         <!-- AGREGAR TARJETAS -->
 
       </div>
 
@@ -277,6 +248,7 @@
 
     </main>
 
+           
     <!-- SIDEBAR DE ALERTAS DINÁMICAS -->
     <aside class="dash-alerts-sidebar" *ngIf="alertasVisible">
       <div class="alerts-header">
