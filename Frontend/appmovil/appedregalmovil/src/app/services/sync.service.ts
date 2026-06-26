@@ -1,20 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { firstValueFrom, timeout } from 'rxjs';
+import { firstValueFrom, timeout, BehaviorSubject } from 'rxjs';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SyncService {
+  
+  public isOnline$ = new BehaviorSubject<boolean>(navigator.onLine);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {
+    window.addEventListener('online', () => this.updateNetworkStatus(true));
+    window.addEventListener('offline', () => this.updateNetworkStatus(false));
+  }
+
+  private updateNetworkStatus(isOnline: boolean) {
+    this.isOnline$.next(isOnline);
+    if (isOnline) {
+      // Intentar sincronizar cuando vuelve la conexión
+      this.uploadSyncQueue().then(() => this.downloadSyncData());
+    }
+  }
 
   async downloadSyncData(): Promise<boolean> {
     if (!navigator.onLine) return false;
     try {
       const data: any = await firstValueFrom(
-        this.http.get(`${environment.apiUrl}/sync/download?dispositivoId=mobile`).pipe(timeout(5000))
+        this.http.get(`${environment.apiUrl}/sync/download?dispositivoId=mobile`).pipe(timeout(30000))
       );
       
       if (data) {
@@ -37,10 +51,10 @@ export class SyncService {
   async uploadSyncQueue(): Promise<boolean> {
     if (!navigator.onLine) return false;
     try {
-      const localesRaw = localStorage.getItem('agro_mobile_partes_locales');
+      const localesRaw = localStorage.getItem(('agro_mobile_partes_locales_' + this.authService.getUserPrefix()));
       const partesLocales = localesRaw ? JSON.parse(localesRaw) : [];
 
-      const queueRaw = localStorage.getItem('sync_queue');
+      const queueRaw = localStorage.getItem(('sync_queue_' + this.authService.getUserPrefix()));
       const queueItems = queueRaw ? JSON.parse(queueRaw) : [];
 
       if (partesLocales.length === 0 && queueItems.length === 0) return true; // Nada que subir
@@ -65,12 +79,12 @@ export class SyncService {
       });
 
       await firstValueFrom(
-        this.http.post(`${environment.apiUrl}/sync/upload`, payload).pipe(timeout(5000))
+        this.http.post(`${environment.apiUrl}/sync/upload`, payload).pipe(timeout(30000))
       );
       
       // Limpiar datos locales después de subirlos con éxito
-      localStorage.removeItem('agro_mobile_partes_locales');
-      localStorage.removeItem('sync_queue');
+      localStorage.removeItem(('agro_mobile_partes_locales_' + this.authService.getUserPrefix()));
+      localStorage.removeItem(('sync_queue_' + this.authService.getUserPrefix()));
       return true;
     } catch (error) {
       console.error('Upload sync error', error);
@@ -82,11 +96,32 @@ export class SyncService {
 
   getLocalTrabajadores() {
     const raw = localStorage.getItem('agro_sync_trabajadores');
-    return raw ? JSON.parse(raw) : [];
+    let trabajadores = raw ? JSON.parse(raw) : [];
+    
+    // Aislamiento de datos: solo retornar trabajadores asignados al jefe logueado
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.syncId) {
+      trabajadores = trabajadores.filter((t: any) => t.jefeSyncId === currentUser.syncId);
+    }
+    
+    return trabajadores;
+  }
+
+  agregarTrabajadorLocal(trabajador: any) {
+    const raw = localStorage.getItem('agro_sync_trabajadores');
+    const trabajadores = raw ? JSON.parse(raw) : [];
+    
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.syncId) {
+      trabajador.jefeSyncId = currentUser.syncId;
+    }
+    
+    trabajadores.push(trabajador);
+    localStorage.setItem('agro_sync_trabajadores', JSON.stringify(trabajadores));
   }
 
   guardarParteLocal(parte: any) {
-    const raw = localStorage.getItem('agro_mobile_partes_locales');
+    const raw = localStorage.getItem(('agro_mobile_partes_locales_' + this.authService.getUserPrefix()));
     const partes = raw ? JSON.parse(raw) : [];
     
     const idx = partes.findIndex((p: any) => p.syncId === parte.syncId);
@@ -96,6 +131,6 @@ export class SyncService {
       partes.push(parte);
     }
     
-    localStorage.setItem('agro_mobile_partes_locales', JSON.stringify(partes));
+    localStorage.setItem(('agro_mobile_partes_locales_' + this.authService.getUserPrefix()), JSON.stringify(partes));
   }
 }

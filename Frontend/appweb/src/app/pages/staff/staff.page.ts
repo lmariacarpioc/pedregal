@@ -26,7 +26,7 @@ jefesDeCampo: any[] = [];
 
   async ngOnInit(): Promise<void> {
     try {
-      await this.trabajador.sincronizarConBackend();
+      await this.trabajador.sincronizarConBackend(true);
     } finally {
       this.jefesDeCampo = this.trabajador.getJefesDeCampo();
       this.supervisorSeleccionado = this.jefesDeCampo.length > 0 ? this.jefesDeCampo[0].id : null;
@@ -44,7 +44,10 @@ jefesDeCampo: any[] = [];
     return this.jefesDeCampo.filter(jefe => 
       jefe.nombre.toLowerCase().includes(busqueda) || 
       jefe.zona.toLowerCase().includes(busqueda)
-    );}
+    );
+  }
+
+
 
   seleccionarSupervisor(id: string): void {
     if (this.supervisorSeleccionado === id) {
@@ -74,4 +77,10 @@ jefesDeCampo: any[] = [];
     console.log('Navegando al perfil del trabajador con DNI:', dni);
     
     this.router.navigate(['/staff/editar_trabajador', dni]);
-  }}
+  }
+
+  irACrearTrabajador(): void {
+    this.router.navigate(['/staff/crear_trabajador']);
+  }
+
+}

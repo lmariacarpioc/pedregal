@@ -7,6 +7,7 @@ import {
   IonButton,
   IonIcon,
   IonCheckbox,
+  NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForwardOutline } from 'ionicons/icons';
@@ -30,7 +31,8 @@ export class LoginPage {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private syncService: SyncService
+    private syncService: SyncService,
+    private navCtrl: NavController
   ) {
     addIcons({ arrowForwardOutline });
   }
@@ -45,7 +47,7 @@ export class LoginPage {
     if (valid) {
       // Intentar sincronizar datos iniciales (no bloquea si falla por offline)
       await this.syncService.downloadSyncData();
-      this.router.navigateByUrl('/registro-diario');
+      this.navCtrl.navigateRoot('/registro-diario');
     } else {
       this.errorMessage.set('Credenciales inválidas');
     }

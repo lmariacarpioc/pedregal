@@ -1,9 +1,10 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton,
+  IonContent, IonButton,
   IonCard, IonCardContent, IonBadge, IonItem, IonLabel, ToastController
 } from '@ionic/angular/standalone';
+import { Subscription } from 'rxjs';
 
 export interface SyncItem {
   type: string;
@@ -17,27 +18,45 @@ export interface SyncItem {
 
 import { SyncService } from '../../services/sync.service';
 
+import { AuthService } from '../../services/auth.service';
+
 @Component({
   selector: 'app-sincronizacion',
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton,
-    IonCard, IonCardContent, IonBadge, IonItem, IonLabel
+    IonContent, IonButton,
+    IonCard, IonCardContent, IonItem, IonLabel
   ],
   templateUrl: './sincronizacion.page.html',
   styleUrls: ['./sincronizacion.page.css'],
 })
-export class SincronizacionPage {
+export class SincronizacionPage implements OnInit, OnDestroy {
   pendingRecords: SyncItem[] = [];
   lastSyncDate: Date | null = null;
   isSyncing = false;
-
+  isOnline = true; // Added property for template
+  private networkSub!: Subscription;
+  
   constructor(
     private toastCtrl: ToastController, 
     private syncService: SyncService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
+
+  ngOnInit() {
+    this.networkSub = this.syncService.isOnline$.subscribe(online => {
+      this.isOnline = online;
+      setTimeout(() => this.cdr.detectChanges());
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.networkSub) {
+      this.networkSub.unsubscribe();
+    }
+  }
 
   ionViewWillEnter() {
     this.loadQueue();
@@ -48,7 +67,7 @@ export class SincronizacionPage {
   }
 
   loadQueue() {
-    const queueStr = localStorage.getItem('sync_queue');
+    const queueStr = localStorage.getItem(('sync_queue_' + this.authService.getUserPrefix()));
     if (queueStr) {
       this.pendingRecords = JSON.parse(queueStr);
       this.pendingRecords.forEach(r => {

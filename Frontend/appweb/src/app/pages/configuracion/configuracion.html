@@ -110,9 +110,9 @@
           <label>ROL DEL SISTEMA</label>
           <div class="select-wrapper">
             <select [(ngModel)]="nuevoUsuario.rol">
-              <option value="Administrador">Administrador</option>
-              <option value="Supervisor">Supervisor</option>
-              <option value="Jefe de Campo">Jefe de Campo</option>
+              <option value="ADMIN">Administrador</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="JEFE_CAMPO">Jefe de Campo</option>
             </select>
           </div>
         </div>
@@ -146,7 +146,7 @@
                   </div>
                 </div>
               </td>
-              <td>{{ u.rol }}</td>
+              <td>{{ getRoleDisplay(u.rol) }}</td>
               <td>
                 <span
                   class="estado-icon"

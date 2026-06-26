@@ -25,6 +25,10 @@ export interface Colaborador {
   estado?: string;
 }
 
+import { AuthService } from '../../services/auth.service';
+
+import { SyncService } from '../../services/sync.service';
+
 @Component({
   selector: 'app-staff',
   standalone: true,
@@ -60,33 +64,32 @@ export class StaffPage {
   // Tardanza state
   tardanzas: string[] = [];
 
-  constructor(private router: Router, private toastCtrl: ToastController, private cdr: ChangeDetectorRef) {
+  constructor(
+    private router: Router, 
+    private toastCtrl: ToastController, 
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private syncService: SyncService
+  ) {
     addIcons({ syncOutline, menuOutline });
   }
 
   ionViewWillEnter() {
     // Attendance date reset logic
     const todayStr = new Date().toISOString().split('T')[0];
-    const storedFecha = localStorage.getItem('asistencia_fecha');
+    const storedFecha = localStorage.getItem(('asistencia_fecha_' + this.authService.getUserPrefix()));
 
     if (storedFecha !== todayStr) {
-      localStorage.removeItem('trabajadores_presentes');
-      localStorage.setItem('asistencia_fecha', todayStr);
+      localStorage.removeItem(('trabajadores_presentes_' + this.authService.getUserPrefix()));
+      localStorage.setItem(('asistencia_fecha_' + this.authService.getUserPrefix()), todayStr);
       this.asistenciaCompletada = false;
     } else {
       this.asistenciaCompletada = true;
     }
 
     // Load supervisor name
-    const userStr = localStorage.getItem('agro_mobile_user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        this.supervisorNombre = user.nombre || 'Supervisor';
-      } catch {
-        this.supervisorNombre = 'Supervisor';
-      }
-    }
+    const currentUser = this.authService.getCurrentUser();
+    this.supervisorNombre = currentUser?.nombre || 'Supervisor';
 
     // Format fechaHoy like 'Domingo, 22 Jun 2025'
     const now = new Date();
@@ -98,36 +101,25 @@ export class StaffPage {
   }
 
   private _cargarDatosDesdeReportes() {
-    const plantillaDefault: Colaborador[] = [
-      { id: '#88294', dni: '45829301', nombre: 'Mendoza Torres, Juan',  rendimiento: 0, meta: 0, avatarColor: '#6b7280', avatarIcon: 'fa-hard-hat' },
-      { id: '#88312', dni: '70192834', nombre: 'Quispe Huation, Elena',  rendimiento: 0, meta: 0, avatarColor: '#f97316', avatarIcon: 'fa-hard-hat' },
-      { id: '#88102', dni: '41029384', nombre: 'Salazar Rojas, Roberto', rendimiento: 0, meta: 0, avatarColor: '#ef4444', avatarIcon: 'fa-hard-hat' },
-      { id: '#88095', dni: '45678901', nombre: 'Perez Castillo, Juan',   rendimiento: 0, meta: 0, avatarColor: '#10b981', avatarIcon: 'fa-hard-hat' },
-      { id: '#88111', dni: '72345678', nombre: 'Gonzales Ruiz, Maria',   rendimiento: 0, meta: 0, avatarColor: '#10b981', avatarIcon: 'fa-hard-hat' },
-      { id: '#88123', dni: '12987654', nombre: 'Luna Diaz, Carlos',      rendimiento: 0, meta: 0, avatarColor: '#ef4444', avatarIcon: 'fa-hard-hat' },
-    ];
+    const rawTrabajadores = this.syncService.getLocalTrabajadores();
+    this.todas = rawTrabajadores.map((t: any) => ({
+      id: t.syncId || ('#' + Math.floor(Math.random()*100000)),
+      dni: t.dni,
+      nombre: t.apellido ? `${t.apellido}, ${t.nombre}` : t.nombre,
+      rendimiento: 0,
+      meta: 0,
+      avatarColor: '#10b981', // green for everyone locally
+      avatarIcon: 'fa-hard-hat'
+    }));
 
-    const backendPlantillaStr = localStorage.getItem('agro_sync_trabajadores');
-    const plantillaStr = localStorage.getItem('staff_plantilla');
-    
-    if (backendPlantillaStr) {
-      this.todas = JSON.parse(backendPlantillaStr);
-      // Keep local staff_plantilla in sync
-      localStorage.setItem('staff_plantilla', backendPlantillaStr);
-    } else if (plantillaStr) {
-      this.todas = JSON.parse(plantillaStr);
-    } else {
-      this.todas = plantillaDefault;
-    }
-
-    const presentesStr = localStorage.getItem('trabajadores_presentes');
+    const presentesStr = localStorage.getItem(('trabajadores_presentes_' + this.authService.getUserPrefix()));
     const presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
 
     // Load tardanzas
-    const tardanzaStr = localStorage.getItem('trabajadores_tardanza');
+    const tardanzaStr = localStorage.getItem(('trabajadores_tardanza_' + this.authService.getUserPrefix()));
     this.tardanzas = tardanzaStr ? JSON.parse(tardanzaStr) : [];
 
-    const reportesStr = localStorage.getItem('trabajadores_reporte_completo');
+    const reportesStr = localStorage.getItem(('trabajadores_reporte_completo_' + this.authService.getUserPrefix()));
     const reportes: any[] = reportesStr ? JSON.parse(reportesStr) : [];
     
     const todayStr = new Date().toISOString().split('T')[0];
@@ -208,7 +200,7 @@ export class StaffPage {
   }
 
   async toggleAsistencia(colaborador: Colaborador) {
-    const presentesStr = localStorage.getItem('trabajadores_presentes');
+    const presentesStr = localStorage.getItem(('trabajadores_presentes_' + this.authService.getUserPrefix()));
     let presentes: string[] = presentesStr ? JSON.parse(presentesStr) : [];
     
     let toastMessage = '';
@@ -221,7 +213,7 @@ export class StaffPage {
       // Also remove from tardanzas if present
       let tardanzaList = [...this.tardanzas];
       tardanzaList = tardanzaList.filter(dni => dni !== colaborador.dni);
-      localStorage.setItem('trabajadores_tardanza', JSON.stringify(tardanzaList));
+      localStorage.setItem(('trabajadores_tardanza_' + this.authService.getUserPrefix()), JSON.stringify(tardanzaList));
 
       toastMessage = `${colaborador.nombre} marcado como Ausente.`;
       toastColor = 'medium';
@@ -235,7 +227,7 @@ export class StaffPage {
     }
     
     // Actualizar UI inmediatamente sin esperar la animación del Toast
-    localStorage.setItem('trabajadores_presentes', JSON.stringify(presentes));
+    localStorage.setItem(('trabajadores_presentes_' + this.authService.getUserPrefix()), JSON.stringify(presentes));
     this._cargarDatosDesdeReportes();
     this.cdr.detectChanges(); 
 
@@ -249,14 +241,14 @@ export class StaffPage {
   }
 
   async marcarTardanza(colaborador: Colaborador) {
-    const tardanzaStr = localStorage.getItem('trabajadores_tardanza');
+    const tardanzaStr = localStorage.getItem(('trabajadores_tardanza_' + this.authService.getUserPrefix()));
     let tardanzaList: string[] = tardanzaStr ? JSON.parse(tardanzaStr) : [];
 
     if (!tardanzaList.includes(colaborador.dni)) {
       tardanzaList.push(colaborador.dni);
     }
 
-    localStorage.setItem('trabajadores_tardanza', JSON.stringify(tardanzaList));
+    localStorage.setItem(('trabajadores_tardanza_' + this.authService.getUserPrefix()), JSON.stringify(tardanzaList));
     this._cargarDatosDesdeReportes();
     this.cdr.detectChanges();
 
@@ -279,7 +271,7 @@ export class StaffPage {
     const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
     const dayBefore = new Date(today); dayBefore.setDate(dayBefore.getDate() - 2);
 
-    const reportStr = localStorage.getItem('trabajadores_reporte_completo');
+    const reportStr = localStorage.getItem(('trabajadores_reporte_completo_' + this.authService.getUserPrefix()));
     let allReports: any[] = [];
     if (reportStr) {
       const reports = JSON.parse(reportStr);
@@ -405,15 +397,19 @@ export class StaffPage {
     this.colaboradorSeleccionado.enObservacion = true;
     this.colaboradorSeleccionado.motivoObservacion = motivo;
 
-    const idx = this.todas.findIndex(c => c.dni === this.colaboradorSeleccionado!.dni);
-    if (idx !== -1) {
-      this.todas[idx].enObservacion = true;
-      this.todas[idx].motivoObservacion = motivo;
+    const globalTrabajadores = localStorage.getItem('agro_sync_trabajadores');
+    if (globalTrabajadores) {
+      const parsed = JSON.parse(globalTrabajadores);
+      const workerIdx = parsed.findIndex((w: any) => w.dni === this.colaboradorSeleccionado!.dni);
+      if (workerIdx !== -1) {
+        parsed[workerIdx].enObservacion = this.colaboradorSeleccionado!.enObservacion;
+        parsed[workerIdx].motivoObservacion = this.colaboradorSeleccionado!.motivoObservacion;
+        localStorage.setItem('agro_sync_trabajadores', JSON.stringify(parsed));
+      }
     }
-    localStorage.setItem('staff_plantilla', JSON.stringify(this.todas));
     this._cargarDatosDesdeReportes();
 
-    const queueStr = localStorage.getItem('sync_queue');
+    const queueStr = localStorage.getItem(('sync_queue_' + this.authService.getUserPrefix()));
     const queue = queueStr ? JSON.parse(queueStr) : [];
     queue.push({
       type:    'observacion',
@@ -421,7 +417,7 @@ export class StaffPage {
       details: `${this.colaboradorSeleccionado.nombre} (${this.colaboradorSeleccionado.id}) - Motivo: ${motivo}`,
       date:    new Date().toISOString(),
     });
-    localStorage.setItem('sync_queue', JSON.stringify(queue));
+    localStorage.setItem(('sync_queue_' + this.authService.getUserPrefix()), JSON.stringify(queue));
 
     const toast = await this.toastCtrl.create({
       message: 'Trabajador puesto en observacion. Sincronizacion pendiente.',
@@ -441,20 +437,24 @@ export class StaffPage {
     this.colaboradorSeleccionado.enObservacion = false;
     this.colaboradorSeleccionado.motivoObservacion = '';
 
-    const idx = this.todas.findIndex(c => c.dni === this.colaboradorSeleccionado!.dni);
-    if (idx !== -1) {
-      this.todas[idx].enObservacion = false;
-      this.todas[idx].motivoObservacion = '';
+    const globalTrabajadores = localStorage.getItem('agro_sync_trabajadores');
+    if (globalTrabajadores) {
+      const parsed = JSON.parse(globalTrabajadores);
+      const workerIdx = parsed.findIndex((w: any) => w.dni === this.colaboradorSeleccionado!.dni);
+      if (workerIdx !== -1) {
+        parsed[workerIdx].enObservacion = this.colaboradorSeleccionado!.enObservacion;
+        parsed[workerIdx].motivoObservacion = this.colaboradorSeleccionado!.motivoObservacion;
+        localStorage.setItem('agro_sync_trabajadores', JSON.stringify(parsed));
+      }
     }
-    localStorage.setItem('staff_plantilla', JSON.stringify(this.todas));
     this._cargarDatosDesdeReportes();
 
-    const queueStr = localStorage.getItem('sync_queue');
+    const queueStr = localStorage.getItem(('sync_queue_' + this.authService.getUserPrefix()));
     if (queueStr) {
       let queue = JSON.parse(queueStr);
       const searchStr = `${this.colaboradorSeleccionado.nombre} (${this.colaboradorSeleccionado.id})`;
       queue = queue.filter((item: any) => !(item.type === 'observacion' && item.details.startsWith(searchStr)));
-      localStorage.setItem('sync_queue', JSON.stringify(queue));
+      localStorage.setItem(('sync_queue_' + this.authService.getUserPrefix()), JSON.stringify(queue));
     }
 
     const toast = await this.toastCtrl.create({

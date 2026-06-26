@@ -15,4 +15,5 @@ public interface TrabajadorRepository extends JpaRepository<Trabajador, Long> {
     boolean existsBySyncId(String syncId);
     List<Trabajador> findByActivoTrue();
     List<Trabajador> findByAreaTrabajo(String areaTrabajo);
+    List<Trabajador> findByJefe_Id(Long jefeId);
 }

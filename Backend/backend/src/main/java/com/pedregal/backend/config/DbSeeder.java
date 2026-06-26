@@ -49,6 +49,9 @@ public class DbSeeder implements CommandLineRunner {
             System.out.println("✅ Usuarios semilla insertados.");
         }
 
+        // Bloque de trabajadores deshabilitado por requerimiento de negocio:
+        // La base de datos debe iniciar sin registros ficticios de personal operativo.
+        /*
         if (trabajadorRepository.count() == 0) {
             String[] nombres = {
                 "Juan Carlos Ramos", "Carlos Mendoza Loza", "Pedro Palacios Vega",
@@ -69,5 +72,6 @@ public class DbSeeder implements CommandLineRunner {
             }
             System.out.println("✅ Trabajadores semilla insertados.");
         }
+        */
     }
 }
