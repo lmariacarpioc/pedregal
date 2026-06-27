@@ -456,3 +456,19 @@
   .personal-info-block { flex-direction: column; align-items: center; }
   .form-grid-2, .form-grid-4, .status-badges-container { grid-template-columns: 1fr; }
 }
+
+/* Estilos para el Avatar con Inicial */
+.avatar-text-circle {
+  background: linear-gradient(135deg, #8B0022, #a30027) !important; /* Tono guinda */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border-radius: 50% !important;
+}
+
+.avatar-text-circle span {
+  color: #ffffff !important;
+  font-size: 2.2rem !important;
+  font-weight: bold !important;
+  font-family: Arial, sans-serif !important;
+}

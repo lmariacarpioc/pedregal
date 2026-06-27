@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Trabajador } from './trabajador';
 
-
 @Component({
   selector: 'app-editar-trabajador',
   standalone: true,
@@ -17,6 +16,7 @@ export class EditarTrabajador implements OnInit {
   trabajadorEdicion: any = {
     nombre: '',
     dni: '',
+    telefono: '', 
     fechaNacimiento: '',
     genero: 'Masculino',
     grupoSanguineo: 'A+',
@@ -61,31 +61,25 @@ export class EditarTrabajador implements OnInit {
     return !!(t.nombre && t.dni && t.fechaNacimiento && t.genero && t.grupoSanguineo && t.lote && t.labor && t.fechaIngreso && t.jefeSyncId);
   }
 
-  guardarCambios(): void {
+  async guardarCambios(): Promise<void> {
     if (!this.validarFormulario()) {
       this.formularioInvalido = true;
-      alert('Faltan campos obligatorios. Por favor, complete todos los campos requeridos (marcados en rojo si se omiten).');
+      alert('Faltan campos obligatorios. Por favor, complete todos los campos requeridos.');
       return;
     }
     
     if (this.esModoCreacion) {
-      // Create new worker logic
       const nuevoTrabajador = {
         ...this.trabajadorEdicion,
-        id: `TRAB-${Date.now()}`,
-        syncId: `TRAB-${Date.now()}`
+        id: undefined,
+        syncId: `TRB-${this.trabajadorEdicion.dni}`
       };
       
-      // Update the specific manager if selected
-      if (this.trabajadorEdicion.jefeSyncId) {
-        this.trabajador.agregarTrabajadorAJefe(this.trabajadorEdicion.jefeSyncId, nuevoTrabajador);
-      } else {
-        // If no jefeSyncId, we still need to create it (though UI requires it)
-        this.trabajador.agregarTrabajadorAJefe('', nuevoTrabajador);
-      }
+      await this.trabajador.agregarTrabajadorAJefe(this.trabajadorEdicion.jefeSyncId || '', nuevoTrabajador);
     } else {
-      this.trabajador.actualizarTrabajador(this.trabajadorEdicion);
+      await this.trabajador.actualizarTrabajador(this.trabajadorEdicion);
     }
+    
     this.regresarAStaff();
   }
 
@@ -97,11 +91,10 @@ export class EditarTrabajador implements OnInit {
     if (this.esModoCreacion) return 'Recientemente';
     const partes = this.trabajador.getPartesFinalizados();
     if (partes.length > 0) {
-      // Tomamos la fecha del último parte donde este trabajador participó
       const partesDelTrabajador = partes.filter(p => p.personal.some((per: any) => per.dni === this.trabajadorEdicion.dni));
       if (partesDelTrabajador.length > 0) {
         const parte = partesDelTrabajador[partesDelTrabajador.length - 1];
-        const date = new Date(parte.fecha + 'T00:00:00'); // Ensure local timezone parsing correctly
+        const date = new Date(parte.fecha + 'T00:00:00');
         return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
       }
     }

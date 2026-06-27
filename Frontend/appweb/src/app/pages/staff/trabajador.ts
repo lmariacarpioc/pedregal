@@ -4,6 +4,8 @@ import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
 export interface ITrabajador {
+  id?: number;
+  syncId?: string;
   dni: string;
   nombre: string;
   labor: string;
@@ -66,7 +68,6 @@ export class Trabajador {
  
   constructor(private http: HttpClient) {
     this._cargarDesdeStorage();
-    // Sincronizar con el backend al iniciar
     this.sincronizarConBackend();
   }
  
@@ -87,34 +88,33 @@ export class Trabajador {
   }
 
   private procesarPayloadSync(payload: any) {
-    // ─── Reconstruir Jefes de Campo desde usuarios con rol JEFE_CAMPO ───
     const supervisores = (payload.usuarios || []).filter(
-      (u: any) => u.rol === 'JEFE_CAMPO' || u.rol === 'SUPERVISOR'
+      (u: any) => u.role === 'JEFE_CAMPO' || u.rol === 'JEFE_CAMPO' || u.rol === 'SUPERVISOR'
     );
     const todosLosTrabajadores = (payload.trabajadores || []);
 
     this.jefesDeCampo = supervisores.map((sup: any) => {
-      // Filtrar trabajadores asignados a este supervisor
       const trabajadoresDelJefe = todosLosTrabajadores.filter((t: any) => t.jefeSyncId === sup.syncId);
       
       const trabsAsignados: ITrabajador[] = trabajadoresDelJefe.map((t: any) => ({
-        id: t.syncId || Date.now().toString() + Math.random().toString(),
+        id: t.id || undefined,
+        syncId: t.syncId || undefined,
         dni: t.dni || '',
         nombre: `${t.nombre || ''} ${t.apellido || ''}`.trim(),
         labor: t.cargo || 'Cosecha',
         lote: t.areaTrabajo || 'Lote General',
         horasLaboradas: 8,
-        costoTraducido: 0,
-        cajas: 0,
+        costoTraducido: t.salarioDiario || 40,
+        cajas: t.cajas || 0,
         metaBase: 10,
-        rendimiento: 0,
+        rendimiento: t.rendimiento || 0,
         estado: t.activo ? 'Regular' : 'Crítico',
         epps: 'Sí',
         restricciones: 'Ninguna',
-        fechaNacimiento: '',
-        genero: '',
-        grupoSanguineo: '',
-        alergias: '',
+        fechaNacimiento: t.fechaNacimiento || '',
+        genero: t.genero || '',
+        grupoSanguineo: t.grupoSanguineo || '',
+        alergias: t.alergias || '',
         jefeSyncId: t.jefeSyncId || sup.syncId
       }));
 
@@ -131,12 +131,9 @@ export class Trabajador {
       };
     });
 
-    // ─── Reconstruir Partes Diarios desde el backend ───
     if (payload.partesDiarios && payload.partesDiarios.length > 0) {
       const partesBackend: IParteDiario[] = payload.partesDiarios.map((p: any) => {
-        // Mapear detalles a la estructura de personal
         const personalDelParte = (p.detalles || []).map((d: any) => {
-          // Buscar nombre del trabajador en la lista
           const trab = todosLosTrabajadores.find((t: any) => t.syncId === d.trabajadorSyncId);
           const nombreTrab = trab ? `${trab.nombre} ${trab.apellido}`.trim() : (d.trabajadorSyncId || 'Desconocido');
           return {
@@ -153,7 +150,6 @@ export class Trabajador {
           };
         });
 
-        // Buscar nombre del jefe
         const jefe = (payload.usuarios || []).find((u: any) => u.syncId === p.usuarioSyncId);
         const jefeNombre = jefe?.nombreCompleto || p.usuarioSyncId || '';
 
@@ -175,29 +171,21 @@ export class Trabajador {
         };
       });
 
-      // Reemplazar partesDiarios enteramente por los del backend en la versión web para limpiar viejos mocks de localStorage
       this.partesDiarios = [...partesBackend];
     } else {
-      // Si no hay partes en el backend, la web debe estar vacía (evita heredar basura del localStorage)
       this.partesDiarios = [];
     }
 
-    // Guardar cambios locales
     this._guardarJefes();
     this._guardarPartes();
   }
 
-  esSincronizado(): boolean {
-    return this.sincronizado;
-  }
+  esSincronizado(): boolean { return this.sincronizado; }
 
-  // ─── STORAGE ─────────────────────────────────────────────────
- 
   private _cargarDesdeStorage(): void {
     try {
       const jefesRaw = localStorage.getItem(STORAGE_KEYS.JEFES);
       this.jefesDeCampo = jefesRaw ? JSON.parse(jefesRaw) : [];
- 
       const partesRaw = localStorage.getItem(STORAGE_KEYS.PARTES);
       this.partesDiarios = partesRaw ? JSON.parse(partesRaw) : [];
     } catch {
@@ -205,24 +193,15 @@ export class Trabajador {
       this.partesDiarios = [];
     }
   }
- 
+
   private _guardarJefes(): void {
-    try {
-      localStorage.setItem(STORAGE_KEYS.JEFES, JSON.stringify(this.jefesDeCampo));
-    } catch (e) {
-      console.error('Error guardando jefes en localStorage:', e);
-    }
+    try { localStorage.setItem(STORAGE_KEYS.JEFES, JSON.stringify(this.jefesDeCampo)); } catch (e) { console.error(e); }
   }
- 
+
   private _guardarPartes(): void {
-    try {
-      localStorage.setItem(STORAGE_KEYS.PARTES, JSON.stringify(this.partesDiarios));
-    } catch (e) {
-      console.error('Error guardando partes en localStorage:', e);
-    }
+    try { localStorage.setItem(STORAGE_KEYS.PARTES, JSON.stringify(this.partesDiarios)); } catch (e) { console.error(e); }
   }
- 
-  /** Borra todo y re-sincroniza con el backend */
+
   resetStorage(): void {
     localStorage.removeItem(STORAGE_KEYS.JEFES);
     localStorage.removeItem(STORAGE_KEYS.PARTES);
@@ -230,141 +209,13 @@ export class Trabajador {
     this.partesDiarios = [];
     this.sincronizarConBackend();
   }
- 
-  // ─── JEFES DE CAMPO ──────────────────────────────────────────
- 
+
   getJefesDeCampo(): IJefeCampo[] { return this.jefesDeCampo; }
- 
-  getJefePorId(id: string): IJefeCampo | undefined {
-    return this.jefesDeCampo.find(j => j.id === id);
-  }
- 
-  agregarJefeCampo(jefe: IJefeCampo): void {
-    this.jefesDeCampo.push(jefe);
-    this._guardarJefes();
+  getJefePorId(id: string): IJefeCampo | undefined { return this.jefesDeCampo.find(j => j.id === id); }
 
-    // Sincronizar al backend como un usuario
-    const payload = {
-      username: jefe.nombre.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 100),
-      passwordHash: '123456', // default password
-      nombreCompleto: jefe.nombre,
-      rol: jefe.rol.toUpperCase().replace(/\s+/g, '_'),
-      email: jefe.nombre.toLowerCase().replace(/\s+/g, '') + '@pedregal.com',
-      activo: true,
-      syncId: jefe.id
-    };
+  // ─── OPTIMIZACIÓN ASYNC PARA TRABAJADORES ────────────────────────────────────────────
 
-    this.http.post(`${environment.apiUrl}/usuarios`, payload).subscribe({
-      next: (res) => console.log('Jefe creado en backend', res),
-    });
-  }
- 
-  async obtenerTodosLosTrabajadoresBackend(): Promise<any[]> {
-    try {
-      const trabajadores = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/trabajadores`));
-      return trabajadores || [];
-    } catch (error) {
-      console.error('Error obteniendo trabajadores del backend', error);
-      return [];
-    }
-  }
-
-  async crearJefeConTrabajadores(jefe: IJefeCampo, trabajadoresAsignar: any[]): Promise<void> {
-    const jefeSyncId = jefe.id;
-    // We start with an empty array of workers; they will be populated during the update loop.
-    jefe.trabajadores = [];
-    this.jefesDeCampo.push(jefe);
-    this._guardarJefes();
-
-    const payload = {
-      username: jefe.nombre.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 100),
-      passwordHash: '123456', // default password
-      nombreCompleto: jefe.nombre,
-      rol: 'JEFE_CAMPO',
-      email: jefe.nombre.toLowerCase().replace(/\s+/g, '') + '@pedregal.com',
-      activo: true,
-      syncId: jefeSyncId
-    };
-
-    try {
-      // 1. Crear el Jefe en el Backend
-      const res: any = await firstValueFrom(this.http.post(`${environment.apiUrl}/usuarios`, payload));
-      console.log('Jefe creado en backend', res);
-      
-      // 2. Iterar y reasignar cada trabajador seleccionado
-      for (const t of trabajadoresAsignar) {
-        if (!t.dni || !t.nombre) continue; // Constraint validation
-        
-        const nombres = t.nombre.split(' ');
-        const tPayload = {
-          ...t,
-          nombre: nombres[0] || t.nombre,
-          apellido: nombres.slice(1).join(' ') || '',
-          jefeSyncId: jefeSyncId
-        };
-        
-        try {
-           await firstValueFrom(this.http.put(`${environment.apiUrl}/trabajadores/${t.id}`, tPayload));
-           // Update local worker state
-           const iTrab: ITrabajador = {
-              dni: t.dni,
-              nombre: t.nombre,
-              labor: t.cargo || 'Cosecha',
-              lote: t.areaTrabajo || 'Lote General',
-              horasLaboradas: 8,
-              costoTraducido: 0,
-              cajas: 0,
-              metaBase: 10,
-              rendimiento: 0,
-              estado: 'Regular',
-              epps: 'Sí',
-              restricciones: 'Ninguna',
-              jefeSyncId: jefeSyncId
-           };
-           jefe.trabajadores.push(iTrab);
-        } catch (err) {
-           console.error(`Error actualizando trabajador ${t.id}`, err);
-        }
-      }
-      
-      jefe.totalACargo = jefe.trabajadores.length;
-      this._guardarJefes();
-      
-      // Eliminar estos trabajadores de otros jefes locales si existían
-      this.removerTrabajadoresDeOtrosJefes(jefeSyncId, trabajadoresAsignar.map(t => t.dni));
-      
-    } catch (err) {
-      console.error('Error creando jefe o asignando trabajadores', err);
-    }
-  }
-
-  private removerTrabajadoresDeOtrosJefes(nuevoJefeSyncId: string, dnisAsignados: string[]): void {
-    const dniSet = new Set(dnisAsignados);
-    for (const j of this.jefesDeCampo) {
-      if (j.id !== nuevoJefeSyncId) {
-        j.trabajadores = j.trabajadores.filter(t => !dniSet.has(t.dni));
-        j.totalACargo = j.trabajadores.length;
-      }
-    }
-    this._guardarJefes();
-  }
-
- 
-  generarIdJefe(): string {
-    return 'SUP-' + String(this.jefesDeCampo.length + 1).padStart(3, '0');
-  }
- 
-  // ─── TRABAJADORES ────────────────────────────────────────────
- 
-  obtenerTrabajadorPorDni(dni: string): ITrabajador | null {
-    for (const jefe of this.jefesDeCampo) {
-      const found = jefe.trabajadores.find(t => t.dni === dni);
-      if (found) return { ...found };
-    }
-    return null;
-  }
- 
-  actualizarTrabajador(mod: ITrabajador): void {
+  async actualizarTrabajador(mod: ITrabajador): Promise<void> {
     mod.rendimiento = this._calcRendimiento(mod.cajas, mod.metaBase);
     mod.estado = this._calcEstado(mod.rendimiento);
 
@@ -373,84 +224,83 @@ export class Trabajador {
 
     for (let i = 0; i < this.jefesDeCampo.length; i++) {
       const idx = this.jefesDeCampo[i].trabajadores.findIndex(t => t.dni === mod.dni);
-      if (idx !== -1) {
-        oldJefeIdx = i;
-        oldTrabIdx = idx;
-        break;
-      }
+      if (idx !== -1) { oldJefeIdx = i; oldTrabIdx = idx; break; }
     }
 
     if (oldJefeIdx !== -1) {
       const oldJefe = this.jefesDeCampo[oldJefeIdx];
       
-      // Si cambió de jefe, lo removemos del anterior y lo ponemos en el nuevo
       if (mod.jefeSyncId && oldJefe.id !== mod.jefeSyncId) {
         oldJefe.trabajadores.splice(oldTrabIdx, 1);
-        oldJefe.trabajadores = [...oldJefe.trabajadores];
         oldJefe.totalACargo = oldJefe.trabajadores.length;
 
         const newJefe = this.jefesDeCampo.find(j => j.id === mod.jefeSyncId);
         if (newJefe) {
           newJefe.trabajadores.push({ ...mod });
-          newJefe.trabajadores = [...newJefe.trabajadores];
           newJefe.totalACargo = newJefe.trabajadores.length;
         }
       } else {
-        // Mismo jefe
         oldJefe.trabajadores[oldTrabIdx] = { ...mod };
-        oldJefe.trabajadores = [...oldJefe.trabajadores];
       }
 
       this._guardarJefes();
 
-      // Sincronizar cambio al backend
-      this._actualizarTrabajadorEnBackend(mod);
+      // 1. Forzamos la espera de la actualización en el servidor central
+      await this._actualizarTrabajadorEnBackend(mod);
+      
+      // 2. Traemos inmediatamente el estado fresco de la BD
+      await this.sincronizarConBackend(true);
     }
   }
 
-  private _actualizarTrabajadorEnBackend(trab: ITrabajador): void {
-    // Buscar por DNI en el backend y actualizar
-    this.http.get<any[]>(`${environment.apiUrl}/trabajadores`).subscribe({
-      next: (trabajadores) => {
-        const encontrado = trabajadores.find(t => t.dni === trab.dni);
+  private async _actualizarTrabajadorEnBackend(trab: ITrabajador): Promise<void> {
+    const nombres = trab.nombre.split(' ');
+    const payload: any = {
+      syncId: (trab as any).syncId || `TRB-${trab.dni}`,
+      nombre: nombres[0] || trab.nombre,
+      apellido: nombres.slice(1).join(' ') || '',
+      dni: trab.dni,
+      cargo: trab.labor,
+      areaTrabajo: trab.lote,
+      salarioDiario: trab.costoTraducido || 40,
+      activo: true,
+      jefeSyncId: trab.jefeSyncId || null
+    };
+
+    const bdId = (trab as any).id;
+    try {
+      if (bdId) {
+        await firstValueFrom(this.http.put(`${environment.apiUrl}/trabajadores/${bdId}`, payload));
+      } else {
+        const lista: any = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/trabajadores`));
+        const encontrado = lista.find((t: any) => t.dni === trab.dni);
         if (encontrado) {
-          const nombres = trab.nombre.split(' ');
-          const payload = {
-            ...encontrado,
-            nombre: nombres[0] || trab.nombre,
-            apellido: nombres.slice(1).join(' ') || '',
-            cargo: trab.labor,
-            areaTrabajo: trab.lote,
-            jefeSyncId: trab.jefeSyncId
-          };
-          this.http.put(`${environment.apiUrl}/trabajadores/${encontrado.id}`, payload).subscribe({
-            next: () => {
-              console.log('Trabajador actualizado en backend');
-              this.sincronizarConBackend(true);
-            },
-            error: (err: any) => console.error('Error actualizando trabajador en backend', err)
-          });
+          await firstValueFrom(this.http.put(`${environment.apiUrl}/trabajadores/${encontrado.id}`, payload));
         }
-      },
-      error: (err: any) => console.error('Error buscando trabajador en backend', err)
-    });
+      }
+    } catch (err) {
+      console.error('Error actualizando trabajador en la nube', err);
+    }
   }
- 
-  agregarTrabajadorAJefe(jefeId: string, trabajador: ITrabajador): void {
+
+  async agregarTrabajadorAJefe(jefeId: string, trabajador: ITrabajador): Promise<void> {
     const jefe = this.jefesDeCampo.find(j => j.id === jefeId);
     if (jefe) {
       jefe.trabajadores = [...jefe.trabajadores, { ...trabajador }];
       jefe.totalACargo = jefe.trabajadores.length;
       this._guardarJefes();
     }
-    // Siempre crear trabajador en el backend para que no se pierda si "Sin Asignar"
-    this._crearTrabajadorEnBackend(trabajador);
+    
+    // 1. Esperamos que guarde el registro en Spring Boot
+    await this._crearTrabajadorEnBackend(trabajador);
+    // 2. Re-sincronizamos el estado de la vista
+    await this.sincronizarConBackend(true);
   }
 
-  private _crearTrabajadorEnBackend(trab: ITrabajador): void {
+  private async _crearTrabajadorEnBackend(trab: ITrabajador): Promise<void> {
     const nombres = trab.nombre.split(' ');
     const payload = {
-      syncId: `web-trab-${trab.dni}-${Date.now()}`,
+      syncId: trab.syncId || `TRB-${trab.dni}`,
       nombre: nombres[0] || trab.nombre,
       apellido: nombres.slice(1).join(' ') || '',
       dni: trab.dni,
@@ -458,21 +308,33 @@ export class Trabajador {
       areaTrabajo: trab.lote,
       telefono: '',
       categoria: 'Operario',
-      salarioDiario: 40.0,
+      salarioDiario: trab.costoTraducido || 40.0,
       activo: true,
       jefeSyncId: trab.jefeSyncId
     };
     
-    this.http.post(`${environment.apiUrl}/trabajadores`, payload).subscribe({
-      next: (res) => {
-        console.log('Trabajador creado en backend', res);
-        this.sincronizarConBackend(true);
-      },
-      error: (err) => console.error('Error creando trabajador en backend', err)
-    });
+    try {
+      const res: any = await firstValueFrom(this.http.post(`${environment.apiUrl}/trabajadores`, payload));
+      if (res?.id) {
+        for (const j of this.jefesDeCampo) {
+          const t = j.trabajadores.find((w: ITrabajador) => w.dni === trab.dni);
+          if (t) { (t as any).id = res.id; (t as any).syncId = res.syncId; }
+        }
+        this._guardarJefes();
+      }
+    } catch (err) {
+      console.error('Error creando trabajador en la nube', err);
+    }
   }
- 
-  /** Llamado al finalizar un parte: sincroniza cajas/hr de cada trabajador */
+
+  obtenerTrabajadorPorDni(dni: string): ITrabajador | null {
+    for (const jefe of this.jefesDeCampo) {
+      const found = jefe.trabajadores.find(t => t.dni === dni);
+      if (found) return { ...found };
+    }
+    return null;
+  }
+
   actualizarCajasDesdePartePersonal(personal: any[]): void {
     for (const p of personal) {
       if (!p.dni) continue;
@@ -494,32 +356,22 @@ export class Trabajador {
     }
     this._guardarJefes();
   }
- 
-  // ─── HELPERS ─────────────────────────────────────────────────
- 
+
   private _calcRendimiento(cajas: number, metaBase: number): number {
     if (!metaBase) return 0;
     return Math.round((cajas / metaBase) * 100);
   }
- 
+
   private _calcEstado(rendimiento: number): string {
     if (rendimiento >= 90) return 'Óptimo';
     if (rendimiento >= 70) return 'Regular';
     return 'Crítico';
   }
- 
-  // ─── PARTES DIARIOS ──────────────────────────────────────────
- 
+
   guardarParte(parte: IParteDiario): void {
     const idx = this.partesDiarios.findIndex(p => p.id === parte.id);
-    if (idx !== -1) {
-      this.partesDiarios[idx] = { ...parte };
-    } else {
-      this.partesDiarios.push({ ...parte });
-    }
-    if (parte.estado === 'finalizado') {
-      this.actualizarCajasDesdePartePersonal(parte.personal);
-    }
+    if (idx !== -1) { this.partesDiarios[idx] = { ...parte }; } else { this.partesDiarios.push({ ...parte }); }
+    if (parte.estado === 'finalizado') { this.actualizarCajasDesdePartePersonal(parte.personal); }
     this._guardarPartes();
     this.subirParteAlBackend(parte);
   }
@@ -550,57 +402,43 @@ export class Trabajador {
         }
       ]
     };
-
     this.http.post(`${environment.apiUrl}/sync/upload`, payload).subscribe({
-      next: (res) => console.log('Parte sincronizado con backend', res),
-      error: (err) => console.error('Error al subir parte al backend', err)
+      next: (res) => console.log('Parte sincronizado', res),
+      error: (err) => console.error(err)
     });
   }
 
   private _formatearFechaISO(fecha: string): string {
-    // Intenta convertir formatos como "23/06/2026" o "23/6/2026" a "2026-06-23"
-    if (fecha.includes('-') && fecha.length === 10) return fecha; // ya está en ISO
+    if (fecha.includes('-') && fecha.length === 10) return fecha;
     const partes = fecha.split('/');
     if (partes.length === 3) {
       const [dia, mes, anio] = partes;
       return `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
     }
-    // Fallback: usar fecha actual
     return new Date().toISOString().split('T')[0];
   }
- 
+
   getPartesDiarios(): IParteDiario[] { return this.partesDiarios; }
-  getPartesFinalizados(): IParteDiario[] {
-    return this.partesDiarios.filter(p => p.estado === 'finalizado');
-  }
- 
-  // ─── KPIs ────────────────────────────────────────────────────
- 
-  getTotalPersonalActivo(): number {
-    return this.jefesDeCampo.reduce((s, j) => s + j.trabajadores.length, 0);
-  }
- 
-  getTotalProduccion(): number {
-    return this.getPartesFinalizados().reduce((s, p) => s + (p.produccionAvanzada || 0), 0);
-  }
- 
+  getPartesFinalizados(): IParteDiario[] { return this.partesDiarios.filter(p => p.estado === 'finalizado'); }
+
+  getTotalPersonalActivo(): number { return this.jefesDeCampo.reduce((s, j) => s + j.trabajadores.length, 0); }
+  getTotalProduccion(): number { return this.getPartesFinalizados().reduce((s, p) => s + (p.produccionAvanzada || 0), 0); }
   getMetaTotalProduccion(): number {
     const partes = this.getPartesFinalizados();
     return partes.length ? partes.reduce((s, p) => s + (p.metaDiaria || 0), 0) : 2450;
   }
- 
+
   getPorcentajeAvanceCosecha(): number {
     const total = this.getTotalProduccion();
     const meta = this.getMetaTotalProduccion();
     if (!total) return 0;
     return Math.min(100, Math.round((total / meta) * 1000) / 10);
   }
- 
+
   getCostoImproductividad(): number {
-    return this.getPartesFinalizados()
-      .reduce((s, p) => s + p.personal.filter((per: any) => per.asistencia === 'FALTA').length * 40, 0);
+    return this.getPartesFinalizados().reduce((s, p) => s + p.personal.filter((per: any) => per.asistencia === 'FALTA').length * 40, 0);
   }
- 
+
   getRankingGrupos(): { nombre: string; lider: string; rendimiento: number }[] {
     return this.jefesDeCampo.map(jefe => {
       const partes = this.partesDiarios.filter(p => p.jefeId === jefe.id && p.estado === 'finalizado');
@@ -608,16 +446,50 @@ export class Trabajador {
       if (partes.length) {
         const ultimo = partes[partes.length - 1];
         const presentes = ultimo.personal.filter((p: any) => p.asistencia === 'PRESENTE');
-        rend = presentes.length
-          ? Math.round(presentes.reduce((s: number, p: any) => s + (p.rendimiento || 0), 0) / presentes.length)
-          : 0;
+        rend = presentes.length ? Math.round(presentes.reduce((s: number, p: any) => s + (p.rendimiento || 0), 0) / presentes.length) : 0;
       } else {
         const ts = jefe.trabajadores;
-        rend = ts.length
-          ? Math.round(ts.reduce((s, t) => s + t.rendimiento, 0) / ts.length)
-          : 0;
+        rend = ts.length ? Math.round(ts.reduce((s, t) => s + t.rendimiento, 0) / ts.length) : 0;
       }
       return { nombre: jefe.nombre, lider: jefe.nombre, rendimiento: Math.min(100, rend) };
     }).sort((a, b) => b.rendimiento - a.rendimiento);
+  }
+  // ─── MÉTODOS DE JEFES DE CAMPO RESTAURADOS ─────────────────────
+
+  /**
+   * Genera secuencialmente el ID del nuevo jefe basado en la cantidad actual
+   * Ejemplo: Si hay 2 jefes, devolverá 'SUP-003'
+   */
+  generarIdJefe(): string {
+    return 'SUP-' + String(this.jefesDeCampo.length + 1).padStart(3, '0');
+  }
+
+  /**
+   * Agrega un nuevo Jefe de Campo localmente y lo envía por POST a Supabase / Spring Boot
+   */
+  agregarJefeCampo(jefe: IJefeCampo): void {
+    this.jefesDeCampo.push(jefe);
+    this._guardarJefes();
+
+    // Estructuramos el payload mapeando con lo que espera tu entidad Usuario de Spring Boot
+    const payload = {
+      username: jefe.nombre.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 100),
+      passwordHash: '123456', // Contraseña por defecto para las pruebas semilla
+      nombreCompleto: jefe.nombre,
+      rol: jefe.rol ? jefe.rol.toUpperCase().replace(/\s+/g, '_') : 'JEFE_CAMPO',
+      email: jefe.nombre.toLowerCase().replace(/\s+/g, '') + '@pedregal.com',
+      activo: true,
+      syncId: jefe.id
+    };
+
+    // Petición asíncrona hacia el backend centralizado en Supabase
+    this.http.post(`${environment.apiUrl}/usuarios`, payload).subscribe({
+      next: (res) => {
+        console.log('✅ Jefe creado exitosamente en el backend/Supabase', res);
+        // Opcional: Forzamos una re-sincronización rápida para verificar el estado completo
+        this.sincronizarConBackend(true);
+      },
+      error: (err) => console.error('❌ Error al registrar jefe en el servidor central:', err)
+    });
   }
 }
