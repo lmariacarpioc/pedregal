@@ -8,6 +8,7 @@ export interface ITrabajador {
   syncId?: string;
   dni: string;
   nombre: string;
+  telefono?: string;
   labor: string;
   lote: string;
   horasLaboradas: number;
@@ -259,6 +260,7 @@ export class Trabajador {
       syncId: (trab as any).syncId || `TRB-${trab.dni}`,
       nombre: nombres[0] || trab.nombre,
       apellido: nombres.slice(1).join(' ') || '',
+      telefono: (trab as any).telefono || '',
       dni: trab.dni,
       cargo: trab.labor,
       areaTrabajo: trab.lote,
@@ -303,10 +305,11 @@ export class Trabajador {
       syncId: trab.syncId || `TRB-${trab.dni}`,
       nombre: nombres[0] || trab.nombre,
       apellido: nombres.slice(1).join(' ') || '',
+      
       dni: trab.dni,
       cargo: trab.labor,
       areaTrabajo: trab.lote,
-      telefono: '',
+     telefono: (trab as any).telefono || '',
       categoria: 'Operario',
       salarioDiario: trab.costoTraducido || 40.0,
       activo: true,

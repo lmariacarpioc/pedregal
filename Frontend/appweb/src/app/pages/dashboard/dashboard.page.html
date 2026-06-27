@@ -303,6 +303,16 @@
           </span>
         </div>
 
+        <!-- Conteo de trabajadores afectados -->
+        <div class="alert-workers-count" *ngIf="alerta.tipo !== 'info'">
+          <span class="count-critico" *ngIf="alerta.trabajadoresCriticos > 0">
+            🔴 {{ alerta.trabajadoresCriticos }} crítico{{ alerta.trabajadoresCriticos > 1 ? 's' : '' }}
+          </span>
+          <span class="count-bajo" *ngIf="alerta.trabajadoresBajos > 0">
+            🟡 {{ alerta.trabajadoresBajos }} regular{{ alerta.trabajadoresBajos > 1 ? 'es' : '' }}
+          </span>
+        </div>
+
         <p class="alert-zona">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:10px;height:10px;fill:#888;display:inline-block;vertical-align:middle;margin-right:3px;">
             <path d="M 320 576 C 320 576 96 381.2 96 224 C 96 100.3 196.3 0 320 0 C 443.7 0 544 100.3 544 224 C 544 381.2 320 576 320 576 z M 320 288 C 355.3 288 384 259.3 384 224 C 384 188.7 355.3 160 320 160 C 284.7 160 256 188.7 256 224 C 256 259.3 284.7 288 320 288 z"/>
@@ -317,7 +327,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:11px;height:11px;fill:white;display:inline-block;vertical-align:middle;margin-right:4px;">
               <path d="M 320 312 C 386.3 312 440 258.3 440 192 C 440 125.7 386.3 72 320 72 C 253.7 72 200 125.7 200 192 C 200 258.3 253.7 312 320 312 z M 290.3 368 C 191.8 368 112 447.8 112 546.3 C 112 562.7 125.3 576 141.7 576 L 498.3 576 C 514.7 576 528 562.7 528 546.3 C 528 447.8 448.2 368 349.7 368 L 290.3 368 z"/>
             </svg>
-            Ver Staff
+            Ver en Staff →
           </button>
           <button class="btn-ignorar" (click)="descartarAlerta(alerta)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width:10px;height:10px;fill:#888;display:inline-block;vertical-align:middle;margin-right:3px;">

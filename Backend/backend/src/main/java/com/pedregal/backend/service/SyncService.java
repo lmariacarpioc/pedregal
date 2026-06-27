@@ -324,6 +324,7 @@ public class SyncService {
 
         List<TrabajadorDTO> trabajadores = trabajadoresFiltrados.stream().map(t -> {
             TrabajadorDTO dto = new TrabajadorDTO();
+            dto.setId(t.getId());
             dto.setSyncId(t.getSyncId());
             dto.setNombre(t.getNombre());
             dto.setApellido(t.getApellido());
@@ -335,6 +336,7 @@ public class SyncService {
             dto.setSalarioDiario(t.getSalarioDiario());
             dto.setActivo(t.isActivo());
             if (t.getJefe() != null) {
+                dto.setJefeId(t.getJefe().getId());
                 dto.setJefeSyncId(t.getJefe().getSyncId());
             }
             return dto;
