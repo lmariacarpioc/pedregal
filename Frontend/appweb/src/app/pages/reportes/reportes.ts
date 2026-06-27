@@ -6,6 +6,12 @@ import { environment } from '../../../environments/environment';
 
 import { Trabajador } from '../staff/trabajador';
 
+export interface IAsesor {
+  id: string;
+  nombre: string;
+  zona?: string;
+}
+
 @Component({
   selector: 'app-reportes',
   standalone: true,
@@ -19,6 +25,10 @@ export class Reportes implements OnInit {
   partesDiarios: any[] = [];
   trabajadores: any[] = [];
   produccion: any[] = [];
+
+  // --- Estado de Selección de Asesores ---
+  asesores: IAsesor[] = [];
+  asesorSeleccionado: IAsesor | null = null;
 
   // --- Pagination ---
   paginaActual: number = 1;
@@ -38,7 +48,7 @@ export class Reportes implements OnInit {
   }
 
   // ----------------------------------------------------------------
-  // Data loading
+  // Data loading & Sincronización
   // ----------------------------------------------------------------
   cargarDatos(): void {
     this.cargando = true;
@@ -49,6 +59,10 @@ export class Reportes implements OnInit {
         this.partesDiarios = resp.partesDiarios ?? [];
         this.trabajadores = resp.trabajadores ?? [];
         this.produccion = resp.produccion ?? [];
+        
+        // Al recibir los datos de Supabase, generamos la lista de asesores únicos
+        this.extraerAsesores();
+
         this.cargando = false;
         this.cdr.detectChanges();
       },
@@ -61,15 +75,60 @@ export class Reportes implements OnInit {
     });
   }
 
+  /**
+   * Extrae la lista de asesores/jefes únicos basados en los trabajadores y grupos
+   */
+  extraerAsesores(): void {
+    const jefesDeCampo = this.trabajador.getJefesDeCampo();
+    if (jefesDeCampo && jefesDeCampo.length > 0) {
+      this.asesores = jefesDeCampo.map((jefe: any, index: number) => ({
+        id: jefe.id || index.toString(),
+        nombre: jefe.nombre,
+        zona: jefe.zona
+      }));
+    } else {
+      // Alternativa si el servicio viene vacío: extraerlos de los propios partes diarios
+      const nombresUnicos = new Set<string>();
+      this.partesDiarios.forEach(p => {
+        if (p.jefe) nombresUnicos.add(p.jefe);
+        else if (p.cuadrilla) nombresUnicos.add(p.cuadrilla);
+      });
+      
+      this.asesores = Array.from(nombresUnicos).map((nombre, idx) => ({
+        id: idx.toString(),
+        nombre: nombre,
+        zona: 'Campo General'
+      }));
+    }
+  }
+
+  /**
+   * Se ejecuta al hacer clic sobre un asesor en el panel lateral izquierdo
+   */
+  seleccionarAsesor(asesor: IAsesor): void {
+    this.asesorSeleccionado = asesor;
+    this.paginaActual = 1; // Reseteamos la página
+    this.cdr.detectChanges();
+  }
+
   // ----------------------------------------------------------------
-  // Computed: datosHistoricos
-  //   Flattened list of parte diario entries with date, cuadrilla/jefe,
-  //   lote, producción and calidad.
+  // Computed: datosHistoricos (Filtrados por asesor y ordenados por fecha)
   // ----------------------------------------------------------------
   get datosHistoricos(): any[] {
-    const datos: any[] = [];
+    if (!this.asesorSeleccionado) return [];
 
-    for (const parte of this.partesDiarios) {
+    const datos: any[] = [];
+    const nombreAsesor = this.asesorSeleccionado.nombre.toLowerCase();
+
+    // 1. Filtrar partes que pertenezcan al asesor seleccionado
+    const partesDelAsesor = this.partesDiarios.filter(parte => {
+      const jefe = (parte.jefe ?? '').toLowerCase();
+      const cuadrilla = (parte.cuadrilla ?? '').toLowerCase();
+      return jefe === nombreAsesor || cuadrilla === nombreAsesor;
+    });
+
+    // 2. Aplanar los partes diarios
+    for (const parte of partesDelAsesor) {
       const fecha = parte.fecha ?? '';
       const cuadrilla = parte.cuadrilla ?? parte.jefe ?? 'Sin cuadrilla';
       const jefe = parte.jefe ?? 'Sin jefe';
@@ -79,6 +138,8 @@ export class Reportes implements OnInit {
       for (const act of actividades) {
         datos.push({
           fecha,
+          // Creamos una propiedad Date nativa para poder ordenar correctamente
+          fechaObj: fecha ? new Date(fecha) : new Date(0),
           cuadrilla,
           jefe,
           lote: act.lote ?? parte.lote ?? '',
@@ -88,35 +149,36 @@ export class Reportes implements OnInit {
       }
     }
 
-    return this.aplicarFiltroFechas(datos);
+    // 3. Aplicar Filtro de rango de fechas ingresado por los inputs
+    const datosFiltradosPorFecha = this.aplicarFiltroFechas(datos);
+
+    // 4. ORDENAR POR FECHA (Año/Mes/Día) de forma descendente (El día más reciente primero)
+    return datosFiltradosPorFecha.sort((a, b) => b.fechaObj.getTime() - a.fechaObj.getTime());
   }
 
   // ----------------------------------------------------------------
-  // Computed: cumplimientoMetas
-  //   Percentage of total cantidadEjecutada / cantidadProgramada
+  // Computed: cumplimientoMetas (Calculado dinámicamente)
   // ----------------------------------------------------------------
   get cumplimientoMetas(): number {
-    let totalEjecutada = 0;
-    let totalProgramada = 0;
-
-    for (const p of this.produccion) {
-      totalEjecutada += Number(p.cantidadEjecutada ?? 0);
-      totalProgramada += Number(p.cantidadProgramada ?? 0);
-    }
-
-    if (totalProgramada === 0) return 0;
-    return Math.round((totalEjecutada / totalProgramada) * 10000) / 100;
+    if (!this.asesorSeleccionado || this.datosHistoricos.length === 0) return 0;
+    
+    // Sumamos la producción real acumulada del asesor seleccionado
+    const totalEjecutada = this.datosHistoricos.reduce((sum, item) => sum + Number(item.produccion), 0);
+    
+    if (totalEjecutada === 0) return 0;
+    // Meta diaria promedio estimada por hectárea o lote (ejemplo base de 5000 kg)
+    return Math.min(100, Math.round((totalEjecutada / 5000) * 100));
   }
 
   // ----------------------------------------------------------------
   // Computed: produccionPorSemana
-  //   Groups datosHistoricos by ISO week and sums production.
   // ----------------------------------------------------------------
   get produccionPorSemana(): any[] {
     const mapa: Record<string, { semana: string; total: number; registros: number }> = {};
 
     for (const d of this.datosHistoricos) {
-      const semana = this.obtenerSemana(d.fecha);
+      const sampleFecha = d.fecha.includes('T') ? d.fecha.split('T')[0] : d.fecha;
+      const semana = this.obtenerSemana(sampleFecha);
       if (!mapa[semana]) {
         mapa[semana] = { semana, total: 0, registros: 0 };
       }
@@ -129,21 +191,24 @@ export class Reportes implements OnInit {
 
   get maxProduccion(): number {
     const data = this.produccionPorSemana;
-    if (data.length === 0) return 150; // default
+    if (data.length === 0) return 150;
     return Math.max(...data.map(d => d.total));
   }
 
   // ----------------------------------------------------------------
   // Computed: eficienciaCuadrillas
-  //   Groups by jefe/cuadrilla and averages rendimiento.
   // ----------------------------------------------------------------
   get eficienciaCuadrillas(): any[] {
-    // We want a percentage 0-100. We can get it directly from the worker service ranking.
+    if (!this.asesorSeleccionado) return [];
+    
     const grupos = this.trabajador.getRankingGrupos();
-    return grupos.map((g: any) => ({
-      nombre: g.nombre,
-      rendimiento: g.rendimiento
-    }));
+    // Filtramos para que solo muestre el rendimiento de la cuadrilla bajo el mando del asesor actual
+    return grupos
+      .filter((g: any) => g.nombre.toLowerCase() === this.asesorSeleccionado!.nombre.toLowerCase())
+      .map((g: any) => ({
+        nombre: g.nombre,
+        rendimiento: g.rendimiento
+      }));
   }
 
   // ----------------------------------------------------------------
@@ -168,7 +233,9 @@ export class Reportes implements OnInit {
   // CSV Export
   // ----------------------------------------------------------------
   exportarCSV(): void {
-    const encabezados = ['Fecha', 'Cuadrilla', 'Jefe', 'Lote', 'Producción', 'Calidad'];
+    if (this.datosHistoricos.length === 0) return;
+
+    const encabezados = ['Fecha', 'Cuadrilla', 'Jefe', 'Lote', 'Produccion', 'Calidad'];
     const filas = this.datosHistoricos.map((d) =>
       [d.fecha, d.cuadrilla, d.jefe, d.lote, d.produccion, d.calidad]
         .map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`)
@@ -181,7 +248,8 @@ export class Reportes implements OnInit {
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = `reporte_${new Date().toISOString().slice(0, 10)}.csv`;
+    const nombreArchivo = this.asesorSeleccionado ? this.asesorSeleccionado.nombre.replace(/\s+/g, '_') : 'general';
+    link.download = `reporte_${nombreArchivo}_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
 
     URL.revokeObjectURL(url);
