@@ -19,9 +19,12 @@ export class CountAsistenciaPipe implements PipeTransform {
 export interface IAlerta {
   tipo: 'critico' | 'bajo' | 'info';
   tipoLabel: string;
+  jefeId: string;        // ← syncId del jefe para navegar directo
   jefeNombre: string;
   zona: string;
   rendimiento: number;
+  trabajadoresCriticos: number;
+  trabajadoresBajos: number;
   tiempo: string;
   mensaje: string;
   descartada: boolean;
@@ -184,71 +187,76 @@ export class DashboardPage implements OnInit {
       const ts = jefe.trabajadores;
       if (!ts.length) continue;
 
-      const rendProm = Math.round(ts.reduce((s, t) => s + t.rendimiento, 0) / ts.length);
-      const criticos = ts.filter(t => t.estado === 'Crítico').length;
-      const regulares = ts.filter(t => t.estado === 'Regular').length;
+      const criticos  = ts.filter((t: any) => t.estado === 'Crítico').length;
+      const regulares = ts.filter((t: any) => t.estado === 'Regular').length;
+      const rendProm  = Math.round(ts.reduce((s: number, t: any) => s + t.rendimiento, 0) / ts.length);
 
-      // Solo alertar si el rendimiento es mayor a 0 (para no alertar al inicio del día)
-      // O si hay trabajadores explícitamente marcados como 'Crítico'
-      if ((rendProm > 0 && rendProm < 60) || criticos > 0) {
+      if (criticos > 0 || (rendProm > 0 && rendProm < 60)) {
         nuevas.push({
           tipo: 'critico',
           tipoLabel: 'RENDIMIENTO CRÍTICO',
+          jefeId: jefe.id,
           jefeNombre: jefe.nombre,
           zona: jefe.zona,
           rendimiento: rendProm,
+          trabajadoresCriticos: criticos,
+          trabajadoresBajos: regulares,
           tiempo: 'AHORA',
-          mensaje: `${criticos} trabajador(es) en estado crítico. Rendimiento promedio ${rendProm}% — por debajo del umbral mínimo. Se requiere intervención inmediata.`,
+          mensaje: `${criticos} trabajador(es) en estado crítico. Rendimiento promedio ${rendProm}%.`,
           descartada: false
         });
       } else if (rendProm >= 60 && rendProm < 80) {
         nuevas.push({
           tipo: 'bajo',
           tipoLabel: 'RENDIMIENTO BAJO',
+          jefeId: jefe.id,
           jefeNombre: jefe.nombre,
           zona: jefe.zona,
           rendimiento: rendProm,
+          trabajadoresCriticos: criticos,
+          trabajadoresBajos: regulares,
           tiempo: 'HOY',
-          mensaje: `${regulares} trabajador(es) en estado regular. Rendimiento promedio ${rendProm}%. Revisar condiciones de labor y asignación.`,
+          mensaje: `${regulares} trabajador(es) en estado regular. Rendimiento promedio ${rendProm}%.`,
           descartada: false
         });
       }
 
-      // Alerta de trabajadores con restricciones médicas activos en campo
-      const conRestricciones = ts.filter(t => t.restricciones && t.restricciones !== 'Ninguna');
+      const conRestricciones = ts.filter((t: any) => t.restricciones && t.restricciones !== 'Ninguna');
       if (conRestricciones.length > 0) {
         nuevas.push({
           tipo: 'info',
           tipoLabel: 'ALERTA SST',
+          jefeId: jefe.id,
           jefeNombre: jefe.nombre,
           zona: jefe.zona,
           rendimiento: rendProm,
+          trabajadoresCriticos: 0,
+          trabajadoresBajos: 0,
           tiempo: 'HOY',
-          mensaje: `${conRestricciones.length} trabajador(es) con restricciones médicas activos en ${jefe.zona}. Verificar EPPs y condiciones.`,
+          mensaje: `${conRestricciones.length} trabajador(es) con restricciones médicas activos en campo.`,
           descartada: false
         });
       }
     }
 
-    // Si no hay alertas reales, mantener una informativa de turno
     if (nuevas.length === 0) {
       nuevas.push({
         tipo: 'info',
-        tipoLabel: 'SIN ALERTAS',
+        tipoLabel: 'TODO EN ORDEN',
+        jefeId: '',
         jefeNombre: 'Todos los grupos',
         zona: 'Fundo Yaurilla',
         rendimiento: 100,
+        trabajadoresCriticos: 0,
+        trabajadoresBajos: 0,
         tiempo: 'HOY',
         mensaje: 'Todos los grupos operan dentro de los parámetros normales.',
         descartada: false
       });
     }
 
-    // Conservar estado descartado de alertas previas
     this.alertas = nuevas.map(n => {
-      const previa = this.alertas.find(
-        a => a.jefeNombre === n.jefeNombre && a.tipo === n.tipo
-      );
+      const previa = this.alertas.find(a => a.jefeId === n.jefeId && a.tipo === n.tipo);
       return previa ? { ...n, descartada: previa.descartada } : n;
     });
   }
@@ -266,7 +274,10 @@ export class DashboardPage implements OnInit {
   }
 
   intervenir(alerta: IAlerta): void {
-    this.router.navigate(['/staff']);
+    // Navega a /staff y abre automáticamente el acordeón del jefe con problemas
+    this.router.navigate(['/staff'], {
+      queryParams: alerta.jefeId ? { jefe: alerta.jefeId } : {}
+    });
   }
 
   // ── RESTO ────────────────────────────────────────────────────
