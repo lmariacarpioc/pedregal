@@ -27,6 +27,11 @@ public class SyncController {
         return ResponseEntity.ok(syncService.downloadSync(dispositivoId));
     }
 
+    @GetMapping("/download/{supervisorSyncId}")
+    public ResponseEntity<SyncPayloadDTO> downloadSyncPorSupervisor(@PathVariable String supervisorSyncId) {
+        return ResponseEntity.ok(syncService.downloadSyncPorSupervisor(supervisorSyncId));
+    }
+
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getSyncStatus() {
         return ResponseEntity.ok(Map.of(

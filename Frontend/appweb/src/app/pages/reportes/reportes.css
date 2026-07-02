@@ -1,10 +1,15 @@
 /* --- CONTENEDOR PRINCIPAL CON DISEÑO DE DOS COLUMNAS --- */
+.contenido-principal {
+  padding: 32px 40px;
+  min-height: 100vh;
+}
+
 .reportes-layout {
   display: flex;
-  gap: 24px;
-  margin-top: 24px;
+  gap: 32px;
+  margin-top: 32px;
   align-items: flex-start;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* --- PANEL LATERAL IZQUIERDO: ASESORES --- */
@@ -137,12 +142,12 @@
 }/* --- ENCABEZADO DE REPORTES --- */
 .reportes-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 28px;
-  padding-bottom: 16px;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #f1f5f9;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .reportes-titulo h1 {
@@ -159,53 +164,6 @@
   margin: 0;
 }
 
-/* --- CONTENEDOR DE FILTROS MODERNO (SOLUCIÓN AL DESORDEN) --- */
-.reportes-filtros {
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Espacio uniforme entre los inputs y el botón */
-}
-
-/* Inputs de fecha limpios y modernos */
-.reportes-filtros input[type="date"].btn-filtro {
-  padding: 8px 14px;
-  font-size: 13.5px;
-  font-family: 'Inter', sans-serif;
-  color: #334155;
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  outline: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.reportes-filtros input[type="date"].btn-filtro:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Botón Limpiar estilizado */
-button.btn-filtro {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  font-size: 13.5px;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  color: #64748b;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-button.btn-filtro:hover {
-  background-color: #e2e8f0;
-  color: #334155;
-}
 
 /* --- ESPACIADO REFORZADO ENTRE LOS NOMBRES --- */
 .lista-asesores {
@@ -219,4 +177,187 @@ button.btn-filtro:hover {
 .tarjeta-asesor-btn {
   border: 1px solid #f1f5f9;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* --- TARJETAS Y GRID --- */
+.fila-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.tarjeta {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.tarjeta h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+}
+
+.tarjeta .subtitulo {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.tarjeta-etiqueta {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.porcentaje {
+  font-size: 36px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  line-height: 1.1;
+}
+
+.variacion {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+}
+.variacion.positiva { color: #10b981; }
+
+.tarjeta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+/* --- TABLA DE DATOS --- */
+.tabla-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tabla-acciones button {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.tabla-acciones button:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.tabla-datos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabla-datos th {
+  text-align: left;
+  padding: 12px 16px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.tabla-datos td {
+  padding: 16px;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tabla-datos tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- BADGES (CALIDAD/ESTADO) --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.badge.excelente { background: #dcfce7; color: #166534; }
+.badge.estandar { background: #fef08a; color: #854d0e; }
+.badge.revision { background: #fee2e2; color: #991b1b; }
+
+/* --- PAGINACIÓN --- */
+.paginacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pag-info {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pag-botones {
+  display: flex;
+  gap: 4px;
+}
+
+.pag-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pag-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.pag-btn.activo {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.pag-btn:disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.7;
 }

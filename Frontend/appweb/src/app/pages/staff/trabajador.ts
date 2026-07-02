@@ -138,6 +138,7 @@ export class Trabajador {
           const trab = todosLosTrabajadores.find((t: any) => t.syncId === d.trabajadorSyncId);
           const nombreTrab = trab ? `${trab.nombre} ${trab.apellido}`.trim() : (d.trabajadorSyncId || 'Desconocido');
           return {
+            syncId: d.trabajadorSyncId,
             dni: trab?.dni || d.trabajadorSyncId || '',
             nombre: nombreTrab,
             asistencia: d.estadoAsistencia || 'PRESENTE',
@@ -175,6 +176,59 @@ export class Trabajador {
       this.partesDiarios = [...partesBackend];
     } else {
       this.partesDiarios = [];
+    }
+
+    // Calcular el rendimiento de HOY por trabajador
+    const hoy = new Date().toISOString().split('T')[0];
+    const cajasPorTrabajadorHoy: Record<string, number> = {};
+    
+    for (const parte of this.partesDiarios) {
+      if (parte.fecha !== hoy) continue;
+      
+      // Ignorar si el parte es Inversión
+      if (parte.labor?.toLowerCase().includes('inversión') || parte.labor?.toLowerCase().includes('inversion')) {
+        continue;
+      }
+      
+      for (const det of parte.personal) {
+        // Ignorar detalle de Inversión
+        if (det.cargo?.toLowerCase().includes('inversión') || det.cargo?.toLowerCase().includes('inversion')) {
+          continue;
+        }
+
+        // Heurística Inversión
+        if (det.cajas === det.horasLaboradas && det.cajas <= 16) {
+          continue;
+        }
+        
+        const key = det.syncId || det.dni; 
+        if (key) {
+          if (!cajasPorTrabajadorHoy[key]) cajasPorTrabajadorHoy[key] = 0;
+          cajasPorTrabajadorHoy[key] += (det.cajas || 0);
+        }
+      }
+    }
+    
+    // Asignar las cajas de hoy a cada trabajador en jefesDeCampo
+    for (const jefe of this.jefesDeCampo) {
+      for (const trab of jefe.trabajadores) {
+        const key = trab.syncId || trab.dni;
+        const cajasHoy = key ? (cajasPorTrabajadorHoy[key] || 0) : 0;
+        
+        trab.cajas = cajasHoy;
+        
+        // Recalcular rendimiento y estado en base a las cajas de HOY
+        const rendimientoCalculado = Math.round((cajasHoy / trab.metaBase) * 100);
+        trab.rendimiento = isNaN(rendimientoCalculado) ? 0 : Math.min(rendimientoCalculado, 100);
+        
+        if (trab.rendimiento >= 90) {
+          trab.estado = 'Óptimo';
+        } else if (trab.rendimiento >= 50) {
+          trab.estado = 'Regular';
+        } else {
+          trab.estado = 'Crítico';
+        }
+      }
     }
 
     this._guardarJefes();
