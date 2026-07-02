@@ -417,4 +417,81 @@ public class SyncService {
 
         return payload;
     }
+
+    @Transactional(readOnly = true)
+    public SyncPayloadDTO downloadSyncPorSupervisor(String supervisorSyncId) {
+        SyncPayloadDTO payload = new SyncPayloadDTO();
+        payload.setDispositivoId("web");
+        payload.setTimestamp(Instant.now().toString());
+
+        Usuario supervisor = usuarioRepository.findBySyncId(supervisorSyncId).orElse(null);
+        if (supervisor == null) {
+            return payload;
+        }
+
+        UsuarioDTO supervisorDto = new UsuarioDTO();
+        supervisorDto.setSyncId(supervisor.getSyncId());
+        supervisorDto.setUsername(supervisor.getUsername());
+        supervisorDto.setNombreCompleto(supervisor.getNombreCompleto());
+        supervisorDto.setRol(supervisor.getRol());
+        payload.setUsuarios(List.of(supervisorDto));
+
+        List<Trabajador> trabajadoresFiltrados = trabajadorRepository.findByJefe_Id(supervisor.getId());
+        List<TrabajadorDTO> trabajadores = trabajadoresFiltrados.stream().map(t -> {
+            TrabajadorDTO dto = new TrabajadorDTO();
+            dto.setId(t.getId());
+            dto.setSyncId(t.getSyncId());
+            dto.setNombre(t.getNombre());
+            dto.setApellido(t.getApellido());
+            dto.setDni(t.getDni());
+            dto.setCargo(t.getCargo());
+            dto.setAreaTrabajo(t.getAreaTrabajo());
+            dto.setActivo(t.isActivo());
+            if (t.getJefe() != null) dto.setJefeSyncId(t.getJefe().getSyncId());
+            return dto;
+        }).toList();
+        payload.setTrabajadores(trabajadores);
+
+        List<ParteDiario> partes = parteDiarioRepository.findByUsuarioId(supervisor.getId());
+        List<ParteDiarioDTO> partesDiarios = partes.stream().map(p -> {
+            ParteDiarioDTO dto = new ParteDiarioDTO();
+            dto.setSyncId(p.getSyncId());
+            dto.setFecha(p.getFecha().toString());
+            dto.setTurno(p.getTurno());
+            dto.setClima(p.getClima());
+            dto.setEstado(p.getEstado());
+            if (p.getUsuario() != null) dto.setUsuarioSyncId(p.getUsuario().getSyncId());
+
+            List<ParteDiarioDetalleDTO> detalles = parteDiarioDetalleRepository.findByParteDiarioId(p.getId()).stream().map(d -> {
+                ParteDiarioDetalleDTO detDto = new ParteDiarioDetalleDTO();
+                detDto.setSyncId(d.getSyncId());
+                if (d.getTrabajador() != null) detDto.setTrabajadorSyncId(d.getTrabajador().getSyncId());
+                detDto.setHoraEntrada(d.getHoraEntrada());
+                detDto.setHoraSalida(d.getHoraSalida());
+                detDto.setEstadoAsistencia(d.getEstadoAsistencia());
+                detDto.setCantidad(d.getCantidad());
+                detDto.setTipoActividad(d.getTipoActividad());
+                return detDto;
+            }).toList();
+            dto.setDetalles(detalles);
+            return dto;
+        }).toList();
+        payload.setPartesDiarios(partesDiarios);
+
+        List<ProduccionDTO> produccion = produccionRepository.findAll().stream()
+                .filter(prod -> prod.getParteDiario() != null && prod.getParteDiario().getUsuario() != null && prod.getParteDiario().getUsuario().getId().equals(supervisor.getId()))
+                .map(prod -> {
+            ProduccionDTO dto = new ProduccionDTO();
+            dto.setSyncId(prod.getSyncId());
+            dto.setActividad(prod.getActividad());
+            dto.setCantidadProgramada(prod.getCantidadProgramada());
+            dto.setCantidadEjecutada(prod.getCantidadEjecutada());
+            dto.setRendimiento(prod.getRendimiento());
+            if (prod.getParteDiario() != null) dto.setParteDiarioSyncId(prod.getParteDiario().getSyncId());
+            return dto;
+        }).toList();
+        payload.setProduccion(produccion);
+
+        return payload;
+    }
 }

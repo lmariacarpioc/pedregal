@@ -54,24 +54,24 @@ export class Reportes implements OnInit {
     this.cargando = true;
     this.error = '';
 
-    this.http.get<any>(`${environment.apiUrl}/sync/download`).subscribe({
-      next: (resp) => {
-        this.partesDiarios = resp.partesDiarios ?? [];
-        this.trabajadores = resp.trabajadores ?? [];
-        this.produccion = resp.produccion ?? [];
-        
-        // Al recibir los datos de Supabase, generamos la lista de asesores únicos
-        this.extraerAsesores();
-
+    // Cargar solo la lista de usuarios para el Master List
+    this.http.get<any[]>(`${environment.apiUrl}/usuarios`).subscribe({
+      next: (usuarios) => {
+        const jefes = usuarios.filter(u => u.rol === 'JEFE_CAMPO' && u.activo !== false);
+        this.asesores = jefes.map(j => ({
+          id: j.syncId, // IMPORTANTE: usar syncId
+          nombre: j.nombreCompleto,
+          zona: 'Asignación General'
+        }));
         this.cargando = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error al cargar datos de reportes:', err);
-        this.error = 'No se pudieron cargar los datos. Intente nuevamente.';
+        console.error('Error al cargar supervisores:', err);
+        this.error = 'No se pudieron cargar los supervisores. Intente nuevamente.';
         this.cargando = false;
         this.cdr.detectChanges();
-      },
+      }
     });
   }
 
@@ -79,36 +79,40 @@ export class Reportes implements OnInit {
    * Extrae la lista de asesores/jefes únicos basados en los trabajadores y grupos
    */
   extraerAsesores(): void {
-    const jefesDeCampo = this.trabajador.getJefesDeCampo();
-    if (jefesDeCampo && jefesDeCampo.length > 0) {
-      this.asesores = jefesDeCampo.map((jefe: any, index: number) => ({
-        id: jefe.id || index.toString(),
-        nombre: jefe.nombre,
-        zona: jefe.zona
-      }));
-    } else {
-      // Alternativa si el servicio viene vacío: extraerlos de los propios partes diarios
-      const nombresUnicos = new Set<string>();
-      this.partesDiarios.forEach(p => {
-        if (p.jefe) nombresUnicos.add(p.jefe);
-        else if (p.cuadrilla) nombresUnicos.add(p.cuadrilla);
-      });
-      
-      this.asesores = Array.from(nombresUnicos).map((nombre, idx) => ({
-        id: idx.toString(),
-        nombre: nombre,
-        zona: 'Campo General'
-      }));
-    }
+    // Ya no se extraen asesores de los partes diarios locales porque ahora fetchamos de /usuarios
   }
 
   /**
    * Se ejecuta al hacer clic sobre un asesor en el panel lateral izquierdo
    */
   seleccionarAsesor(asesor: IAsesor): void {
+    if (this.asesorSeleccionado?.id === asesor.id) return;
+    
+    // Invalidate state to avoid flickering and orphan data
     this.asesorSeleccionado = asesor;
-    this.paginaActual = 1; // Reseteamos la página
+    this.partesDiarios = [];
+    this.trabajadores = [];
+    this.produccion = [];
+    this.paginaActual = 1;
+    this.cargando = true;
     this.cdr.detectChanges();
+
+    // Lazy load the specific details
+    this.http.get<any>(`${environment.apiUrl}/sync/download/${asesor.id}`).subscribe({
+      next: (resp) => {
+        this.partesDiarios = resp.partesDiarios ?? [];
+        this.trabajadores = resp.trabajadores ?? [];
+        this.produccion = resp.produccion ?? [];
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar datos del supervisor:', err);
+        this.error = 'No se pudieron cargar los reportes de este supervisor.';
+        this.cargando = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   // ----------------------------------------------------------------
@@ -120,31 +124,66 @@ export class Reportes implements OnInit {
     const datos: any[] = [];
     const nombreAsesor = this.asesorSeleccionado.nombre.toLowerCase();
 
-    // 1. Filtrar partes que pertenezcan al asesor seleccionado
-    const partesDelAsesor = this.partesDiarios.filter(parte => {
-      const jefe = (parte.jefe ?? '').toLowerCase();
-      const cuadrilla = (parte.cuadrilla ?? '').toLowerCase();
-      return jefe === nombreAsesor || cuadrilla === nombreAsesor;
-    });
+    const partesDelAsesor = this.partesDiarios;
 
-    // 2. Aplanar los partes diarios
     for (const parte of partesDelAsesor) {
       const fecha = parte.fecha ?? '';
-      const cuadrilla = parte.cuadrilla ?? parte.jefe ?? 'Sin cuadrilla';
-      const jefe = parte.jefe ?? 'Sin jefe';
+      
+      const detalles: any[] = parte.detalles ?? [];
+      
+      const prodMatch = this.produccion.find(p => p.parteDiarioSyncId === parte.syncId);
+      const lote = prodMatch ? (prodMatch.actividad ?? 'San José') : 'San José';
 
-      const actividades: any[] = parte.actividades ?? parte.detalles ?? [parte];
+      // Omitir si el parte indica explícitamente Inversión
+      if (parte.turno?.toLowerCase().includes('inversión') || parte.turno?.toLowerCase().includes('inversion')) {
+        continue;
+      }
 
-      for (const act of actividades) {
+      // Si no hay detalles, agregar el parte al menos
+      if (detalles.length === 0) {
         datos.push({
           fecha,
-          // Creamos una propiedad Date nativa para poder ordenar correctamente
           fechaObj: fecha ? new Date(fecha) : new Date(0),
-          cuadrilla,
-          jefe,
-          lote: act.lote ?? parte.lote ?? '',
-          produccion: act.cantidadEjecutada ?? act.produccion ?? act.cantidad ?? 0,
-          calidad: act.calidad ?? act.observacion ?? 'N/A',
+          trabajador: 'Sin operarios',
+          lote: (parte.turno || 'Día') + ' / ' + lote,
+          horas: 0,
+          produccion: 0,
+          calidad: parte.estado ?? 'REGISTRADO'
+        });
+      }
+
+      for (const det of detalles) {
+        const trab = this.trabajadores.find(t => t.syncId === det.trabajadorSyncId);
+        const trabajadorNombre = trab ? `${trab.nombre} ${trab.apellido}` : 'Desconocido';
+        let produccionCantidad = det.cantidad || 0;
+
+        // Omitir si es Inversión
+        if (det.tipoActividad?.toLowerCase().includes('inversión') || det.tipoActividad?.toLowerCase().includes('inversion')) {
+          continue;
+        }
+
+        let horasTrabajadas = 0;
+        if (det.horaEntrada && det.horaSalida) {
+          const [hE, mE] = det.horaEntrada.split(':').map(Number);
+          const [hS, mS] = det.horaSalida.split(':').map(Number);
+          horasTrabajadas = (hS + (mS/60)) - (hE + (mE/60));
+          if (horasTrabajadas < 0) horasTrabajadas += 24;
+        }
+
+        // Heurística de Inversión: Si la cantidad coincide con las horas trabajadas (ej. 8)
+        // se asume que es el reporte de horas de inversión. Como el usuario pidió omitirlo, hacemos continue.
+        if (produccionCantidad === horasTrabajadas && produccionCantidad <= 16) {
+          continue; 
+        }
+
+        datos.push({
+          fecha,
+          fechaObj: fecha ? new Date(fecha) : new Date(0),
+          trabajador: trabajadorNombre,
+          lote: (parte.turno || 'Día') + ' / ' + lote,
+          horas: horasTrabajadas,
+          produccion: produccionCantidad,
+          calidad: det.estadoAsistencia ?? 'ASISTIÓ'
         });
       }
     }
@@ -201,14 +240,20 @@ export class Reportes implements OnInit {
   get eficienciaCuadrillas(): any[] {
     if (!this.asesorSeleccionado) return [];
     
-    const grupos = this.trabajador.getRankingGrupos();
-    // Filtramos para que solo muestre el rendimiento de la cuadrilla bajo el mando del asesor actual
-    return grupos
-      .filter((g: any) => g.nombre.toLowerCase() === this.asesorSeleccionado!.nombre.toLowerCase())
-      .map((g: any) => ({
-        nombre: g.nombre,
-        rendimiento: g.rendimiento
-      }));
+    // Calcular la eficiencia conectada a la base de datos a partir de "this.produccion" (datos asíncronos reales)
+    if (this.produccion.length === 0) {
+      return [{ nombre: this.asesorSeleccionado.nombre, rendimiento: 0 }];
+    }
+
+    const sumaRendimiento = this.produccion.reduce((acc, p) => acc + (p.rendimiento || 0), 0);
+    const avgRendimiento = Math.round(sumaRendimiento / this.produccion.length);
+
+    return [
+      {
+        nombre: this.asesorSeleccionado.nombre,
+        rendimiento: avgRendimiento
+      }
+    ];
   }
 
   // ----------------------------------------------------------------
@@ -235,9 +280,9 @@ export class Reportes implements OnInit {
   exportarCSV(): void {
     if (this.datosHistoricos.length === 0) return;
 
-    const encabezados = ['Fecha', 'Cuadrilla', 'Jefe', 'Lote', 'Produccion', 'Calidad'];
+    const encabezados = ['Fecha', 'Trabajador', 'Turno/Lote', 'Horas Trab.', 'Produccion (KG)', 'Estado'];
     const filas = this.datosHistoricos.map((d) =>
-      [d.fecha, d.cuadrilla, d.jefe, d.lote, d.produccion, d.calidad]
+      [d.fecha, d.trabajador, d.lote, d.horas, d.produccion > 0 ? d.produccion : 0, d.calidad]
         .map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`)
         .join(',')
     );
